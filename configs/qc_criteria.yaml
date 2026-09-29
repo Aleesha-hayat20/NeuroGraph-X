@@ -1,0 +1,27 @@
+# Quality control criteria for NeuroGraph-X.
+#
+# THESE CRITERIA ARE FIXED IN ADVANCE.
+# Recorded: 2026-09-28, before any classification result was produced.
+# Changing them after seeing a result invalidates every number downstream.
+# See docs/decisions/0003-qc-criteria.md
+#
+# Rater column values come from the ABIDE Preprocessed phenotypic file.
+# The accepted values below follow the convention used by
+# nilearn.datasets.fetch_abide_pcp(quality_checked=True), version 0.14.1.
+
+rater_criteria:
+  qc_rater_1:       ["OK"]
+  qc_anat_rater_2:  ["OK", "maybe"]
+  qc_func_rater_2:  ["OK", "maybe"]
+  qc_anat_rater_3:  ["OK"]
+  qc_func_rater_3:  ["OK"]
+
+# Applied only if the corresponding column exists in the phenotypic file.
+# Confirm the real column name in the Week 1 metadata report before relying on it.
+motion:
+  column_candidates: [func_mean_fd, func_perc_fd, func_num_fd]
+  mean_fd_max: 0.5      # millimetres. Provisional, confirm against the distribution.
+
+completeness:
+  require_derivative_present: true
+  require_nonempty_timeseries: true

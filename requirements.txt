@@ -1,0 +1,12 @@
+# Runtime dependencies, pinned.
+# Regenerate with: pip freeze > requirements.lock.txt
+numpy==2.4.4
+pandas==3.0.2
+scipy==1.17.1
+matplotlib==3.10.9
+nilearn==0.14.1
+nibabel==5.3.2
+scikit-learn==1.7.2
+pyyaml==6.0.2
+requests==2.33.1
+tqdm==4.67.1

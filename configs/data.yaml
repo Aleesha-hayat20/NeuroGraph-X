@@ -1,0 +1,44 @@
+# NeuroGraph-X data configuration.
+# Every value here is a declared analysis choice. Changing one changes results,
+# so changes go through a decision memo in docs/decisions/.
+
+dataset:
+  name: ABIDE Preprocessed
+  base_url: https://s3.amazonaws.com/fcp-indi/data/Projects/ABIDE_Initiative
+  phenotypic_file: Phenotypic_V1_0b_preprocessed1.csv
+
+# Fixed and declared. See docs/decisions/0002-pipeline-strategy.md
+pipeline:
+  name: cpac          # one of: ccs, cpac, dparsf, niak
+  strategy: filt_global   # one of: filt_global, filt_noglobal, nofilt_global, nofilt_noglobal
+
+# Four atlases spanning different definitions of a region.
+# See docs/decisions/0001-atlas-selection.md
+atlases:
+  - key: rois_aal
+    label: AAL
+    family: anatomical
+  - key: rois_cc200
+    label: CC200
+    family: functional
+  - key: rois_ho
+    label: Harvard-Oxford
+    family: probabilistic
+  - key: rois_dosenbach160
+    label: Dosenbach 160
+    family: meta-analytic
+
+pilot_atlas: rois_cc200
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  frozen: data/frozen
+  reports: docs/reports
+
+frozen_evaluation_set:
+  size: 100
+  stratify_by: [SITE_ID, DX_GROUP]
+  seed: 20260928
+  file: data/frozen/frozen_eval_100.csv

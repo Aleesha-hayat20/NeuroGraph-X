@@ -1,0 +1,24 @@
+[project]
+name = "neurographx"
+version = "0.1.0"
+description = "A graph neural network platform for reliability-aware brain connectivity analysis in autism research"
+requires-python = ">=3.11"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
