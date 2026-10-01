@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
 from neurographx.config import load  # noqa: E402
+from neurographx.m1_ingestion.fetch import parse_strategy  # noqa: E402
 from neurographx.utils.paths import resolve  # noqa: E402
 
 
@@ -41,11 +42,12 @@ def main() -> int:
     raw = resolve(cfg["paths"]["raw"])
 
     print(f"Pilot atlas: {atlas}   pipeline: {pipeline}   strategy: {strategy}")
+    flags = parse_strategy(strategy)
     data = fetch_abide_pcp(
         data_dir=str(raw),
         pipeline=pipeline,
-        band_pass_filtering="filt" in strategy,
-        global_signal_regression="noglobal" not in strategy,
+        band_pass_filtering=flags["band_pass_filtering"],
+        global_signal_regression=flags["global_signal_regression"],
         derivatives=[atlas],
         quality_checked=True,
         n_subjects=args.n,

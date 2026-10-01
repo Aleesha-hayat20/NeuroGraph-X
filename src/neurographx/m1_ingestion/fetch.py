@@ -36,3 +36,38 @@ def download(url: str, destination: Path, timeout: int = 120) -> Path:
 
     partial.replace(destination)
     return destination
+
+
+VALID_PIPELINES = ("ccs", "cpac", "dparsf", "niak")
+VALID_STRATEGIES = ("filt_global", "filt_noglobal", "nofilt_global", "nofilt_noglobal")
+
+
+def parse_strategy(strategy: str) -> dict[str, bool]:
+    """Turn a strategy string into the two flags nilearn expects.
+
+    nilearn builds the strategy string as:
+        ("no" if not band_pass else "") + "filt_" + ("no" if not global else "") + "global"
+
+    Naive substring checks get this wrong, because "filt" is a substring of
+    "nofilt" and "global" is a substring of "noglobal".
+    """
+    if strategy not in VALID_STRATEGIES:
+        raise ValueError(f"Unknown strategy {strategy!r}. Expected one of {VALID_STRATEGIES}.")
+    return {
+        "band_pass_filtering": not strategy.startswith("nofilt"),
+        "global_signal_regression": "noglobal" not in strategy,
+    }
+
+
+def derivative_url(base_url: str, pipeline: str, strategy: str, derivative: str,
+                   file_id: str) -> str:
+    """Build the URL of one participant's derivative file.
+
+    Layout confirmed against nilearn.datasets.fetch_abide_pcp, version 0.14.1:
+        {base}/Outputs/{pipeline}/{strategy}/{derivative}/{FILE_ID}_{derivative}{ext}
+    """
+    ext = ".1D" if derivative.startswith("rois") else ".nii.gz"
+    return (
+        f"{base_url.rstrip('/')}/Outputs/{pipeline}/{strategy}/"
+        f"{derivative}/{file_id}_{derivative}{ext}"
+    )
