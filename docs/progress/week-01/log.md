@@ -18,11 +18,28 @@
 - Confirmed the derivative extension rule: `rois_*` derivatives are `.1D` text files,
   everything else is `.nii.gz`.
 
-### DD September
--
+### 01 October
+- Fix 01: strategy parsing bug caught during verification and fixed before
+  script 03 was ever run. "filt" is a substring of "nofilt", so the two
+  nofilt strategies would have fetched the wrong preprocessing variant.
+  Configured strategy filt_global was unaffected. Tests up from 10 to 18.
+- Metadata report generated: `docs/reports/metadata_report.md` plus figures.
+- Decision memo 0002 accepted: `cpac` / `filt_global` matches the preprocessing of the
+  primary comparator, Heinsfeld et al. 2018.
+- Pilot atlas run (CC200, 5 participants): `scripts/03_pilot_atlas.py`. Result: <fill in>.
+- Full four atlas download: `scripts/04_fetch_all_atlases.py`. Summary written to
+  `docs/reports/atlas_summary.md`. Memo 0001 to-confirm items ticked from it.
+
+### Handoff to Laiba
+- Region time series for all four atlases sit in `data/raw/ABIDE_pcp/cpac/filt_global/`
+  on Aleesha's machine (not committed, too large and regenerable). Re-create with
+  `python scripts/04_fetch_all_atlases.py`.
+- Node counts per atlas are in `docs/reports/atlas_summary.md`; one model per atlas (0004).
+- Correlation code: `neurographx.m2_connectome.connectivity`. Regions with a flat signal
+  give empty (NaN) rows; how to treat them needs its own short memo before training.
 
 ## Decisions taken
-- `docs/decisions/0001-atlas-selection.md`
+- `docs/decisions/0002-pipeline-strategy.md` (accepted 1 October)
 - `docs/decisions/0003-qc-criteria.md`
 - `docs/decisions/0004-node-count-handling.md`
 

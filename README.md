@@ -56,10 +56,14 @@ pytest                             # should pass before you change anything
 python scripts/01_fetch_phenotypic.py     # download the phenotypic CSV, list its columns
 python scripts/02_metadata_report.py      # build docs/reports/metadata_report.md
 python scripts/03_pilot_atlas.py --n 5    # pilot one atlas, verify a correlation matrix
+python scripts/04_fetch_all_atlases.py --limit 20   # optional trial on 20 participants
+caffeinate -i python scripts/04_fetch_all_atlases.py  # all four atlases, everyone (macOS)
 ```
 
 Run them in that order. Step 1 downloads one small CSV. Step 3 downloads region time
-series for the pilot atlas only.
+series for the pilot atlas only. Step 4 downloads all four atlases and writes
+`docs/reports/atlas_summary.md`. It is resumable: if it stops, run it again.
+`caffeinate -i` only keeps a Mac awake; on Linux or Windows drop it.
 
 > **Never request the `func_preproc` derivative.** The `rois_*` derivatives are small
 > `.1D` text files. Everything else is a large `.nii.gz` volume.

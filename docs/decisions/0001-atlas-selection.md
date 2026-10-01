@@ -39,5 +39,12 @@ underlying idea of what a region is, not just the resolution.
 
 ## To confirm
 
-- [ ] Record the exact region count for each atlas from the downloaded files.
-- [ ] Confirm each derivative key resolves to a `.1D` file.
+Both items are filled automatically by `scripts/04_fetch_all_atlases.py`, which writes
+`docs/reports/atlas_summary.md`. Tick them once that file exists and the numbers look sane.
+
+- [ ] Record the exact region count for each atlas from the downloaded files
+  (see the Regions column of `docs/reports/atlas_summary.md`).
+- [ ] Confirm each derivative key resolves to a `.1D` file
+  (see the File type column of the same report).
+- [ ] Note any atlas where some participants have regions with zero variance (a flat
+  signal). These produce empty rows in the correlation matrix and are handled in 0004.
