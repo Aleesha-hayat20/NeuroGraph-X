@@ -26,9 +26,14 @@
 - Metadata report generated: `docs/reports/metadata_report.md` plus figures.
 - Decision memo 0002 accepted: `cpac` / `filt_global` matches the preprocessing of the
   primary comparator, Heinsfeld et al. 2018.
-- Pilot atlas run (CC200, 5 participants): `scripts/03_pilot_atlas.py`. Result: <fill in>.
-- Full four atlas download: `scripts/04_fetch_all_atlases.py`. Summary written to
-  `docs/reports/atlas_summary.md`. Memo 0001 to-confirm items ticked from it.
+- Pilot atlas run (CC200, 5 participants): `scripts/03_pilot_atlas.py`. 
+  Result: Pilot passed. Safe to run scripts/04_fetch_all_atlases.py 
+  Figure: `docs/reports/figures/pilot_connectivity_matrix.png`.
+- Full four atlas download (2 October): `scripts/04_fetch_all_atlases.py`. 871 participants
+  passed quality control (403 autism, 468 control, 20 sites), the same set in all four
+  atlases. Region counts: AAL 116, CC200 200, Harvard-Oxford 111, Dosenbach 160 161.
+  0 invalid matrices. 992.1 MB on disk. Summary in `docs/reports/atlas_summary.md`.
+  Memo 0001 closed.
 
 ### Handoff to Laiba
 - Region time series for all four atlases sit in `data/raw/ABIDE_pcp/cpac/filt_global/`

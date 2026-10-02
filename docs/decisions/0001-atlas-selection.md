@@ -37,14 +37,21 @@ underlying idea of what a region is, not just the resolution.
 - Attribution must map onto four different label sets in FYP-II.
 - Every run in the reliability grid is multiplied by four.
 
-## To confirm
+## To confirm (closed 2026-10-02)
 
-Both items are filled automatically by `scripts/04_fetch_all_atlases.py`, which writes
-`docs/reports/atlas_summary.md`. Tick them once that file exists and the numbers look sane.
+Source: `docs/reports/atlas_summary.md`, generated 2026-10-02 by
+`scripts/04_fetch_all_atlases.py` (pipeline `cpac`, strategy `filt_global`).
 
-- [ ] Record the exact region count for each atlas from the downloaded files
-  (see the Regions column of `docs/reports/atlas_summary.md`).
-- [ ] Confirm each derivative key resolves to a `.1D` file
-  (see the File type column of the same report).
-- [ ] Note any atlas where some participants have regions with zero variance (a flat
-  signal). These produce empty rows in the correlation matrix and are handled in 0004.
+- [x] Record the exact region count for each atlas from the downloaded files.
+  AAL **116**, CC200 **200**, Harvard-Oxford **111**, Dosenbach 160 **161** (see note below).
+- [x] Confirm each derivative key resolves to a `.1D` file.
+  All four downloaded as `.1D` text files for the same **871** participants, and all
+  3,484 matrices (871 x 4) passed the validity checks. Total size on disk 992.1 MB.
+- [x] Note any atlas where some participants have regions with zero variance.
+  Participants with at least one flat region: AAL 54, CC200 15, Harvard-Oxford 201,
+  Dosenbach 160 46 (out of 871 each). Handling goes in its own memo before training.
+
+**Open note, Dosenbach 160 has 161 columns.** The atlas is named for 160 regions but the
+files have 161 columns. Check the header line of one file to see whether the extra
+column is a real region or something else, and record the answer here. This does not
+block Week 2: the model reads the node count from the data, not from the atlas name.
