@@ -2,8 +2,8 @@
 reproducibility work BEFORE real ABIDE data arrives.
 
 Usage:
-    python train_toy.py                       # MUTAG, defaults
-    python train_toy.py --dataset PROTEINS --epochs 150 --seed 7
+    python scripts/train_toy.py                       # MUTAG, defaults
+    python scripts/train_toy.py --dataset PROTEINS --epochs 150 --seed 7
 """
 import argparse
 import random
@@ -12,11 +12,10 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn.functional as F
-from torch.nn import Dropout, Linear, ModuleList, ReLU, Sequential
 from torch_geometric.datasets import FakeDataset, TUDataset
 from torch_geometric.loader import DataLoader
-from torch_geometric.nn import GCNConv, global_mean_pool
 
+from neurographx.m3_model.model import GCN
 from neurographx.m3_model.run_logger import log_run, new_run_id
 
 
@@ -28,29 +27,6 @@ def set_seed(seed: int) -> None:
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-
-
-# --------------------------------------------------------------------- model
-class GCN(torch.nn.Module):
-    """N x GCNConv -> mean-pool readout -> MLP head."""
-
-    def __init__(self, in_dim, hidden, num_classes, num_layers=3, dropout=0.5):
-        super().__init__()
-        dims = [in_dim] + [hidden] * num_layers
-        self.convs = ModuleList(
-            [GCNConv(dims[i], dims[i + 1]) for i in range(num_layers)]
-        )
-        self.head = Sequential(
-            Linear(hidden, hidden), ReLU(), Dropout(dropout), Linear(hidden, num_classes)
-        )
-        self.dropout = dropout
-
-    def forward(self, x, edge_index, batch):
-        for conv in self.convs:
-            x = F.relu(conv(x, edge_index))
-            x = F.dropout(x, p=self.dropout, training=self.training)
-        x = global_mean_pool(x, batch)  # graph-level readout
-        return self.head(x)  # logits
 
 
 # ---------------------------------------------------------------- train/eval
