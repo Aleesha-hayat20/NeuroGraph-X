@@ -13,11 +13,11 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from run_logger import log_run, new_run_id
 from sklearn.model_selection import train_test_split
 from torch_geometric.loader import DataLoader
 from train_toy import GCN, evaluate, set_seed, train_epoch
 
+from neurographx.m3_model.run_logger import log_run, new_run_id
 from neurographx.m3_model.synthetic_brain import make_dataset
 
 
