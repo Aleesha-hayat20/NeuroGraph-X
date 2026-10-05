@@ -12,11 +12,12 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn.functional as F
-from run_logger import log_run, new_run_id
 from torch.nn import Dropout, Linear, ModuleList, ReLU, Sequential
 from torch_geometric.datasets import FakeDataset, TUDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import GCNConv, global_mean_pool
+
+from neurographx.m3_model.run_logger import log_run, new_run_id
 
 
 # ----------------------------------------------------------------- utilities
