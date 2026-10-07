@@ -1,0 +1,58 @@
+@startuml
+title NeuroGraph-X Database Schema
+hide circle
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam linetype ortho
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+entity "run_log" as run_log {
+  * run_id : TEXT <<PK>>
+  --
+  * timestamp : TEXT
+  * schema_version : INTEGER
+  git_commit : TEXT
+  environment : TEXT (JSON)
+  * dataset : TEXT
+  atlas : TEXT
+  * seed : INTEGER
+  * hyperparameters : TEXT (JSON)
+  * metrics : TEXT (JSON)
+  * checkpoint_path : TEXT
+  data_config : TEXT (JSON)
+  split_sizes : TEXT (JSON)
+  reload_identical : INTEGER (0 or 1)
+}
+
+entity "model_registry" as model_registry {
+  * atlas : TEXT <<PK>>
+  --
+  * run_id : TEXT <<FK>>
+  * checkpoint_path : TEXT
+  * metrics : TEXT (JSON)
+  * registered_at : TEXT
+  * previous_run_ids : TEXT (JSON array)
+}
+
+entity "analysis_log (planned)" as analysis_log {
+  * analysis_id : TEXT <<PK>>
+  --
+  * timestamp : TEXT
+  * participant_id : TEXT
+  * atlas : TEXT
+  * run_id : TEXT <<FK>>
+  * prediction : TEXT (autism or control)
+  * confidence : REAL
+  * calibrated : INTEGER (0 or 1)
+  git_commit : TEXT
+  reproduces_analysis_id : TEXT <<FK>>
+}
+
+run_log ||--o| model_registry : is current model for
+run_log ||--o{ analysis_log : produced model used by
+analysis_log |o--o{ analysis_log : reproduces
+@enduml
