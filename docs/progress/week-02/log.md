@@ -38,6 +38,17 @@
   frozen set and splits byte-identical (hash check before and after).
 - Tests: 94 passing on a clean Python 3.11 copy without raw data, ruff clean.
 - Branch `feature/m2-week2-connectome` created from `main` (091dcb7) and committed.
+- First publish attempt stopped safely: main had 14 new commits (Laiba PRs #26 to #30,
+  Alishba #31 and #32) and `requirements.txt` conflicted. Merged main into the branch:
+  - `requirements.txt`: kept the API pins and added `tabulate`.
+  - Connectome memo renumbered **0007** (Laiba's model architecture memo is 0006);
+    it now states the interface agreed with 0006 (Fisher z rows as node features,
+    z diagonal 0, thresholding in model code).
+  - The API's participant screen (`screening.py`) now applies the closed motion gate.
+    On the real phenotypic file it includes exactly the 861 of `qc_cohort.csv`;
+    a test pins this agreement on synthetic data.
+  - `ConnectomeSet` accepts the zero-padded ids the API and inference use ("0050003").
+  - Tests: 138 passing, 2 skipped without PyTorch (same as CI).
   Published with `docs/progress/week-02/publish_week2.sh`: sync with GitHub, local
   tests, push, pull request, wait for CI, merge.
 

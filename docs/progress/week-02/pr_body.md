@@ -13,5 +13,6 @@ Train only on `data/splits/cv5_folds.csv` (or a split committed under `data/spli
 
 ## Checks
 
-- ruff clean, 94 tests pass on a clean Python 3.11 copy without raw data
+- Merged with main (PRs #26 to #32): connectome memo renumbered 0007; the API screen now applies the closed motion gate, so it includes the same 861 as `data/splits/qc_cohort.csv`
+- ruff clean, 138 tests pass (2 PyTorch tests skip, as on CI) on a clean Python 3.11 copy without raw data
 - CI on this PR must be green before merging
