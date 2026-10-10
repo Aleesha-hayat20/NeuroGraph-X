@@ -59,7 +59,7 @@ def _bar(series, title, xlabel, path: Path, horizontal=False, color=STROKE):
     plt.close(fig)
 
 
-def build(csv_path: Path, out_md: Path, fig_dir: Path) -> str:
+def build(csv_path: Path, out_md: Path, fig_dir: Path, motion_column: str | None = None) -> str:
     df = md.load_phenotypic(csv_path)
     today = dt.date.today().isoformat()
     figures = []
@@ -92,9 +92,8 @@ def build(csv_path: Path, out_md: Path, fig_dir: Path) -> str:
         plt.close(fig)
         figures.append(("Age distribution", "figures/age_hist.png"))
 
-    motion_cols = md.find_motion_columns(df)
-    if motion_cols:
-        col = motion_cols[0]
+    col = md.pick_motion_column(df, motion_column)
+    if col:
         fig, ax = plt.subplots(figsize=(7.4, 3.2))
         ax.hist(df[col].dropna(), bins=40, color=ACCENT, edgecolor="#FFFFFF")
         ax.set_xlabel(col)
@@ -196,7 +195,8 @@ def main() -> int:
         return 1
 
     reports = resolve(cfg["paths"]["reports"])
-    build(csv_path, reports / "metadata_report.md", reports / "figures")
+    motion_column = load("qc_criteria.yaml").get("motion", {}).get("column")
+    build(csv_path, reports / "metadata_report.md", reports / "figures", motion_column)
     print(f"Wrote {reports / 'metadata_report.md'}")
     print(f"Figures in {reports / 'figures'}")
     return 0

@@ -1,6 +1,6 @@
 # ABIDE Preprocessed: Metadata Report
 
-**Generated:** 2026-10-02  
+**Generated:** 2026-10-10  
 **Source file:** `Phenotypic_V1_0b_preprocessed1.csv`  
 **Rows:** 1112  **Columns:** 106
 
@@ -88,17 +88,17 @@ This table drives the stratification of the frozen evaluation set.
 Accepted values follow `nilearn.datasets.fetch_abide_pcp(quality_checked=True)`,
 version 0.14.1.
 
-| column                | distinct values                                                                                                                          | most common   |   count of most common | accepted values           |   passing |
-|:----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------|:--------------|-----------------------:|:--------------------------|----------:|
-| qc_rater_1            | OK, fail, maybe                                                                                                                          | OK            |                    997 | OK                        |       997 |
+| column                | distinct values                                                                                                                          | most common   |   count of most common | accepted values           | passing   |
+|:----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------|:--------------|-----------------------:|:--------------------------|:----------|
+| qc_rater_1            | OK, fail, maybe                                                                                                                          | OK            |                    997 | OK                        | 997       |
 | qc_notes_rater_1      | <NA>, dorsal cropped, **Not recommended with niak, ventral edge is cropped, cerebellum & brainstem cropped, misshapen right frontal lobe | <NA>          |                   1073 | not in the nilearn filter |           |
-| qc_anat_rater_2       | OK, maybe, fail, <NA>                                                                                                                    | OK            |                    866 | OK, maybe                 |      1060 |
+| qc_anat_rater_2       | OK, maybe, fail, <NA>                                                                                                                    | OK            |                    866 | OK, maybe                 | 1060      |
 | qc_anat_notes_rater_2 | <NA>, skull-striping fail, skull-striping fail;, skull-striping fail; Motion, stripe, Motion                                             | <NA>          |                    837 | not in the nilearn filter |           |
-| qc_func_rater_2       | OK, maybe, fail, <NA>                                                                                                                    | OK            |                    842 | OK, maybe                 |      1049 |
+| qc_func_rater_2       | OK, maybe, fail, <NA>                                                                                                                    | OK            |                    842 | OK, maybe                 | 1049      |
 | qc_func_notes_rater_2 | <NA>, ic-cerebellum, Ic-parietal, ic-cerebellum_temporal_lobe, ic-cerebellum-temporal_lobe, ic-parietal-cerebellum                       | <NA>          |                    853 | not in the nilearn filter |           |
-| qc_anat_rater_3       | OK, fail, <NA>                                                                                                                           | OK            |                   1003 | OK                        |      1003 |
+| qc_anat_rater_3       | OK, fail, <NA>                                                                                                                           | OK            |                   1003 | OK                        | 1003      |
 | qc_anat_notes_rater_3 | <NA>, headmotion, noise, half head, no T1, T2, less headmotion                                                                           | <NA>          |                   1004 | not in the nilearn filter |           |
-| qc_func_rater_3       | OK, fail, <NA>                                                                                                                           | OK            |                   1035 | OK                        |      1035 |
+| qc_func_rater_3       | OK, fail, <NA>                                                                                                                           | OK            |                   1035 | OK                        | 1035      |
 | qc_func_notes_rater_3 | <NA>, no func images, no T1, ERROR #5, ERROR #46, bad quality                                                                            | <NA>          |                   1036 | not in the nilearn filter |           |
 
 Applying the standard rater filter to the 5 rater columns present would retain **871 of 1112** participants.
@@ -240,6 +240,6 @@ before setting a threshold.
 
 ![Age distribution](figures/age_hist.png)
 
-**Distribution of func_dvars**
+**Distribution of func_mean_fd**
 
-![Distribution of func_dvars](figures/motion_hist.png)
+![Distribution of func_mean_fd](figures/motion_hist.png)

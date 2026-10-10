@@ -44,3 +44,12 @@ def test_missing_columns_do_not_crash():
     assert md.site_by_group(df) is None
     assert md.qc_summary(df) is None
     assert md.would_pass_all_raters(df) == {"applicable": False}
+
+
+def test_motion_column_prefers_the_qc_variable(synthetic_phenotypic):
+    df = md.load_phenotypic(synthetic_phenotypic)
+    df.insert(0, "func_dvars", 1.0)          # first in file order, like the real file
+    assert md.pick_motion_column(df) == "func_dvars"
+    assert md.pick_motion_column(df, "func_mean_fd") == "func_mean_fd"
+    assert md.pick_motion_column(df, "not_a_column") == "func_dvars"
+    assert md.pick_motion_column(pd.DataFrame({"SUB_ID": [1]})) is None
