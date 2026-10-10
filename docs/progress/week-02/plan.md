@@ -26,5 +26,5 @@ from Wednesday.
 | Contract | Producer | Consumer | Where |
 |---|---|---|---|
 | Participant record and quality flags | Aleesha | Laiba, Alishba | `data/splits/qc_cohort.csv`, `docs/reports/exclusion_log.csv` |
-| Graph object, with node count and atlas identifier | Aleesha | Laiba | `neurographx.m2_connectome.engine.load_atlas`, memo 0006 |
+| Graph object, with node count and atlas identifier | Aleesha | Laiba | `neurographx.m2_connectome.engine.load_atlas`, memo 0007 |
 | Frozen set and training folds | Aleesha | Laiba | `data/frozen/frozen_eval_100.csv`, `data/splits/cv5_folds.csv` |

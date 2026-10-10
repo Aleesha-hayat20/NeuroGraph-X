@@ -59,7 +59,7 @@ development_splits:
   seed: 20261006
   file: data/splits/cv5_folds.csv
 
-# M2 connectome engine. See docs/decisions/0006-connectome-engine.md
+# M2 connectome engine. See docs/decisions/0007-connectome-engine.md
 connectome:
   measure: pearson
   fisher_clip: 0.9999999    # |r| is clipped to this before arctanh, so z stays finite

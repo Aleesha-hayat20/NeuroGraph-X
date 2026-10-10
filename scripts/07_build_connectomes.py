@@ -111,7 +111,7 @@ def main() -> int:
         f"**Stored in:** `{rel}/{pipeline}_{strategy}/` (not committed, rebuild with "
         "`python scripts/07_build_connectomes.py`)",
         "",
-        "Design and conventions: `docs/decisions/0006-connectome-engine.md`. Independent",
+        "Design and conventions: `docs/decisions/0007-connectome-engine.md`. Independent",
         "check of a sample: `docs/reports/connectome_verification.md`.",
         "",
         table.drop(columns=["Seconds"]).to_markdown(index=False),
@@ -119,7 +119,7 @@ def main() -> int:
         "- **Nodes** is the graph size for that atlas and **Edges** is nodes x (nodes - 1) / 2,",
         "  the number of distinct region pairs stored per participant.",
         "- **Edges NaN in at least one participant** counts region pairs that touch a flat",
-        "  region in somebody. They are NaN on disk and handled by the policy in memo 0006.",
+        "  region in somebody. They are NaN on disk and handled by the policy in memo 0007.",
         "- **Status** says whether this run computed the matrices or reused the cache.",
         "",
         "![Mean connectome per atlas](figures/mean_connectomes.png)",

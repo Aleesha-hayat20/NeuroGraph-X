@@ -152,3 +152,8 @@ def test_unknown_kind_rejected(setup):
     cset, _ = _build(setup)
     with pytest.raises(ValueError):
         cset.edges("pearson")
+
+
+def test_api_style_padded_id_is_accepted(setup):
+    cset, _ = _build(setup)
+    assert cset.index("0050003") == cset.index(50003) == cset.index("SITEB_0050003") == 2

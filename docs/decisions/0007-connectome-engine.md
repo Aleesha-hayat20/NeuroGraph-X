@@ -1,9 +1,12 @@
-# 0006. Connectome engine: measure, Fisher transform, storage, caching, flat regions
+# 0007. Connectome engine: measure, Fisher transform, storage, caching, flat regions
 
 **Status:** Accepted for storage and transform. Flat-region fill for training: Proposed,
 needs Laiba's agreement as the consumer.
 **Date:** 2026-10-06
 **Owner:** Aleesha Hayat
+**Related:** 0002 (pipeline), 0004 (one model per atlas), 0006 (baseline model architecture)
+
+Numbered 0007 because Laiba's model architecture memo took 0006 while this was in review.
 
 ## Context
 
@@ -33,7 +36,14 @@ mask available as a node feature if useful. Affected participants per atlas (QC 
 861): AAL 54, CC200 15, Harvard-Oxford 198, Dosenbach 160 46. Dropping those participants
 instead would cost 23 per cent of the Harvard-Oxford cohort, which is why it is not the
 default. Laiba confirms or amends this before the first training run, and the choice is
-recorded here.
+recorded here. Memo 0006 (model architecture) says the graph builder raises on any NaN
+rather than repairing silently; that stays correct, because with this policy the fill
+happens explicitly in the loader call (`fill_nan=0.0`), where it is visible and logged in
+the run configuration.
+
+Matches memo 0006 on the rest of the interface: node features are rows of the Fisher z
+matrix, and the engine supplies unthresholded matrices with the z diagonal set to 0.
+Thresholding stays in the model code.
 
 ## Verification
 

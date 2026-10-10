@@ -11,7 +11,7 @@
 - Memo 0003 closed: motion gate `func_mean_fd` at most 0.5 mm. QC cohort 861
   (396 autism, 465 control, 20 sites); 241 excluded by raters, 10 by motion, 0 by
   completeness. `scripts/05_apply_qc.py`, cohort and exclusion log committed.
-- Connectome engine built (memo 0006): Pearson r, Fisher z, upper-triangle float32
+- Connectome engine built (memo 0007): Pearson r, Fisher z, upper-triangle float32
   storage, fingerprint cache. All four atlases for 861 participants in about 33 s,
   cached re-run in about 6 s. Summary `docs/reports/connectome_summary.md`.
 - Frozen evaluation set drawn once (memo 0005, seed 20260928): 100 participants,
@@ -42,8 +42,8 @@
   tests, push, pull request, wait for CI, merge.
 
 ### Handoff to Laiba
-- Load matrices with `load_atlas` (example in memo 0006). Use `fill_nan=0.0` for now and
-  confirm or amend the flat-region proposal in memo 0006 before training.
+- Load matrices with `load_atlas` (example in memo 0007). Use `fill_nan=0.0` for now and
+  confirm or amend the flat-region proposal in memo 0007 before training.
 - Train only on `data/splits/cv5_folds.csv` or another file committed under
   `data/splits/`. Evaluate once on `data/frozen/frozen_eval_100.csv`.
 - Call `assert_no_leakage(train_ids, frozen)` from
@@ -57,7 +57,7 @@
 ## Decisions taken
 - `docs/decisions/0003-qc-criteria.md` (closed 6 October)
 - `docs/decisions/0005-frozen-evaluation-set.md` (accepted 6 October)
-- `docs/decisions/0006-connectome-engine.md` (new)
+- `docs/decisions/0007-connectome-engine.md` (new)
 
 ## Week close, Sunday 11 October
 **Gate items met:**

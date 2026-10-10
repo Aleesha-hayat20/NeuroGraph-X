@@ -103,7 +103,7 @@ def fisher_z(corr: np.ndarray, clip: float = DEFAULT_FISHER_CLIP) -> np.ndarray:
     near the bounds. z is unbounded and approximately normal, so averages and
     differences of z behave well, which is what a model and later statistics need.
 
-    Conventions, recorded in decision memo 0006:
+    Conventions, recorded in decision memo 0007:
     - |r| is clipped to `clip` first, because arctanh(1) is infinite.
     - The diagonal (a region with itself) is set to 0. It carries no information
       and an infinite value would poison any downstream sum.

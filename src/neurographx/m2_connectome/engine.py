@@ -4,7 +4,7 @@ One call per atlas turns every cohort participant's region time series into a
 Pearson correlation matrix and its Fisher z transform, then stores the whole
 atlas as one file. Running it again with the same inputs reuses the stored file.
 
-Storage format (one pair of files per atlas, decision memo 0006):
+Storage format (one pair of files per atlas, decision memo 0007):
 
     {output_dir}/{pipeline}_{strategy}/{atlas_key}.npz
         file_ids       (n,)        str     ABIDE FILE_ID, row order of every array
@@ -121,7 +121,10 @@ class ConnectomeSet:
         return self.r_triu.shape[1]
 
     def index(self, participant: str | int) -> int:
-        """Row of a participant, given a FILE_ID string, a SUB_ID integer, or a row."""
+        """Row of a participant, given a FILE_ID ("NYU_0050952"), a SUB_ID (50952), or the
+        zero-padded SUB_ID string the API and inference use ("0050952")."""
+        if isinstance(participant, str) and participant.isdigit():
+            participant = int(participant)
         if isinstance(participant, str):
             hits = np.flatnonzero(self.file_ids == participant)
         else:
