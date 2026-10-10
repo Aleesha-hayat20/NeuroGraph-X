@@ -37,11 +37,16 @@ def get_criteria() -> dict[str, list[str]]:
     return screening.rater_criteria()
 
 
+def get_motion() -> dict | None:
+    return screening.motion_rule()
+
+
 TablePath = Annotated[Path, Depends(get_table_path)]
 Criteria = Annotated[dict, Depends(get_criteria)]
+Motion = Annotated[dict | None, Depends(get_motion)]
 
 
-def _participants(path: Path, criteria: dict) -> list[dict]:
+def _participants(path: Path, criteria: dict, motion: dict | None = None) -> list[dict]:
     if not path.exists():
         raise HTTPException(
             status_code=503,
@@ -49,7 +54,7 @@ def _participants(path: Path, criteria: dict) -> list[dict]:
             "Run scripts/01_fetch_phenotypic.py first.",
         )
     try:
-        return pt.load_participants(path, criteria)
+        return pt.load_participants(path, criteria, motion)
     except ValueError as err:
         raise HTTPException(status_code=500, detail=f"Participant table unreadable: {err}")
 
@@ -70,11 +75,12 @@ def health(path: TablePath) -> dict:
 def list_participants(
     path: TablePath,
     criteria: Criteria,
+    motion: Motion,
     qc_status: Literal["included", "excluded"] | None = Query(
         default=None, description="Only participants with this quality status."
     ),
 ) -> dict:
-    records = _participants(path, criteria)
+    records = _participants(path, criteria, motion)
     included = sum(r["qc_status"] == "included" for r in records)
     shown = records if qc_status is None else [r for r in records if r["qc_status"] == qc_status]
     return {
@@ -92,8 +98,9 @@ def list_participants(
     summary="One participant",
     responses={404: {"description": "Unknown participant"}},
 )
-def get_participant(participant_id: str, path: TablePath, criteria: Criteria) -> dict:
-    records = _participants(path, criteria)
+def get_participant(participant_id: str, path: TablePath, criteria: Criteria,
+                    motion: Motion) -> dict:
+    records = _participants(path, criteria, motion)
     wanted = pt.participant_id(participant_id) if participant_id.isdigit() else None
     for record in records:
         if record["participant_id"] == wanted:

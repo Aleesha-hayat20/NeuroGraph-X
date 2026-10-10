@@ -1,0 +1,298 @@
+{
+  "description": "Frozen evaluation set. Drawn once, never regenerated. See memo 0005.",
+  "drawn_on": "2026-10-06",
+  "size": 100,
+  "seed": 20260928,
+  "stratify_by": [
+    "SITE_ID",
+    "DX_GROUP"
+  ],
+  "method": "proportional allocation, largest remainder, numpy default_rng choice without replacement within each stratum, strata in sorted order, cohort sorted by SUB_ID",
+  "numpy_version": "2.4.4",
+  "cohort_file": "qc_cohort.csv",
+  "cohort_size": 861,
+  "cohort_sha256": "cd090a9c2b8edc63eb87d1a2dd4de73770f4a77d428883b73fab2b16d4334f7f",
+  "frozen_sha256": "8f13741d9ab82a4630c4f7c94cb49aa0e59d4c2d27c59e8a6b9a37509435010a",
+  "allocation": [
+    {
+      "SITE_ID": "CALTECH",
+      "DX_GROUP": 1,
+      "in_cohort": 5,
+      "drawn": 1,
+      "expected": 0.58
+    },
+    {
+      "SITE_ID": "CALTECH",
+      "DX_GROUP": 2,
+      "in_cohort": 10,
+      "drawn": 1,
+      "expected": 1.16
+    },
+    {
+      "SITE_ID": "CMU",
+      "DX_GROUP": 1,
+      "in_cohort": 6,
+      "drawn": 1,
+      "expected": 0.7
+    },
+    {
+      "SITE_ID": "CMU",
+      "DX_GROUP": 2,
+      "in_cohort": 5,
+      "drawn": 1,
+      "expected": 0.58
+    },
+    {
+      "SITE_ID": "KKI",
+      "DX_GROUP": 1,
+      "in_cohort": 12,
+      "drawn": 1,
+      "expected": 1.39
+    },
+    {
+      "SITE_ID": "KKI",
+      "DX_GROUP": 2,
+      "in_cohort": 21,
+      "drawn": 2,
+      "expected": 2.44
+    },
+    {
+      "SITE_ID": "LEUVEN_1",
+      "DX_GROUP": 1,
+      "in_cohort": 14,
+      "drawn": 2,
+      "expected": 1.63
+    },
+    {
+      "SITE_ID": "LEUVEN_1",
+      "DX_GROUP": 2,
+      "in_cohort": 14,
+      "drawn": 2,
+      "expected": 1.63
+    },
+    {
+      "SITE_ID": "LEUVEN_2",
+      "DX_GROUP": 1,
+      "in_cohort": 12,
+      "drawn": 1,
+      "expected": 1.39
+    },
+    {
+      "SITE_ID": "LEUVEN_2",
+      "DX_GROUP": 2,
+      "in_cohort": 16,
+      "drawn": 2,
+      "expected": 1.86
+    },
+    {
+      "SITE_ID": "MAX_MUN",
+      "DX_GROUP": 1,
+      "in_cohort": 19,
+      "drawn": 2,
+      "expected": 2.21
+    },
+    {
+      "SITE_ID": "MAX_MUN",
+      "DX_GROUP": 2,
+      "in_cohort": 26,
+      "drawn": 3,
+      "expected": 3.02
+    },
+    {
+      "SITE_ID": "NYU",
+      "DX_GROUP": 1,
+      "in_cohort": 74,
+      "drawn": 9,
+      "expected": 8.59
+    },
+    {
+      "SITE_ID": "NYU",
+      "DX_GROUP": 2,
+      "in_cohort": 98,
+      "drawn": 11,
+      "expected": 11.38
+    },
+    {
+      "SITE_ID": "OHSU",
+      "DX_GROUP": 1,
+      "in_cohort": 12,
+      "drawn": 1,
+      "expected": 1.39
+    },
+    {
+      "SITE_ID": "OHSU",
+      "DX_GROUP": 2,
+      "in_cohort": 13,
+      "drawn": 2,
+      "expected": 1.51
+    },
+    {
+      "SITE_ID": "OLIN",
+      "DX_GROUP": 1,
+      "in_cohort": 13,
+      "drawn": 2,
+      "expected": 1.51
+    },
+    {
+      "SITE_ID": "OLIN",
+      "DX_GROUP": 2,
+      "in_cohort": 14,
+      "drawn": 2,
+      "expected": 1.63
+    },
+    {
+      "SITE_ID": "PITT",
+      "DX_GROUP": 1,
+      "in_cohort": 24,
+      "drawn": 3,
+      "expected": 2.79
+    },
+    {
+      "SITE_ID": "PITT",
+      "DX_GROUP": 2,
+      "in_cohort": 25,
+      "drawn": 3,
+      "expected": 2.9
+    },
+    {
+      "SITE_ID": "SBL",
+      "DX_GROUP": 1,
+      "in_cohort": 12,
+      "drawn": 1,
+      "expected": 1.39
+    },
+    {
+      "SITE_ID": "SBL",
+      "DX_GROUP": 2,
+      "in_cohort": 14,
+      "drawn": 2,
+      "expected": 1.63
+    },
+    {
+      "SITE_ID": "SDSU",
+      "DX_GROUP": 1,
+      "in_cohort": 8,
+      "drawn": 1,
+      "expected": 0.93
+    },
+    {
+      "SITE_ID": "SDSU",
+      "DX_GROUP": 2,
+      "in_cohort": 19,
+      "drawn": 2,
+      "expected": 2.21
+    },
+    {
+      "SITE_ID": "STANFORD",
+      "DX_GROUP": 1,
+      "in_cohort": 12,
+      "drawn": 1,
+      "expected": 1.39
+    },
+    {
+      "SITE_ID": "STANFORD",
+      "DX_GROUP": 2,
+      "in_cohort": 13,
+      "drawn": 1,
+      "expected": 1.51
+    },
+    {
+      "SITE_ID": "TRINITY",
+      "DX_GROUP": 1,
+      "in_cohort": 19,
+      "drawn": 2,
+      "expected": 2.21
+    },
+    {
+      "SITE_ID": "TRINITY",
+      "DX_GROUP": 2,
+      "in_cohort": 25,
+      "drawn": 3,
+      "expected": 2.9
+    },
+    {
+      "SITE_ID": "UCLA_1",
+      "DX_GROUP": 1,
+      "in_cohort": 35,
+      "drawn": 4,
+      "expected": 4.07
+    },
+    {
+      "SITE_ID": "UCLA_1",
+      "DX_GROUP": 2,
+      "in_cohort": 27,
+      "drawn": 3,
+      "expected": 3.14
+    },
+    {
+      "SITE_ID": "UCLA_2",
+      "DX_GROUP": 1,
+      "in_cohort": 9,
+      "drawn": 1,
+      "expected": 1.05
+    },
+    {
+      "SITE_ID": "UCLA_2",
+      "DX_GROUP": 2,
+      "in_cohort": 10,
+      "drawn": 1,
+      "expected": 1.16
+    },
+    {
+      "SITE_ID": "UM_1",
+      "DX_GROUP": 1,
+      "in_cohort": 33,
+      "drawn": 4,
+      "expected": 3.83
+    },
+    {
+      "SITE_ID": "UM_1",
+      "DX_GROUP": 2,
+      "in_cohort": 52,
+      "drawn": 6,
+      "expected": 6.04
+    },
+    {
+      "SITE_ID": "UM_2",
+      "DX_GROUP": 1,
+      "in_cohort": 13,
+      "drawn": 1,
+      "expected": 1.51
+    },
+    {
+      "SITE_ID": "UM_2",
+      "DX_GROUP": 2,
+      "in_cohort": 20,
+      "drawn": 2,
+      "expected": 2.32
+    },
+    {
+      "SITE_ID": "USM",
+      "DX_GROUP": 1,
+      "in_cohort": 42,
+      "drawn": 5,
+      "expected": 4.88
+    },
+    {
+      "SITE_ID": "USM",
+      "DX_GROUP": 2,
+      "in_cohort": 24,
+      "drawn": 3,
+      "expected": 2.79
+    },
+    {
+      "SITE_ID": "YALE",
+      "DX_GROUP": 1,
+      "in_cohort": 22,
+      "drawn": 3,
+      "expected": 2.56
+    },
+    {
+      "SITE_ID": "YALE",
+      "DX_GROUP": 2,
+      "in_cohort": 19,
+      "drawn": 2,
+      "expected": 2.21
+    }
+  ]
+}

@@ -41,12 +41,13 @@ def _value(row: pd.Series, column: str):
     return value.item() if hasattr(value, "item") else value
 
 
-def build_records(df: pd.DataFrame, criteria: dict[str, list[str]]) -> list[dict]:
+def build_records(df: pd.DataFrame, criteria: dict[str, list[str]],
+                  motion: dict | None = None) -> list[dict]:
     if "SUB_ID" not in df.columns:
         raise ValueError("participant table has no SUB_ID column")
     records = []
     for _, row in df.iterrows():
-        reasons = screening.exclusion_reasons(row, criteria)
+        reasons = screening.exclusion_reasons(row, criteria, motion)
         file_id = _value(row, "FILE_ID")
         age = _value(row, "AGE_AT_SCAN")
         records.append(
@@ -64,11 +65,13 @@ def build_records(df: pd.DataFrame, criteria: dict[str, list[str]]) -> list[dict
     return records
 
 
-def load_participants(path: Path, criteria: dict[str, list[str]]) -> list[dict]:
+def load_participants(path: Path, criteria: dict[str, list[str]],
+                      motion: dict | None = None) -> list[dict]:
     """Read the table once and reuse it until the file or the rules change."""
     rules = tuple((c, tuple(v)) for c, v in sorted(criteria.items()))
+    rules += (tuple(sorted(motion.items())),) if motion else ()
     key = (str(path), path.stat().st_mtime, rules)
     if key not in _cache:
         _cache.clear()
-        _cache[key] = build_records(md.load_phenotypic(path), criteria)
+        _cache[key] = build_records(md.load_phenotypic(path), criteria, motion)
     return _cache[key]

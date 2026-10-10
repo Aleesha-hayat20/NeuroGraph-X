@@ -52,6 +52,10 @@ Source: `docs/reports/atlas_summary.md`, generated 2026-10-02 by
   Dosenbach 160 46 (out of 871 each). Handling goes in its own memo before training.
 
 **Open note, Dosenbach 160 has 161 columns.** The atlas is named for 160 regions but the
-files have 161 columns. Check the header line of one file to see whether the extra
-column is a real region or something else, and record the answer here. This does not
-block Week 2: the model reads the node count from the data, not from the atlas name.
+files have 161 columns. Checked 2026-10-06: the header labels run `#1` to `#160`
+contiguously, and the 161st column is labelled `#223`. The file itself does not say what
+label 223 refers to, so this is recorded as an observation, not explained. Across the 871
+participants, column 161 is flat in none of them (the most often flat columns are 150 and
+154, 22 participants each). The connectome engine keeps all 161 columns as nodes. If the
+source of label 223 is confirmed later, record it here and, if it should be dropped, do
+it through a new memo so the change is declared.

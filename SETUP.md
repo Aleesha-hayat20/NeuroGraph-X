@@ -93,7 +93,8 @@ pip install -e .
 pytest
 ```
 
-Ten tests should pass.
+Every test should pass (138 as of Week 2, plus 2 that need PyTorch and skip without it). If one fails, read its message before
+changing anything: several tests guard the frozen evaluation set on purpose.
 
 ## 9. Run the Week 1 scripts
 

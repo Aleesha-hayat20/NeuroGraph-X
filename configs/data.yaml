@@ -35,10 +35,40 @@ paths:
   interim: data/interim
   processed: data/processed
   frozen: data/frozen
+  splits: data/splits
   reports: docs/reports
 
+# Output of the quality control screen (scripts/05_apply_qc.py). Committed.
+cohort:
+  file: data/splits/qc_cohort.csv
+  exclusion_log: docs/reports/exclusion_log.csv
+
+# Drawn once from the QC cohort, never regenerated. See docs/decisions/0005.
 frozen_evaluation_set:
   size: 100
   stratify_by: [SITE_ID, DX_GROUP]
   seed: 20260928
   file: data/frozen/frozen_eval_100.csv
+  meta: data/frozen/frozen_eval_100.meta.json
+
+# Cross-validation folds over the development pool (QC cohort minus the frozen set).
+# Every training split must be committed under data/splits/ so the leakage test sees it.
+development_splits:
+  folds: 5
+  stratify_by: [SITE_ID, DX_GROUP]
+  seed: 20261006
+  file: data/splits/cv5_folds.csv
+
+# M2 connectome engine. See docs/decisions/0007-connectome-engine.md
+connectome:
+  measure: pearson
+  fisher_clip: 0.9999999    # |r| is clipped to this before arctanh, so z stays finite
+  dtype: float32
+  output_dir: data/processed/connectomes
+
+# Independent recomputation of a sample of stored matrices (scripts/08).
+verification:
+  participants_per_atlas: 20
+  edges_for_scipy_check: 200
+  seed: 20261007
+  report: docs/reports/connectome_verification.md

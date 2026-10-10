@@ -65,6 +65,19 @@ series for the pilot atlas only. Step 4 downloads all four atlases and writes
 `docs/reports/atlas_summary.md`. It is resumable: if it stops, run it again.
 `caffeinate -i` only keeps a Mac awake; on Linux or Windows drop it.
 
+## Week 2 workflow
+
+```bash
+python scripts/05_apply_qc.py            # QC screen (memo 0003): cohort + exclusion log
+python scripts/06_draw_frozen_set.py     # frozen 100 (drawn ONCE, memo 0005) + CV folds
+python scripts/07_build_connectomes.py   # r and Fisher z for all four atlases, cached
+python scripts/08_verify_connectomes.py  # independent recomputation of a sample
+pytest                                   # includes the leakage assertion
+```
+
+Or `make week2`. Script 06 never redraws an existing frozen set; it only checks its hash.
+Script 07 reuses stored matrices unless an input changed (`--force` rebuilds).
+
 > **Never request the `func_preproc` derivative.** The `rois_*` derivatives are small
 > `.1D` text files. Everything else is a large `.nii.gz` volume.
 
@@ -75,7 +88,8 @@ configs/          declared analysis choices, changed only through a decision mem
 data/raw/         downloaded source data, not committed
 data/interim/     intermediate artefacts, not committed
 data/processed/   connectomes and features, not committed
-data/frozen/      the frozen evaluation set, COMMITTED on purpose
+data/frozen/      the frozen evaluation set, COMMITTED on purpose, never regenerated
+data/splits/      QC cohort and training splits, COMMITTED, checked by the leakage test
 docs/decisions/   numbered decision memos, the reasoning behind every choice
 docs/progress/    weekly plan and log, one folder per week
 docs/reports/     generated reports and figures
@@ -91,3 +105,5 @@ tests/            pytest suite, runs in CI on every push
 - Branches: `feature/<module>-<short-description>`, merged into `main` by pull request.
 - Every pull request is read by at least one other member before merging.
 - The test suite must pass before merging.
+- Every training split lives in `data/splits/`. Nothing in `data/frozen/` is ever
+  trained on; `tests/test_leakage.py` fails the build if it is.

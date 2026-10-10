@@ -50,6 +50,18 @@ def find_motion_columns(df: pd.DataFrame) -> list[str]:
     return out
 
 
+def pick_motion_column(df: pd.DataFrame, preferred: str | None = None) -> str | None:
+    """The motion column to plot: the one the QC gate uses if present, else the first found.
+
+    Without a preference the first match in file order is func_dvars, which is not the
+    variable the motion gate thresholds. Passing the configured column avoids that.
+    """
+    found = find_motion_columns(df)
+    if preferred and preferred in found:
+        return preferred
+    return found[0] if found else None
+
+
 def _counts(df: pd.DataFrame, column: str, labels: dict | None = None) -> pd.DataFrame | None:
     if column not in df.columns:
         return None
