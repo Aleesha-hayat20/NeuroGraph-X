@@ -13,17 +13,19 @@ pytest.importorskip("fastapi")  # skip locally until requirements are installed;
 from fastapi.testclient import TestClient  # noqa: E402
 
 from neurographx.api import participants as pt  # noqa: E402
-from neurographx.api.main import app, get_criteria, get_table_path  # noqa: E402
+from neurographx.api.main import app, get_criteria, get_motion, get_table_path  # noqa: E402
 from neurographx.m1_ingestion import metadata as md  # noqa: E402
 from neurographx.m1_ingestion import screening  # noqa: E402
 
 
 @pytest.fixture
 def client_for():
-    def make(path, criteria=None):
+    def make(path, criteria=None, motion="config"):
         app.dependency_overrides[get_table_path] = lambda: path
         rules = criteria if criteria is not None else screening.rater_criteria()
         app.dependency_overrides[get_criteria] = lambda: rules
+        gate = screening.motion_rule() if motion == "config" else motion
+        app.dependency_overrides[get_motion] = lambda: gate
         return TestClient(app)
 
     yield make
@@ -63,7 +65,7 @@ def test_lists_every_row_with_consistent_counts(client, synthetic_phenotypic):
 
 def test_included_count_matches_the_m1_rater_filter(client_for, synthetic_phenotypic):
     """Given the same rules, the API and M1's metadata report agree on who passes."""
-    client = client_for(synthetic_phenotypic, criteria=md.QC_ACCEPTED)
+    client = client_for(synthetic_phenotypic, criteria=md.QC_ACCEPTED, motion=None)
     body = client.get("/participants").json()
     m1 = md.would_pass_all_raters(md.load_phenotypic(synthetic_phenotypic))
     assert body["included"] == m1["passing_all"]
@@ -136,3 +138,30 @@ def test_default_path_comes_from_the_config():
     path = pt.table_path()
     assert path.name == "Phenotypic_V1_0b_preprocessed1.csv"
     assert path.parent.name == "raw"
+
+
+def test_api_screen_matches_the_week2_qc_cohort_logic(client, synthetic_phenotypic):
+    """One source of truth: with the closed memo 0003 rules (raters plus head motion),
+    the API includes exactly the participants m1_ingestion.qc.apply_qc retains."""
+    from neurographx.config import load
+    from neurographx.m1_ingestion.qc import apply_qc
+
+    df = md.load_phenotypic(synthetic_phenotypic)
+    df["FILE_ID"] = [f"S_{i}" for i in df.SUB_ID]
+    kept, _ = apply_qc(df, load("qc_criteria.yaml"), None, [])
+    body = client.get("/participants", params={"qc_status": "included"}).json()
+    assert {int(p["participant_id"]) for p in body["participants"]} == set(kept.SUB_ID)
+
+
+def test_motion_reason_is_named(client_for, tmp_path):
+    table = pd.DataFrame({"SUB_ID": [50001, 50002, 50003], "qc_rater_1": ["OK"] * 3,
+                          "func_mean_fd": [0.1, 0.62, None]})
+    path = tmp_path / "pheno.csv"
+    table.to_csv(path, index=False)
+    by_id = {p["participant_id"]: p for p in
+             client_for(path).get("/participants").json()["participants"]}
+    assert by_id["0050001"]["qc_status"] == "included"
+    assert by_id["0050002"]["exclusion_reasons"] == [
+        "func_mean_fd is 0.620 (accepted: at most 0.5 mm)"]
+    assert by_id["0050003"]["exclusion_reasons"] == [
+        "func_mean_fd is missing (head motion gate)"]
