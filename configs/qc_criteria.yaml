@@ -1,7 +1,9 @@
 # Quality control criteria for NeuroGraph-X.
 #
 # THESE CRITERIA ARE FIXED IN ADVANCE.
-# Recorded: 2026-09-28, before any classification result was produced.
+# Rater and completeness gates recorded: 2026-09-28.
+# Motion column and threshold finalised: 2026-10-06, from the observed distribution
+# in docs/reports/metadata_report.md, before any model was trained on ABIDE.
 # Changing them after seeing a result invalidates every number downstream.
 # See docs/decisions/0003-qc-criteria.md
 #
@@ -16,11 +18,11 @@ rater_criteria:
   qc_anat_rater_3:  ["OK"]
   qc_func_rater_3:  ["OK"]
 
-# Applied only if the corresponding column exists in the phenotypic file.
-# Confirm the real column name in the Week 1 metadata report before relying on it.
+# Mean framewise displacement, in millimetres. Column confirmed present in the
+# phenotypic file (metadata report, section 7). A missing value fails the gate.
 motion:
-  column_candidates: [func_mean_fd, func_perc_fd, func_num_fd]
-  mean_fd_max: 0.5      # millimetres. Provisional, confirm against the distribution.
+  column: func_mean_fd
+  mean_fd_max: 0.5
 
 completeness:
   require_derivative_present: true

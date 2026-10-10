@@ -1,0 +1,252 @@
+SUB_ID,FILE_ID,SITE_ID,DX_GROUP,first_gate_failed,gates_failed,reasons
+50002,no_filename,PITT,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail; qc_func_rater_3 = fail
+50009,Pitt_0050009,PITT,1,rater,rater,qc_func_rater_2 = fail
+50017,Pitt_0050017,PITT,1,rater,rater,qc_anat_rater_3 = fail
+50019,Pitt_0050019,PITT,1,rater,rater,qc_func_rater_2 = fail
+50029,Pitt_0050029,PITT,1,rater,rater,qc_func_rater_2 = fail
+50039,Pitt_0050039,PITT,2,motion,motion,func_mean_fd = 0.602 > 0.5
+50055,Pitt_0050055,PITT,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+50058,Pitt_0050058,PITT,2,rater,rater,qc_rater_1 = fail
+50108,no_filename,OLIN,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50110,Olin_0050110,OLIN,2,rater,rater,qc_anat_rater_3 = fail
+50120,Olin_0050120,OLIN,1,rater,rater,qc_anat_rater_3 = fail
+50122,Olin_0050122,OLIN,1,rater,rater,qc_anat_rater_3 = fail
+50123,Olin_0050123,OLIN,1,motion,motion,func_mean_fd = 1.052 > 0.5
+50126,Olin_0050126,OLIN,1,rater,rater,qc_anat_rater_3 = fail
+50133,Olin_0050133,OLIN,1,rater,rater,qc_anat_rater_3 = fail
+50136,Olin_0050136,OLIN,1,rater,rater,qc_anat_rater_3 = fail
+50137,no_filename,OLIN,1,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50155,no_filename,OHSU,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_func_rater_3 = fail; func_mean_fd missing
+50165,no_filename,OHSU,2,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_func_rater_3 = fail; func_mean_fd missing
+50166,OHSU_0050166,OHSU,2,rater,rater,qc_rater_1 = fail
+50185,SDSU_0050185,SDSU,1,rater,rater,qc_anat_rater_3 = fail
+50191,SDSU_0050191,SDSU,1,rater,rater,qc_anat_rater_3 = fail
+50192,SDSU_0050192,SDSU,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_3 = fail; func_mean_fd = 0.616 > 0.5
+50197,SDSU_0050197,SDSU,2,rater,rater,qc_anat_rater_3 = fail
+50207,SDSU_0050207,SDSU,1,rater,rater,qc_anat_rater_3 = fail
+50209,SDSU_0050209,SDSU,2,rater,rater,qc_rater_1 = fail
+50211,SDSU_0050211,SDSU,2,rater,rater,qc_anat_rater_3 = fail
+50212,SDSU_0050212,SDSU,1,rater,rater,qc_anat_rater_3 = fail
+50216,SDSU_0050216,SDSU,1,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail
+50235,Trinity_0050235,TRINITY,1,rater,rater,qc_anat_rater_3 = fail
+50238,no_filename,TRINITY,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50242,Trinity_0050242,TRINITY,1,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.692 > 0.5
+50244,no_filename,TRINITY,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50246,Trinity_0050246,TRINITY,1,rater,rater,qc_anat_rater_3 = fail
+50277,UM_1_0050277,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50279,UM_1_0050279,UM_1,1,rater,rater;motion,qc_rater_1 = maybe; func_mean_fd = 1.140 > 0.5
+50280,UM_1_0050280,UM_1,1,rater,rater,qc_rater_1 = fail
+50281,UM_1_0050281,UM_1,1,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.522 > 0.5
+50283,UM_1_0050283,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50286,UM_1_0050286,UM_1,1,rater,rater;motion,qc_rater_1 = maybe; func_mean_fd = 1.140 > 0.5
+50288,UM_1_0050288,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50296,UM_1_0050296,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50299,UM_1_0050299,UM_1,1,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.680 > 0.5
+50303,UM_1_0050303,UM_1,1,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 1.095 > 0.5
+50305,UM_1_0050305,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50306,UM_1_0050306,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50307,UM_1_0050307,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50308,UM_1_0050308,UM_1,1,motion,motion,func_mean_fd = 1.435 > 0.5
+50309,no_filename,UM_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd = 0.606 > 0.5
+50311,UM_1_0050311,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50313,UM_1_0050313,UM_1,1,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.949 > 0.5
+50316,UM_1_0050316,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50317,UM_1_0050317,UM_1,1,rater,rater;motion,qc_rater_1 = maybe; qc_anat_rater_3 = fail; func_mean_fd = 0.736 > 0.5
+50322,UM_1_0050322,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50323,no_filename,UM_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd = 1.325 > 0.5
+50326,UM_1_0050326,UM_1,1,rater,rater,qc_anat_rater_3 = fail
+50328,no_filename,UM_1,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50371,UM_1_0050371,UM_1,2,rater,rater,qc_anat_rater_3 = fail
+50378,no_filename,UM_1,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50383,UM_2_0050383,UM_2,2,motion,motion,func_mean_fd = 0.503 > 0.5
+50423,no_filename,UM_2,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50432,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = missing; qc_func_rater_3 = missing
+50450,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50451,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50452,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50454,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50455,USM_0050455,USM,2,rater,rater,qc_func_rater_3 = fail
+50456,no_filename,USM,2,rater,rater,qc_rater_1 = fail
+50457,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50458,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50459,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50460,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50461,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50462,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50464,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50465,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50471,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50472,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50473,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50474,no_filename,USM,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50475,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50476,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50478,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50479,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50484,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50489,USM_0050489,USM,1,rater,rater;motion,qc_rater_1 = maybe; qc_anat_rater_3 = fail; func_mean_fd = 1.056 > 0.5
+50495,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50505,USM_0050505,USM,1,rater,rater,qc_anat_rater_2 = fail
+50506,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50508,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50511,USM_0050511,USM,1,rater,rater,qc_anat_rater_3 = fail
+50512,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50513,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50517,no_filename,USM,1,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+50522,no_filename,USM,1,rater,rater;motion,qc_rater_1 = fail; qc_func_rater_3 = fail; func_mean_fd = 0.505 > 0.5
+50531,USM_0050531,USM,1,motion,motion,func_mean_fd = 0.754 > 0.5
+50553,Yale_0050553,YALE,2,rater,rater,qc_anat_rater_2 = fail
+50554,Yale_0050554,YALE,2,rater,rater,qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50556,Yale_0050556,YALE,2,rater,rater,qc_anat_rater_2 = fail
+50559,Yale_0050559,YALE,2,rater,rater,qc_anat_rater_2 = fail
+50560,Yale_0050560,YALE,2,rater,rater,qc_anat_rater_2 = fail; qc_anat_rater_3 = fail
+50562,Yale_0050562,YALE,2,rater,rater,qc_anat_rater_2 = fail
+50564,Yale_0050564,YALE,2,rater,rater,qc_anat_rater_2 = fail
+50566,Yale_0050566,YALE,2,rater,rater,qc_anat_rater_2 = fail
+50567,Yale_0050567,YALE,2,rater,rater,qc_anat_rater_2 = fail
+50605,Yale_0050605,YALE,1,rater,rater,qc_anat_rater_2 = fail
+50609,Yale_0050609,YALE,1,rater,rater,qc_anat_rater_2 = fail
+50610,Yale_0050610,YALE,1,rater,rater;motion,qc_anat_rater_2 = fail; func_mean_fd missing
+50611,Yale_0050611,YALE,1,rater,rater,qc_anat_rater_2 = fail
+50617,Yale_0050617,YALE,1,rater,rater,qc_anat_rater_2 = fail; qc_anat_rater_3 = fail
+50618,Yale_0050618,YALE,1,rater,rater,qc_anat_rater_2 = fail; qc_anat_rater_3 = fail
+50643,CMU_b_0050643,CMU,1,rater,rater,qc_rater_1 = fail; qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50645,CMU_b_0050645,CMU,1,rater,rater,qc_rater_1 = fail; qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50646,CMU_a_0050646,CMU,1,rater,rater,qc_anat_rater_2 = fail
+50650,CMU_b_0050650,CMU,1,rater,rater;motion,qc_anat_rater_2 = fail; qc_func_rater_2 = fail; func_mean_fd = 0.732 > 0.5
+50651,CMU_b_0050651,CMU,1,rater,rater,qc_rater_1 = fail; qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50652,CMU_b_0050652,CMU,1,rater,rater,qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50653,CMU_a_0050653,CMU,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+50655,CMU_b_0050655,CMU,1,rater,rater,qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50657,CMU_b_0050657,CMU,2,rater,rater,qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50658,CMU_b_0050658,CMU,2,rater,rater,qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50660,CMU_a_0050660,CMU,2,rater,rater,qc_anat_rater_2 = fail
+50661,CMU_b_0050661,CMU,2,rater,rater,qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50663,CMU_a_0050663,CMU,2,rater,rater,qc_anat_rater_2 = fail
+50666,CMU_a_0050666,CMU,2,rater,rater,qc_anat_rater_2 = fail
+50667,CMU_b_0050667,CMU,2,rater,rater,qc_anat_rater_2 = fail; qc_func_rater_2 = fail
+50668,CMU_a_0050668,CMU,2,rater,rater,qc_anat_rater_2 = fail
+50710,Leuven_1_0050710,LEUVEN_1,2,rater,rater,qc_rater_1 = fail
+50727,Leuven_2_0050727,LEUVEN_2,2,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+50732,Leuven_2_0050732,LEUVEN_2,2,rater,rater,qc_func_rater_2 = fail
+50734,no_filename,LEUVEN_2,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50736,Leuven_2_0050736,LEUVEN_2,2,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+50746,Leuven_2_0050746,LEUVEN_2,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+50747,Leuven_2_0050747,LEUVEN_2,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+50753,Leuven_2_0050753,LEUVEN_2,1,rater,rater,qc_func_rater_2 = fail
+50779,KKI_0050779,KKI,2,rater,rater,qc_anat_rater_3 = fail
+50784,KKI_0050784,KKI,2,rater,rater,qc_anat_rater_3 = fail
+50785,KKI_0050785,KKI,2,rater,rater,qc_anat_rater_3 = fail
+50787,KKI_0050787,KKI,2,rater,rater,qc_anat_rater_3 = fail
+50788,KKI_0050788,KKI,2,rater,rater,qc_anat_rater_3 = fail
+50789,KKI_0050789,KKI,2,rater,rater,qc_anat_rater_3 = fail
+50793,KKI_0050793,KKI,1,rater,rater,qc_anat_rater_2 = fail
+50794,KKI_0050794,KKI,1,rater,rater,qc_anat_rater_3 = fail
+50795,KKI_0050795,KKI,1,rater,rater,qc_anat_rater_3 = fail
+50802,KKI_0050802,KKI,1,rater,rater,qc_anat_rater_2 = fail
+50804,KKI_0050804,KKI,1,rater,rater,qc_anat_rater_2 = fail
+50805,no_filename,KKI,1,rater,rater;motion,qc_rater_1 = fail; qc_func_rater_3 = fail; func_mean_fd = 0.509 > 0.5
+50806,no_filename,KKI,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd = 1.199 > 0.5
+50808,no_filename,KKI,2,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = fail; qc_func_rater_3 = fail; func_mean_fd = 0.509 > 0.5
+50809,no_filename,KKI,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50810,no_filename,KKI,2,rater,rater,qc_rater_1 = fail; qc_anat_rater_2 = fail; qc_func_rater_3 = fail
+50811,no_filename,KKI,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50813,no_filename,KKI,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50815,KKI_0050815,KKI,1,rater,rater,qc_anat_rater_3 = fail
+50819,KKI_0050819,KKI,2,rater,rater,qc_anat_rater_2 = fail
+50825,KKI_0050825,KKI,1,rater,rater,qc_anat_rater_2 = fail; qc_anat_rater_3 = fail
+50826,KKI_0050826,KKI,1,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.645 > 0.5
+50953,no_filename,NYU,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50971,no_filename,NYU,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50975,no_filename,NYU,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50980,no_filename,NYU,1,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+50998,NYU_0050998,NYU,1,rater,rater,qc_rater_1 = fail
+51071,NYU_0051071,NYU,2,rater,rater,qc_anat_rater_3 = fail
+51108,no_filename,NYU,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51115,no_filename,NYU,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51119,no_filename,NYU,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51120,no_filename,NYU,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51121,NYU_0051121,NYU,2,rater,rater,qc_func_rater_3 = fail
+51125,no_filename,NYU,2,rater,rater,qc_rater_1 = fail
+51160,Stanford_0051160,STANFORD,1,rater,rater,qc_anat_rater_3 = fail
+51165,Stanford_0051165,STANFORD,1,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail
+51166,Stanford_0051166,STANFORD,1,rater,rater,qc_anat_rater_3 = fail
+51167,Stanford_0051167,STANFORD,1,rater,rater,qc_func_rater_2 = fail
+51172,Stanford_0051172,STANFORD,1,rater,rater,qc_rater_1 = fail
+51174,Stanford_0051174,STANFORD,1,rater,rater,qc_anat_rater_3 = fail
+51175,Stanford_0051175,STANFORD,1,rater,rater,qc_anat_rater_3 = fail
+51176,no_filename,STANFORD,1,rater,rater,qc_rater_1 = fail; qc_anat_rater_3 = fail; qc_func_rater_3 = fail
+51186,Stanford_0051186,STANFORD,2,rater,rater,qc_anat_rater_3 = fail
+51190,Stanford_0051190,STANFORD,2,rater,rater,qc_anat_rater_3 = fail
+51191,Stanford_0051191,STANFORD,2,rater,rater,qc_anat_rater_3 = fail
+51193,Stanford_0051193,STANFORD,2,rater,rater,qc_anat_rater_3 = fail
+51195,Stanford_0051195,STANFORD,2,rater,rater,qc_anat_rater_3 = fail
+51196,Stanford_0051196,STANFORD,2,rater,rater,qc_anat_rater_3 = fail
+51199,Stanford_0051199,STANFORD,2,rater,rater,qc_anat_rater_3 = fail
+51203,UCLA_1_0051203,UCLA_1,1,motion,motion,func_mean_fd = 0.685 > 0.5
+51209,UCLA_1_0051209,UCLA_1,1,rater,rater,qc_anat_rater_3 = fail
+51213,UCLA_1_0051213,UCLA_1,1,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.712 > 0.5
+51227,UCLA_1_0051227,UCLA_1,1,rater,rater,qc_anat_rater_3 = fail
+51228,UCLA_1_0051228,UCLA_1,1,motion,motion,func_mean_fd = 1.224 > 0.5
+51232,no_filename,UCLA_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51233,no_filename,UCLA_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51238,UCLA_1_0051238,UCLA_1,1,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.873 > 0.5
+51242,no_filename,UCLA_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51243,no_filename,UCLA_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51244,no_filename,UCLA_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51245,no_filename,UCLA_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51246,no_filename,UCLA_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51247,no_filename,UCLA_1,1,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51258,UCLA_1_0051258,UCLA_1,2,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.890 > 0.5
+51259,no_filename,UCLA_1,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51263,UCLA_1_0051263,UCLA_1,2,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.564 > 0.5
+51270,no_filename,UCLA_1,2,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51274,UCLA_1_0051274,UCLA_1,2,rater,rater,qc_anat_rater_3 = fail
+51282,UCLA_1_0051282,UCLA_1,2,rater,rater,qc_anat_rater_3 = fail
+51292,UCLA_2_0051292,UCLA_2,1,motion,motion,func_mean_fd = 0.524 > 0.5
+51296,UCLA_2_0051296,UCLA_2,1,rater,rater;motion,qc_anat_rater_2 = fail; qc_anat_rater_3 = fail; func_mean_fd = 1.031 > 0.5
+51300,UCLA_2_0051300,UCLA_2,1,motion,motion,func_mean_fd = 1.012 > 0.5
+51310,no_filename,UCLA_2,2,rater,rater;motion,qc_rater_1 = fail; qc_anat_rater_2 = missing; qc_func_rater_2 = missing; qc_anat_rater_3 = fail; qc_func_rater_3 = fail; func_mean_fd missing
+51312,UCLA_2_0051312,UCLA_2,2,rater,rater,qc_anat_rater_3 = fail
+51314,UCLA_2_0051314,UCLA_2,2,rater,rater,qc_anat_rater_3 = fail
+51316,UCLA_2_0051316,UCLA_2,2,rater,rater,qc_anat_rater_3 = fail
+51317,UCLA_2_0051317,UCLA_2,1,rater,rater,qc_anat_rater_3 = fail
+51324,MaxMun_b_0051324,MAX_MUN,1,rater,rater,qc_anat_rater_2 = fail
+51348,MaxMun_c_0051348,MAX_MUN,1,rater,rater,qc_anat_rater_3 = fail
+51352,MaxMun_d_0051352,MAX_MUN,1,rater,rater,qc_anat_rater_3 = fail
+51353,MaxMun_d_0051353,MAX_MUN,1,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.695 > 0.5
+51355,MaxMun_d_0051355,MAX_MUN,1,rater,rater,qc_anat_rater_3 = fail
+51358,MaxMun_d_0051358,MAX_MUN,2,rater,rater;motion,qc_anat_rater_3 = fail; func_mean_fd = 0.588 > 0.5
+51359,MaxMun_d_0051359,MAX_MUN,2,motion,motion,func_mean_fd = 0.535 > 0.5
+51366,no_filename,MAX_MUN,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51367,no_filename,MAX_MUN,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51368,no_filename,MAX_MUN,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51371,no_filename,MAX_MUN,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51372,no_filename,MAX_MUN,2,rater,rater,qc_rater_1 = fail; qc_func_rater_3 = fail
+51456,Caltech_0051456,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51457,Caltech_0051457,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51458,Caltech_0051458,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51459,Caltech_0051459,CALTECH,1,rater,rater,qc_func_rater_2 = fail
+51460,Caltech_0051460,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51462,Caltech_0051462,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51466,Caltech_0051466,CALTECH,1,rater,rater,qc_func_rater_2 = fail
+51467,Caltech_0051467,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51468,Caltech_0051468,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51469,Caltech_0051469,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51470,Caltech_0051470,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51471,Caltech_0051471,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51472,Caltech_0051472,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51474,Caltech_0051474,CALTECH,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51475,no_filename,CALTECH,2,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail; qc_func_rater_3 = fail
+51476,Caltech_0051476,CALTECH,2,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51478,Caltech_0051478,CALTECH,2,rater,rater,qc_func_rater_2 = fail
+51483,Caltech_0051483,CALTECH,2,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51485,Caltech_0051485,CALTECH,2,rater,rater,qc_func_rater_2 = fail
+51486,Caltech_0051486,CALTECH,2,rater,rater,qc_func_rater_2 = fail
+51489,Caltech_0051489,CALTECH,2,rater,rater,qc_func_rater_2 = fail
+51490,Caltech_0051490,CALTECH,2,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail
+51492,Caltech_0051492,CALTECH,2,rater,rater,qc_func_rater_2 = fail
+51561,SBL_0051561,SBL,2,rater,rater,qc_func_rater_2 = fail
+51571,SBL_0051571,SBL,1,rater,rater,qc_func_rater_2 = fail
+51575,SBL_0051575,SBL,1,rater,rater,qc_func_rater_2 = fail
+51581,SBL_0051581,SBL,1,rater,rater,qc_func_rater_2 = fail
