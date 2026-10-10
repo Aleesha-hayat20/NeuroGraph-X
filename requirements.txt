@@ -10,4 +10,9 @@ scikit-learn==1.7.2
 pyyaml==6.0.2
 requests==2.33.1
 tqdm==4.67.1
+fastapi==0.141.1
+starlette==1.3.1
+pydantic==2.13.5
+uvicorn==0.53.0
+anyio==4.14.2
 tabulate==0.9.0     # pandas DataFrame.to_markdown, used by the report scripts
