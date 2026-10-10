@@ -1,6 +1,6 @@
 # 0008. Database schema for the run log and model registry
 
-**Status:** Proposed
+**Status:** Accepted (merged in PR #31)
 **Date:** 2026-10-08
 **Owner:** Alishba Fayaz
 **Related:** 0004 (one model per atlas), 0005 (frozen evaluation set), 0006 (model architecture)
