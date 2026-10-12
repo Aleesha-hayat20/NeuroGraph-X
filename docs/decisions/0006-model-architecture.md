@@ -112,3 +112,24 @@ the calibration work after the midterm and is returned with `calibrated: false`.
 - So far the training loop is verified on toy datasets (MUTAG, PROTEINS; runs 85bd9bb6,
   155be75c). The brain-shaped synthetic test, including a no-signal control, is the next
   verification step.
+
+## Amendments
+
+### 2026-10-12: training protocol and flat regions
+
+- **Selection uses the committed 5-fold cross-validation** (`data/splits/cv5_folds.csv`,
+  memo 0005), not a single train/validation split. Each fold picks its checkpoint on its own
+  validation fold; settings (edge density, hidden size, ...) are compared on the mean
+  cross-validation accuracy only.
+- **One final model per atlas** is trained on the whole development pool (761) for the
+  median best epoch across the folds, then measured **once** on
+  `data/frozen/frozen_eval_100.csv`, logged and registered. `scripts/train_gnn.py` refuses a
+  second frozen measurement for the same atlas unless `--allow-repeat` is given, and records it.
+- **Reported metrics:** accuracy, balanced accuracy, AUC, confusion matrix, and the
+  majority-class baseline (54 % on the frozen set: 54 control, 46 autism), so a model that
+  predicts one class for everyone cannot look good.
+- **Flat regions:** agreed with memo 0007. NaN from zero-variance regions is filled with 0
+  ("no connection measured") in the loader (`fill_nan=0.0`), recorded in every run's
+  configuration. The number of flat regions per participant is reported by group on the
+  development pool, because flat regions follow scanner field of view and so track site.
+- **Labels:** ABIDE DX_GROUP 1 (autism) becomes label 1, DX_GROUP 2 (control) becomes 0.

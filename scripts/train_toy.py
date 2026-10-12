@@ -6,54 +6,15 @@ Usage:
     python scripts/train_toy.py --dataset PROTEINS --epochs 150 --seed 7
 """
 import argparse
-import random
 from pathlib import Path
 
-import numpy as np
 import torch
-import torch.nn.functional as F
 from torch_geometric.datasets import FakeDataset, TUDataset
 from torch_geometric.loader import DataLoader
 
 from neurographx.m3_model.model import GCN
 from neurographx.m3_model.run_logger import log_run, new_run_id
-
-
-# ----------------------------------------------------------------- utilities
-def set_seed(seed: int) -> None:
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-
-
-# ---------------------------------------------------------------- train/eval
-def train_epoch(model, loader, optimizer, device):
-    model.train()
-    total = 0.0
-    for data in loader:
-        data = data.to(device)
-        optimizer.zero_grad()
-        loss = F.cross_entropy(model(data.x, data.edge_index, data.batch), data.y)
-        loss.backward()
-        optimizer.step()
-        total += loss.item() * data.num_graphs
-    return total / len(loader.dataset)
-
-
-@torch.no_grad()
-def evaluate(model, loader, device):
-    """Returns (accuracy, logits) with logits in loader order."""
-    model.eval()
-    correct, all_logits = 0, []
-    for data in loader:
-        data = data.to(device)
-        logits = model(data.x, data.edge_index, data.batch)
-        correct += (logits.argmax(dim=1) == data.y).sum().item()
-        all_logits.append(logits.cpu())
-    return correct / len(loader.dataset), torch.cat(all_logits)
+from neurographx.m3_model.training import evaluate, set_seed, train_epoch
 
 
 # ---------------------------------------------------------------------- main
