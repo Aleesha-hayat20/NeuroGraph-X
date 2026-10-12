@@ -20,7 +20,9 @@ CREATE TABLE IF NOT EXISTS run_log (
     checkpoint_path   TEXT NOT NULL,
     data_config       TEXT,                        -- JSON object, optional
     split_sizes       TEXT,                        -- JSON object, optional
-    reload_identical  INTEGER CHECK (reload_identical IN (0, 1))  -- optional
+    reload_identical  INTEGER CHECK (reload_identical IN (0, 1)), -- optional
+    stage             TEXT CHECK (stage IN ('cv', 'final')),     -- ABIDE runs: cross-validation or the final model; NULL otherwise
+    repeat_frozen_measurement INTEGER CHECK (repeat_frozen_measurement IN (0, 1))  -- final runs: 1 if the frozen set had already been measured for this atlas
 );
 
 -- One row per atlas: the model currently served for that atlas (decision 0004).

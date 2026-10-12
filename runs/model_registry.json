@@ -1,0 +1,30 @@
+{
+  "cc200": {
+    "atlas": "cc200",
+    "checkpoint_path": "checkpoints/cc200_00252f2b.pt",
+    "metrics": {
+      "cv_accuracy": {
+        "mean": 0.6728,
+        "sd": 0.0147
+      },
+      "cv_run_id": "df8dd345",
+      "frozen": {
+        "accuracy": 0.63,
+        "auc": 0.655,
+        "balanced_accuracy": 0.6236,
+        "confusion_tn_fp_fn_tp": [
+          38,
+          16,
+          21,
+          25
+        ],
+        "majority_baseline": 0.54,
+        "n": 100,
+        "predicted_autism": 41
+      }
+    },
+    "previous_run_ids": [],
+    "registered_at": "2026-10-12T10:49:14+00:00",
+    "run_id": "00252f2b"
+  }
+}
