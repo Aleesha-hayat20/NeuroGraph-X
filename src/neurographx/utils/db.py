@@ -31,6 +31,8 @@ RUN_LOG_COLUMNS = (
     "data_config",
     "split_sizes",
     "reload_identical",
+    "stage",
+    "repeat_frozen_measurement",
 )
 REGISTRY_COLUMNS = (
     "atlas",
