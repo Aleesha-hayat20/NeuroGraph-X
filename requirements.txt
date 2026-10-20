@@ -16,3 +16,9 @@ pydantic==2.13.5
 uvicorn==0.53.0
 anyio==4.14.2
 tabulate==0.9.0     # pandas DataFrame.to_markdown, used by the report scripts
+
+# Model code (src/neurographx/m3_model, scripts/train_*.py).
+# Pinned to the versions that trained the registered CC200 model (run 00252f2b, see runs/run_log.jsonl).
+# On Linux, PyPI's torch wheel includes CUDA libraries (a large download); the same code runs on CPU.
+torch==2.11.0
+torch-geometric==2.8.0.post1
