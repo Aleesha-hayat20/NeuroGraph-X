@@ -11,6 +11,7 @@ class Health(BaseModel):
     status: Literal["ok"]
     version: str
     participant_table_found: bool
+    data_mode: Literal["real", "fixtures"]  # NGX_DATA, memo 0014; the dashboard shows it
 
 
 class Participant(BaseModel):
