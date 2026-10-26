@@ -1,0 +1,29 @@
+{
+  "atlas_key": "rois_cc200",
+  "atlas_label": "CC200",
+  "n_regions": 200,
+  "n_edges": 19900,
+  "n_participants": 18,
+  "participants_with_zero_variance": 1,
+  "engine_version": "1.0.0",
+  "parameters": {
+    "atlas_key": "rois_cc200",
+    "pipeline": "cpac",
+    "strategy": "filt_global",
+    "measure": "pearson",
+    "fisher_clip": 0.9999999,
+    "dtype": "float32",
+    "storage": "triu_k1"
+  },
+  "storage": {
+    "format": "npz",
+    "triangle": "strict upper, numpy.triu_indices(n_regions, k=1), row-major",
+    "diagonal_r": 1.0,
+    "diagonal_z": 0.0,
+    "nan": "rows and columns of zero-variance regions, see zero_var"
+  },
+  "input_fingerprint": "6c4b36fa15585de810c3680416a8284563839c3a30dfa4e1402e0435e80dda80",
+  "output_sha256": "9ceb6a46ce6ab0e64e60fec70e5d5593d656a05a106cff58b63249842199a086",
+  "created": "2026-10-26T23:22:51",
+  "numpy_version": "2.4.4"
+}
