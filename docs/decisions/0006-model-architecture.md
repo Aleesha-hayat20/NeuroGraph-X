@@ -5,6 +5,12 @@
 **Owner:** Laiba Afridi
 **Related:** 0001 (atlases), 0002 (pipeline and strategy), 0004 (node counts), 0005 (frozen evaluation set)
 
+> **Note on figures (2026-10-24).** The counts 871 participants and Harvard-Oxford 201
+> below are Week 1 figures from `docs/reports/atlas_summary.md`, taken before the head
+> motion gate was closed. The QC cohort the models train on is **861** (memo 0003), and in
+> it **198** participants have flat Harvard-Oxford regions (memo 0007,
+> `docs/reports/connectome_summary.md`). See the amendment of 2026-10-24 at the end.
+
 ## Context
 
 Each participant is represented as one brain graph built from the connectome engine's
@@ -133,3 +139,16 @@ the calibration work after the midterm and is returned with `calibrated: false`.
   configuration. The number of flat regions per participant is reported by group on the
   development pool, because flat regions follow scanner field of view and so track site.
 - **Labels:** ABIDE DX_GROUP 1 (autism) becomes label 1, DX_GROUP 2 (control) becomes 0.
+
+### 2026-10-24: Week 1 figures in this memo (Aleesha, agreed with Laiba)
+
+- The Rationale's "871 participants" and the Consequences' flat-region count "Harvard-Oxford
+  201" describe the Week 1 download: everyone who passed the rater checks, before the head
+  motion gate (memo 0003, closed 6 October) removed 10 more.
+- Current figures: QC cohort **861** (396 autism, 465 control); development pool 761 and
+  frozen set 100 (memo 0005). Participants with flat regions in the 861: AAL 54, CC200 15,
+  **Harvard-Oxford 198**, Dosenbach 160 46 (memo 0007). Only Harvard-Oxford changed.
+- No decision in this memo depends on the difference: the model size argument holds for
+  861 as for 871, and the flat-region rule is the one agreed in the 2026-10-12 amendment.
+  The original text is left as written so the record of what was known on 4 October stays
+  intact.
