@@ -41,7 +41,7 @@
   cent" replaced with Heinsfeld et al. 2018 (70 per cent) and Parisot et al. 2018
   (70.4 per cent), both checked against the papers.
 - Tests: 198 passed.
-- Pull request: (paste the PR link). CI run on `main` after merge: (paste the link).
+- Pull request: https://github.com/Aleesha-hayat20/NeuroGraph-X/pull/87. CI run on `main` after merge: (paste the link).
 
 ## Decisions taken
 - `docs/decisions/0011-tuning-protocol.md` (proposed)
