@@ -27,7 +27,7 @@
   not pinned.
 - Tests: 29 to 92, all passing locally with Python 3.11 on a clean copy without raw data.
 
-### 10 to 11 October (Aleesha, with Claude)
+### 10 to 11 October (Aleesha)
 - Code review pass before publishing. Fixes:
   - `scripts/02_metadata_report.py` plotted `func_dvars` as "the" motion variable because
     it is the first motion-like column in the file. It now plots `func_mean_fd`, the

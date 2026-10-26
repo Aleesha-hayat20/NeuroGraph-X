@@ -1,5 +1,13 @@
 # Atlas Download Summary
 
+> **SUPERSEDED (Week 1 record).** This summary describes the Week 1 download of
+> 2 October: the **871** participants who passed the rater checks, before the head motion
+> gate (memo 0003) was closed on 6 October. It is kept unchanged because it closed memo 0001.
+> **Current figures:** QC cohort **861** (`data/splits/qc_cohort.csv`); per-atlas
+> participants, nodes, edges and flat regions (Harvard-Oxford **198**, not 201) in
+> `docs/reports/connectome_summary.md`. Re-running `scripts/04_fetch_all_atlases.py`
+> rewrites this file and drops this note.
+
 **Generated:** 2026-10-02  
 **Pipeline:** cpac  **Strategy:** filt_global  
 **Quality filter:** nilearn `quality_checked=True`, all five rater columns  

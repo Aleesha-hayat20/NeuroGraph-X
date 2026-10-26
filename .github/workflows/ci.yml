@@ -29,3 +29,6 @@ jobs:
 
       - name: Test
         run: pytest
+
+      - name: API smoke test on the fixture dataset (memo 0014)
+        run: python scripts/smoke_api.py --data fixtures

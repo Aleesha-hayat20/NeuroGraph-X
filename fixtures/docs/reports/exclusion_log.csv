@@ -1,0 +1,7 @@
+SUB_ID,FILE_ID,SITE_ID,DX_GROUP,first_gate_failed,gates_failed,reasons
+90007,no_filename,SYN_A,1,rater,rater,qc_rater_1 = fail; qc_func_rater_2 = fail; qc_func_rater_3 = fail
+90008,SynA_0090008,SYN_A,2,rater,rater,qc_func_rater_2 = fail
+90015,SynB_0090015,SYN_B,1,rater,rater,qc_anat_rater_3 = fail
+90016,SynB_0090016,SYN_B,2,motion,motion,func_mean_fd = 0.620 > 0.5
+90023,SynC_0090023,SYN_C,1,motion,motion,func_mean_fd missing
+90024,SynC_0090024,SYN_C,2,rater,rater;motion,qc_rater_1 = maybe; func_mean_fd = 0.710 > 0.5

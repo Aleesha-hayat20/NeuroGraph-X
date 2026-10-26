@@ -1,0 +1,29 @@
+{
+  "atlas_key": "rois_ho",
+  "atlas_label": "Harvard-Oxford",
+  "n_regions": 111,
+  "n_edges": 6105,
+  "n_participants": 18,
+  "participants_with_zero_variance": 2,
+  "engine_version": "1.0.0",
+  "parameters": {
+    "atlas_key": "rois_ho",
+    "pipeline": "cpac",
+    "strategy": "filt_global",
+    "measure": "pearson",
+    "fisher_clip": 0.9999999,
+    "dtype": "float32",
+    "storage": "triu_k1"
+  },
+  "storage": {
+    "format": "npz",
+    "triangle": "strict upper, numpy.triu_indices(n_regions, k=1), row-major",
+    "diagonal_r": 1.0,
+    "diagonal_z": 0.0,
+    "nan": "rows and columns of zero-variance regions, see zero_var"
+  },
+  "input_fingerprint": "b5961aac648dded257c593d3721a045e18ed8ed32c78269d8daca9cc8e8c04ac",
+  "output_sha256": "ce4b630dd77baf1d5fe6d42feee493f09d44f8858327cabf5b5b7731ce8422df",
+  "created": "2026-10-26T23:22:51",
+  "numpy_version": "2.4.4"
+}

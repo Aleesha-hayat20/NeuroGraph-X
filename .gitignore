@@ -45,3 +45,8 @@ Thumbs.db
 *.pem
 *.key
 runs/*.sqlite
+
+# fixture dataset (memo 0014): its tiny checkpoint IS committed, unlike real checkpoints;
+# analyses written while the API runs in fixture mode are not
+!fixtures/checkpoints/*.pt
+fixtures/runs/analysis_log.jsonl

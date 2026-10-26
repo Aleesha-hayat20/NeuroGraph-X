@@ -1,6 +1,7 @@
 """The participant table served by the API.
 
-Reads the ABIDE Preprocessed phenotypic file named in configs/data.yaml with M1's loader,
+Reads the ABIDE Preprocessed phenotypic file named in configs/data.yaml (or, with
+NGX_DATA=fixtures, the synthetic fixture's copy; memo 0014) with M1's loader,
 and asks M1's screen (m1_ingestion/screening.py) for each participant's quality status.
 This module only reshapes those results for the API. It makes no quality decisions itself.
 """
@@ -11,10 +12,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from neurographx.config import load
+from neurographx import datasource
 from neurographx.m1_ingestion import metadata as md
 from neurographx.m1_ingestion import screening
-from neurographx.utils.paths import resolve
 
 GROUPS = {1: "autism", 2: "control"}  # DX_GROUP coding, as in metadata.DX_LABELS
 SEXES = {1: "male", 2: "female"}  # SEX coding, as in metadata.SEX_LABELS
@@ -23,9 +23,11 @@ _cache: dict[tuple, list[dict]] = {}
 
 
 def table_path(root: Path | None = None) -> Path:
-    """Where the phenotypic file lives, according to configs/data.yaml."""
-    cfg = load("data.yaml", root)
-    return resolve(cfg["paths"]["raw"], root) / cfg["dataset"]["phenotypic_file"]
+    """Where the phenotypic file lives, according to the active dataset's data.yaml.
+
+    NGX_DATA picks the dataset (memo 0014): the real one, or the synthetic fixture.
+    """
+    return datasource.phenotypic_table(root)
 
 
 def participant_id(sub_id) -> str:
