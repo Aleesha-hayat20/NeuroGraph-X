@@ -45,3 +45,4 @@ Thumbs.db
 *.pem
 *.key
 runs/*.sqlite
+node_modules/
