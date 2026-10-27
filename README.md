@@ -12,8 +12,11 @@ Final Year Project 2026-27, Department of Computer Science, FAST-NUCES Peshawar.
 
 ## What this is
 
-Published graph neural network models for autism connectivity reach around 80 per cent
-accuracy on open data, yet none of them is usable by a research team that did not build it.
+Published deep learning models for autism on the open ABIDE data report accuracies of about
+70 per cent: 70 per cent for a deep neural network on 1,035 participants under 10-fold
+cross-validation (Heinsfeld et al., 2018), and 70.4 per cent (AUC 0.75) for a graph
+convolutional network on 871 participants, also under 10-fold cross-validation
+(Parisot et al., 2018). Yet none of them is usable by a research team that did not build it.
 Existing neuroimaging platforms process data but do not deploy trained models or issue
 predictions, and no available tool reports how far a prediction depends on analysis
 settings the user did not choose.
@@ -22,6 +25,15 @@ NeuroGraph-X turns that class of model into a working platform, and makes every 
 it issues carry a reliability envelope.
 
 **This is a research analysis tool. It does not diagnose, and it is not a medical device.**
+
+References:
+Heinsfeld, A. S., Franco, A. R., Craddock, R. C., Buchweitz, A., and Meneguzzi, F. (2018).
+Identification of autism spectrum disorder using deep learning and the ABIDE dataset.
+*NeuroImage: Clinical*, 17, 16 to 23. https://pubmed.ncbi.nlm.nih.gov/29034163/
+Parisot, S., Ktena, S. I., Ferrante, E., Lee, M., Guerrero, R., Glocker, B., and Rueckert, D.
+(2018). Disease prediction using graph convolutional networks: application to autism
+spectrum disorder and Alzheimer's disease. *Medical Image Analysis*, 48, 117 to 130.
+https://doi.org/10.1016/j.media.2018.06.001 (preprint: https://arxiv.org/abs/1806.01738)
 
 ## Modules
 
@@ -78,6 +90,20 @@ pytest                                   # includes the leakage assertion
 Or `make week2`. Script 06 never redraws an existing frozen set; it only checks its hash.
 Script 07 reuses stored matrices unless an input changed (`--force` rebuilds).
 
+## Running without the real data (fixture mode)
+
+The real data is about 1 GB and is not in the repository. A small **synthetic** dataset in
+exactly the real file formats is (`fixtures/`, decision memo 0014). One setting switches
+the API to it:
+
+```bash
+NGX_DATA=fixtures python -m uvicorn neurographx.api.main:app --reload   # make api-fixtures
+python scripts/smoke_api.py --data fixtures   # start the server and check it answers (CI runs this)
+python scripts/build_fixtures.py --force      # regenerate after a file format changes
+```
+
+`/health` reports `"data_mode": "fixtures"`. Nothing measured on the fixture is a result.
+
 > **Never request the `func_preproc` derivative.** The `rois_*` derivatives are small
 > `.1D` text files. Everything else is a large `.nii.gz` volume.
 
@@ -90,6 +116,7 @@ data/interim/     intermediate artefacts, not committed
 data/processed/   connectomes and features, not committed
 data/frozen/      the frozen evaluation set, COMMITTED on purpose, never regenerated
 data/splits/      QC cohort and training splits, COMMITTED, checked by the leakage test
+fixtures/         small SYNTHETIC dataset in the real formats, for tests, CI and demos (memo 0014)
 docs/decisions/   numbered decision memos, the reasoning behind every choice
 docs/progress/    weekly plan and log, one folder per week
 docs/reports/     generated reports and figures

@@ -4,6 +4,9 @@ Run locally:
     python -m uvicorn neurographx.api.main:app --reload
 then open http://127.0.0.1:8000/docs
 
+On the synthetic fixture dataset instead of the real data (memo 0014), one setting:
+    NGX_DATA=fixtures python -m uvicorn neurographx.api.main:app --reload
+
 Endpoints:
     GET /health                          the server is up; is the participant table there
     GET /participants[?qc_status=...]    participant list with quality status and reasons
@@ -17,10 +20,12 @@ from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 
-from neurographx import __version__
+from neurographx import __version__, datasource
 from neurographx.api import participants as pt
 from neurographx.api.schemas import Health, Participant, ParticipantList
 from neurographx.m1_ingestion import screening
+
+datasource.mode()  # an unknown NGX_DATA value stops the server at start-up, not mid-demo
 
 app = FastAPI(
     title="NeuroGraph-X API",
@@ -51,7 +56,9 @@ def _participants(path: Path, criteria: dict, motion: dict | None = None) -> lis
         raise HTTPException(
             status_code=503,
             detail=f"Participant table {path.name} not found in data/raw. "
-            "Run scripts/01_fetch_phenotypic.py first.",
+            "Run scripts/01_fetch_phenotypic.py first, or start the API with "
+            "NGX_DATA=fixtures to use the synthetic fixture dataset.",
+
         )
     try:
         return pt.load_participants(path, criteria, motion)
@@ -61,7 +68,8 @@ def _participants(path: Path, criteria: dict, motion: dict | None = None) -> lis
 
 @app.get("/health", response_model=Health, tags=["health"], summary="Server status")
 def health(path: TablePath) -> dict:
-    return {"status": "ok", "version": __version__, "participant_table_found": path.exists()}
+        return {"status": "ok", "version": __version__, "participant_table_found": path.exists(),
+                "data_mode": datasource.mode()}
 
 
 @app.get(

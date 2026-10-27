@@ -14,6 +14,15 @@ import pytest
 SITES = ["NYU", "UCLA_1", "KKI", "TRINITY", "SDSU", "OHSU"]
 
 
+@pytest.fixture(autouse=True)
+def _real_data_mode(monkeypatch):
+    """Every test starts in real-data mode, whatever NGX_DATA the shell has (memo 0014).
+
+    Tests that need the fixture dataset set NGX_DATA themselves.
+    """
+    monkeypatch.delenv("NGX_DATA", raising=False)
+
+
 @pytest.fixture
 def synthetic_phenotypic(tmp_path):
     rng = np.random.default_rng(0)
