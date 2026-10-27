@@ -7,6 +7,8 @@
   --accent: #2b5d8a;
   --notice-bg: #fff6dc;
   --notice-line: #d9b44a;
+  --fixture-bg: #fde8e7;
+  --fixture-line: #d9867f;
   --error: #a12622;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--ink);
@@ -71,6 +73,14 @@ body {
   padding: 0.6rem 1.5rem;
   background: var(--notice-bg);
   border-bottom: 1px solid var(--notice-line);
+  font-size: 0.9rem;
+}
+
+.fixture-notice {
+  margin: 0;
+  padding: 0.6rem 1.5rem;
+  background: var(--fixture-bg);
+  border-bottom: 1px solid var(--fixture-line);
   font-size: 0.9rem;
 }
 
