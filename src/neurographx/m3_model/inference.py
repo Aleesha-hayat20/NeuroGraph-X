@@ -15,6 +15,7 @@ from pathlib import Path
 
 import torch
 
+from neurographx import datasource
 from neurographx.m3_model.model import model_from_checkpoint
 from neurographx.m3_model.run_logger import REGISTRY_PATH, get_model
 
@@ -22,14 +23,29 @@ from neurographx.m3_model.run_logger import REGISTRY_PATH, get_model
 LABELS = {0: "control", 1: "autism"}
 
 
+def checkpoint_path(entry: dict, registry_path: Path = REGISTRY_PATH) -> Path:
+    """Where the registered checkpoint is on this machine.
+
+    Registry paths are relative ("checkpoints/cc200_00252f2b.pt"). A registry kept in a
+    data root's ``runs/`` folder (the real one, or ``fixtures/runs/``) resolves them
+    against that root through ``datasource.checkpoint`` (memo 0009), so the result does
+    not depend on the working directory. Any other registry keeps the old behaviour:
+    relative to the working directory. Absolute paths are returned unchanged.
+    """
+    registry_path = Path(registry_path)
+    root = registry_path.parent.parent if registry_path.parent.name == "runs" else Path(".")
+    return datasource.checkpoint(entry["checkpoint_path"], root=root)
+
+
 def load_model(atlas: str, registry_path: Path = REGISTRY_PATH, device="cpu"):
     """Return (model, registry_entry) for the current model of `atlas`.
 
-    Raises KeyError if no model is registered for the atlas, and
+    The checkpoint is loaded onto `device` (CPU by default), so serving needs no GPU
+    (memo 0009). Raises KeyError if no model is registered for the atlas, and
     FileNotFoundError if the registered checkpoint file is missing.
     """
     entry = get_model(atlas, registry_path)
-    ckpt_path = Path(entry["checkpoint_path"])
+    ckpt_path = checkpoint_path(entry, registry_path)
     if not ckpt_path.exists():
         raise FileNotFoundError(
             f"checkpoint for atlas '{atlas}' (run {entry['run_id']}) not found: {ckpt_path}"

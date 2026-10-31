@@ -43,10 +43,40 @@
 - Tests: 198 passed.
 - Pull request: https://github.com/Aleesha-hayat20/NeuroGraph-X/pull/87. CI run on `main` after merge: (paste the link).
 
+### 31 October (Laiba)
+- Repository state checked before starting: `main` at `7a2ed45` (PR #89). Suite: 198 passing.
+- **CPU inference (memo 0009).** `scripts/predict_one.py` runs one prediction through the
+  registry on the CPU and compares it with a reference (`--expect prediction:confidence`,
+  tolerance 0.001). CC200 reference: Kaggle GPU result of run `00252f2b`, participant
+  `0050011`, control, 0.7052. Works on the fixture data with `NGX_DATA=fixtures`. Documented
+  in `SETUP.md`, section 10. `requirements-model.txt` was not created: PyTorch 2.11.0 and
+  PyTorch Geometric 2.8.0.post1 are already pinned in `requirements.txt` since PR #38, and
+  the main CI job runs the model tests with them.
+- **Checkpoint paths (memo 0014 open item).** `inference.checkpoint_path` resolves the
+  registry's relative path against the data root holding the registry, through
+  `datasource.checkpoint()`, so fixture and real checkpoints load from any working
+  directory. Existing callers unchanged.
+- **Out-of-fold probabilities.** `train_gnn.py --stage cv` writes
+  `runs/oof/<atlas>_<run_id>_oof.csv` (one row per development participant, checked: every
+  participant once, no frozen participant, probabilities in 0 to 1) and records its path,
+  SHA-256 and count under `metrics.oof`, plus `cv_seconds` and per-fold `seconds` for memo
+  0011's timing check. Inside `metrics`, so the database schema does not change.
+- **Tests:** `tests/test_oof.py` (unit tests, and the real `cv` stage on the fixture dataset in
+  a scratch folder) and a checkpoint-path test in `tests/test_inference.py`. 209 passed.
+- **Memos drafted:** 0009 (serving checkpoints), 0010 (calibration).
+- **Baseline CV, AAL, Harvard-Oxford, Dosenbach 160:** notebook
+  `notebooks/neurographx-w4-baseline-cv-three-atlases.ipynb` (no frozen measurement).
+  Results: (paste the three summary lines: atlas, run_id, CV accuracy, balanced, AUC, epochs,
+  seconds).
+- **CPU check on the Mac:** (paste `predict_one.py` output from Aleesha's Mac).
+- Pull request: (paste the link).
+
 ## Decisions taken
 - `docs/decisions/0011-tuning-protocol.md` (proposed)
 - `docs/decisions/0013-analysis-log-and-api-contract.md` (proposed)
 - `docs/decisions/0014-fixture-data.md` (proposed)
+- `docs/decisions/0009-serving-checkpoints.md` (proposed)
+- `docs/decisions/0010-calibration.md` (proposed)
 
 ## Week close, Sunday 25 October
 **Gate items met:** (tick in `plan.md` and list here)
