@@ -16,7 +16,12 @@ Two stages, run separately on purpose:
 
 Usage (from the repository root):
     python scripts/train_gnn.py --stage cv
+    python scripts/train_gnn.py --stage cv --class-weighted --tuning-grid 0011-v1   (memo 0011)
     python scripts/train_gnn.py --stage final --epochs-from-cv <cv run_id>
+
+The final stage takes every setting (including class weighting) from the CV run it
+is given, and saves the frozen-set probabilities per participant to
+runs/frozen_predictions/ (memo 0010), so calibration never needs a second measurement.
 """
 import argparse
 import statistics
@@ -39,7 +44,13 @@ from neurographx.m3_model.data import (
     short_atlas_name,
 )
 from neurographx.m3_model.model import GCN, model_from_checkpoint
-from neurographx.m3_model.oof import fold_rows, oof_path, write_oof
+from neurographx.m3_model.oof import (
+    fold_rows,
+    frozen_predictions_path,
+    oof_path,
+    write_frozen_predictions,
+    write_oof,
+)
 from neurographx.m3_model.run_logger import (
     get_run,
     log_run,
@@ -47,7 +58,7 @@ from neurographx.m3_model.run_logger import (
     read_runs,
     register_model,
 )
-from neurographx.m3_model.training import evaluate, set_seed, train_epoch
+from neurographx.m3_model.training import class_weights, evaluate, set_seed, train_epoch
 
 FOLDS_FILE = Path("data/splits/cv5_folds.csv")
 FROZEN_FILE = Path("data/frozen/frozen_eval_100.csv")
@@ -70,11 +81,13 @@ def fit(train_graphs, val_graphs, args, device, ckpt_path=None):
     set_seed(args.seed)
     model = GCN(train_graphs[0].x.shape[1], args.hidden, 2, args.layers, args.dropout).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    # memo 0011: weights from this training fold's labels only, never validation or frozen
+    weight = class_weights([int(g.y) for g in train_graphs]) if args.class_weighted else None
     train_loader = DataLoader(train_graphs, batch_size=args.batch_size, shuffle=True)
     val_loader = DataLoader(val_graphs, batch_size=args.batch_size) if val_graphs else None
     best = {"val_acc": -1.0, "epoch": 0, "state": None}
     for epoch in range(1, args.epochs + 1):
-        loss = train_epoch(model, train_loader, optimizer, device)
+        loss = train_epoch(model, train_loader, optimizer, device, weight)
         if val_loader is not None:
             val_acc, _ = evaluate(model, val_loader, device)
             if val_acc > best["val_acc"]:
@@ -110,7 +123,8 @@ def scores(model, graphs, device, batch_size):
 
 def hyperparameters(args) -> dict:
     return {"hidden": args.hidden, "layers": args.layers, "dropout": args.dropout,
-            "lr": args.lr, "batch_size": args.batch_size, "epochs": args.epochs}
+            "lr": args.lr, "batch_size": args.batch_size, "epochs": args.epochs,
+            "class_weighted": bool(args.class_weighted)}
 
 
 def data_config(args, cset) -> dict:
@@ -118,7 +132,8 @@ def data_config(args, cset) -> dict:
             "folds_file": str(FOLDS_FILE), "folds_sha256": sha256_file(FOLDS_FILE),
             "frozen_file": str(FROZEN_FILE), "frozen_sha256": sha256_file(FROZEN_FILE),
             "connectome_engine": cset.manifest.get("engine_version"),
-            "connectome_sha256": cset.manifest.get("output_sha256")}
+            "connectome_sha256": cset.manifest.get("output_sha256"),
+            **({"tuning_grid": args.tuning_grid} if args.tuning_grid else {})}
 
 
 def stage_cv(args, cset, folds, frozen, device):
@@ -198,6 +213,9 @@ def stage_final(args, cset, folds, frozen, device):
                          "for this atlas (it decides the number of epochs).")
     for key in ("hidden", "layers", "dropout", "lr", "batch_size"):
         setattr(args, key, cv_run["hyperparameters"][key])
+    # runs logged before memo 0011 have no flag: they were unweighted
+    args.class_weighted = bool(cv_run["hyperparameters"].get("class_weighted", False))
+    args.tuning_grid = None  # the tag marks tuning (CV) runs only
     args.density = cv_run["data_config"]["density"]
     args.fill_nan = cv_run["data_config"]["fill_nan"]
     args.epochs = cv_run["metrics"]["chosen_epochs"]
@@ -223,6 +241,14 @@ def stage_final(args, cset, folds, frozen, device):
     again = model_from_checkpoint(torch.load(ckpt_path, map_location="cpu")).to(device)
     _, logits_b = scores(again, frozen_graphs, device, args.batch_size)
     identical = bool(torch.allclose(logits_a, logits_b, atol=1e-6))
+    # the same single measurement, kept per participant for calibration (memo 0010)
+    pred_file = frozen_predictions_path(atlas, run_id)
+    pred_sha = write_frozen_predictions(
+        fold_rows(frozen, -1, [int(g.y) for g in frozen_graphs],
+                  torch.softmax(logits_a, dim=1)[:, 1].numpy()).drop(columns="fold"),
+        pred_file, frozen, folds)
+    frozen_metrics["predictions"] = {"file": pred_file.as_posix(), "sha256": pred_sha,
+                                     "n": len(frozen_graphs)}
 
     log_run({"run_id": run_id, "stage": "final", "dataset": DATASET, "atlas": atlas,
              "seed": args.seed, "hyperparameters": hyperparameters(args),
@@ -256,7 +282,13 @@ def main():
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--epochs-from-cv", dest="epochs_from_cv")
     p.add_argument("--allow-repeat", dest="allow_repeat", action="store_true")
+    p.add_argument("--class-weighted", dest="class_weighted", action="store_true",
+                   help="weight the loss by class, from each training fold (memo 0011)")
+    p.add_argument("--tuning-grid", dest="tuning_grid",
+                   help="tag a CV run as part of a declared tuning grid, e.g. 0011-v1")
     args = p.parse_args()
+    if args.tuning_grid and args.stage != "cv":
+        p.error("--tuning-grid tags cross-validation runs only")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Device:", device)
