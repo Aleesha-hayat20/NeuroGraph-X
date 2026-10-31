@@ -64,10 +64,25 @@
 - **Tests:** `tests/test_oof.py` (unit tests, and the real `cv` stage on the fixture dataset in
   a scratch folder) and a checkpoint-path test in `tests/test_inference.py`. 209 passed.
 - **Memos drafted:** 0009 (serving checkpoints), 0010 (calibration).
-- **Baseline CV, AAL, Harvard-Oxford, Dosenbach 160:** notebook
-  `notebooks/neurographx-w4-baseline-cv-three-atlases.ipynb` (no frozen measurement).
-  Results: (paste the three summary lines: atlas, run_id, CV accuracy, balanced, AUC, epochs,
-  seconds).
+- **Baseline CV, AAL, Harvard-Oxford, Dosenbach 160** (memo 0006 settings, development
+  pool of 761 only, no frozen measurement), notebook
+  `notebooks/neurographx-w4-baseline-cv-three-atlases.ipynb`, Kaggle T4, code `273ed4a`.
+  Each atlas ran twice in the same session; both runs are kept in the log with their OOF files.
+
+  | Atlas | Run | CV accuracy (SD) | Balanced | AUC | Epochs | Seconds |
+  |---|---|---|---|---|---|---|
+  | AAL | `d0d6ab7b` | 0.6715 (0.0145) | 0.6681 | 0.6967 | 30 | 98.4 |
+  | AAL | `bc8c9ab8` | 0.6741 (0.0184) | 0.6629 | 0.7006 | 22 | 98.6 |
+  | Harvard-Oxford | `4908c681` | 0.6518 (0.0188) | 0.6418 | 0.6546 | 38 | 97.6 |
+  | Harvard-Oxford | `fe849e36` | 0.6570 (0.0230) | 0.6500 | 0.6594 | 36 | 97.0 |
+  | Dosenbach 160 | `f7f49989` | 0.6334 (0.0246) | 0.6277 | 0.6260 | 48 | 121.2 |
+  | Dosenbach 160 | `0248d655` | 0.6281 (0.0219) | 0.6220 | 0.6334 | 60 | 120.7 |
+
+  Majority baseline 0.5401 for all. Same seed, different results by up to 0.7 points:
+  GPU message passing is not bit-for-bit deterministic (memo 0006), so differences below
+  about 1 point between tuning settings are noise. Memo 0011 timing check: about 100 to
+  120 s per CV run, so the 48 tuning runs take roughly 2.5 GPU hours; the grid fits and
+  does not need shrinking.
 - **CPU check on the Mac:** (paste `predict_one.py` output from Aleesha's Mac).
 - Pull request: (paste the link).
 
