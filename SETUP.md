@@ -93,7 +93,8 @@ pip install -e .
 pytest
 ```
 
-Every test should pass (138 as of Week 2, plus 2 that need PyTorch and skip without it). If one fails, read its message before
+Every test should pass (209 as of Week 4). `requirements.txt` includes PyTorch and PyTorch
+Geometric, so the model tests run too; without them installed they are skipped. If one fails, read its message before
 changing anything: several tests guard the frozen evaluation set on purpose.
 
 ## 9. Run the Week 1 scripts
@@ -111,6 +112,36 @@ git add docs/reports
 git commit -m "Week 1: metadata report and pilot connectivity matrix"
 git push
 ```
+
+## 10. Run the model on a CPU (inference, memo 0009)
+
+No GPU is needed to serve a model. Training runs on Kaggle; prediction runs on any laptop.
+
+**Without the real data** (checks the CPU path on the committed fixture dataset, memo 0014):
+
+```bash
+NGX_DATA=fixtures python scripts/predict_one.py --participant 0090001
+```
+
+**With the real CC200 model.** You need two things that are not in git:
+
+1. The checkpoint `cc200_00252f2b.pt` (from Laiba, or the Kaggle notebook's evidence
+   folder), copied to `checkpoints/cc200_00252f2b.pt`.
+2. The connectomes in `data/processed/connectomes/cpac_filt_global/`, built with
+   `scripts/01_fetch_phenotypic.py`, `04_fetch_all_atlases.py` and `07_build_connectomes.py`
+   (or copied from a machine that already has them).
+
+Then, from the repository root:
+
+```bash
+python scripts/predict_one.py --participant 0050011 --atlas cc200 --expect control:0.7052
+```
+
+The last line must read `matches reference control:0.7052 (tolerance 0.001): True`. The
+reference is the Kaggle GPU result of run `00252f2b`. The script only predicts: it reads no
+labels and writes nothing, so it is safe on frozen-set participants and is not a frozen-set
+measurement. Never run `scripts/train_gnn.py --stage final` to check a setup: it measures the
+frozen set, which happens once per atlas (memo 0011).
 
 ## Branch naming
 
