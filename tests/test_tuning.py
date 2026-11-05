@@ -119,6 +119,7 @@ def test_cc200_frozen_rule_depends_on_whether_the_baseline_wins(winner_is_baseli
     text = render({"cc200": (rows, *select(rows))})
     assert ("00252f2b` remains" in text) == winner_is_baseline
     assert ("--allow-repeat" in text) == (not winner_is_baseline)
+    assert ("--repeat-reason" in text) == (not winner_is_baseline)
 
 
 def test_grid_runner_dry_run_lists_every_pending_configuration(tmp_path):

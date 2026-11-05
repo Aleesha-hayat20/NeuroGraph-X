@@ -148,6 +148,9 @@ def _fmt(value, digits=4) -> str:
     return "" if value is None else f"{value:.{digits}f}"
 
 
+REPEAT_REASON = "post-tuning measurement per memo 0011"
+
+
 def _final_step(atlas: str, winner: Row) -> str:
     """Memo 0011, section 4: what happens to the frozen set for this atlas."""
     command = (f"`python scripts/train_gnn.py --stage final --atlas rois_{atlas} "
@@ -158,8 +161,8 @@ def _final_step(atlas: str, winner: Row) -> str:
         return ("CC200: the baseline configuration was selected, so there is no second frozen "
                 "measurement; run `00252f2b` remains the final CC200 model.")
     return (f"CC200: a configuration other than the baseline was selected, so it is measured "
-            f"once more as a declared repeat: {command} --allow-repeat` "
-            "(reason: post-tuning measurement per memo 0011).")
+            f"once more as a declared repeat: {command} --allow-repeat "
+            f'--repeat-reason "{REPEAT_REASON}"`.')
 
 
 def render(results: dict[str, tuple[list[Row], Row | None, list[Row]]], freeze: str = FREEZE,

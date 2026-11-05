@@ -47,7 +47,7 @@ Final model, frozen set measured once: `python scripts/train_gnn.py --stage fina
 
 12 of 12 configurations ran before the freeze. Selected: **density 0.05, class weights off, hidden 64**, CV run `c2516a5f` (balanced accuracy 0.6777, 3 configuration(s) within 0.005).
 
-CC200: a configuration other than the baseline was selected, so it is measured once more as a declared repeat: `python scripts/train_gnn.py --stage final --atlas rois_cc200 --epochs-from-cv c2516a5f --allow-repeat` (reason: post-tuning measurement per memo 0011).
+CC200: a configuration other than the baseline was selected, so it is measured once more as a declared repeat: `python scripts/train_gnn.py --stage final --atlas rois_cc200 --epochs-from-cv c2516a5f --allow-repeat --repeat-reason "post-tuning measurement per memo 0011"`.
 
 ## ho
 
