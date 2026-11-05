@@ -183,6 +183,20 @@ def test_class_weighted_tuning_run_then_final_saves_frozen_predictions(tmp_path)
          "--epochs-from-cv", cv["run_id"]],
         cwd=tmp_path, env=env, capture_output=True, text=True, timeout=300)
     assert again.returncode != 0 and "measured once" in (again.stdout + again.stderr)
+    # the checkpoint's hash is logged (memo 0009, schema 3)
+    ckpt = tmp_path / final["checkpoint_path"]
+    assert final["checkpoint_sha256"] == hashlib.sha256(ckpt.read_bytes()).hexdigest()
+    assert final["repeat_reason"] is None and final["schema_version"] == 3
+    # a declared repeat needs a written reason, which is logged (memo 0011, section 5)
+    final_cmd = [sys.executable, str(ROOT / "scripts/train_gnn.py"), "--stage", "final",
+                 "--connectomes", str(FX / "data/processed/connectomes"),
+                 "--epochs-from-cv", cv["run_id"], "--allow-repeat"]
+    no_reason = subprocess.run(final_cmd, cwd=tmp_path, env=env, capture_output=True,
+                               text=True, timeout=300)
+    assert no_reason.returncode != 0 and "--repeat-reason" in (no_reason.stdout + no_reason.stderr)
+    runs = _train(tmp_path, env, *final_cmd[2:], "--repeat-reason", "test of the rule")
+    assert runs[-1]["repeat_frozen_measurement"] is True
+    assert runs[-1]["repeat_reason"] == "test of the rule"
 
 
 def test_class_weights_follow_memo_0011():

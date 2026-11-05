@@ -12,7 +12,7 @@ Two stages, run separately on purpose:
          cross-validation chose, then measures it ONCE on the frozen evaluation set
          (data/frozen/frozen_eval_100.csv), logs the run and registers the model.
          Refuses to run a second time for the same atlas unless --allow-repeat is
-         given, and then records that it was a repeat.
+         given with --repeat-reason, and then records both (memo 0011, section 5).
 
 Usage (from the repository root):
     python scripts/train_gnn.py --stage cv
@@ -201,6 +201,9 @@ def previous_frozen_runs(atlas: str) -> list[dict]:
 def stage_final(args, cset, folds, frozen, device):
     atlas = short_atlas_name(args.atlas)
     earlier = previous_frozen_runs(atlas)
+    if args.allow_repeat and not (args.repeat_reason or "").strip():
+        raise SystemExit("--allow-repeat needs --repeat-reason \"...\": the reason is written to "
+                         "the run log (memo 0011, section 5).")
     if earlier and not args.allow_repeat:
         raise SystemExit(
             f"The frozen set was already measured for {atlas} "
@@ -257,7 +260,9 @@ def stage_final(args, cset, folds, frozen, device):
              "data_config": data_config(args, cset),
              "split_sizes": {"train": len(train), "frozen": len(frozen_graphs)},
              "checkpoint_path": str(ckpt_path), "reload_identical": identical,
-             "repeat_frozen_measurement": bool(earlier), "git_commit": code_version()})
+             "repeat_frozen_measurement": bool(earlier),
+             "repeat_reason": args.repeat_reason.strip() if earlier else None,
+             "checkpoint_sha256": sha256_file(ckpt_path), "git_commit": code_version()})
     register_model(run_id)
     print(f"Frozen set: {frozen_metrics}")
     print(f"Majority-class baseline on the frozen set: {frozen_metrics['majority_baseline']}")
@@ -282,6 +287,8 @@ def main():
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--epochs-from-cv", dest="epochs_from_cv")
     p.add_argument("--allow-repeat", dest="allow_repeat", action="store_true")
+    p.add_argument("--repeat-reason", dest="repeat_reason",
+                   help="required with --allow-repeat: why the frozen set is measured again")
     p.add_argument("--class-weighted", dest="class_weighted", action="store_true",
                    help="weight the loss by class, from each training fold (memo 0011)")
     p.add_argument("--tuning-grid", dest="tuning_grid",

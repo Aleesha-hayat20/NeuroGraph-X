@@ -10,6 +10,7 @@ answer always states which training run produced it (`run_id`).
 No labels are read here and nothing is tuned: this module only applies an
 already-selected checkpoint. It is safe to call on frozen-set participants.
 """
+import hashlib
 from collections.abc import Callable
 from pathlib import Path
 
@@ -17,7 +18,7 @@ import torch
 
 from neurographx import datasource
 from neurographx.m3_model.model import model_from_checkpoint
-from neurographx.m3_model.run_logger import REGISTRY_PATH, get_model
+from neurographx.m3_model.run_logger import REGISTRY_PATH, get_model, get_run
 
 # Our own label coding (participant-record contract): 1 = autism, 0 = control.
 LABELS = {0: "control", 1: "autism"}
@@ -37,18 +38,35 @@ def checkpoint_path(entry: dict, registry_path: Path = REGISTRY_PATH) -> Path:
     return datasource.checkpoint(entry["checkpoint_path"], root=root)
 
 
+def expected_checkpoint_sha256(entry: dict, registry_path: Path = REGISTRY_PATH) -> str | None:
+    """The checkpoint hash recorded by the registered run (schema 3), or None.
+
+    The run log is the registry's neighbour (runs/run_log.jsonl). Runs logged before
+    schema 3, such as the CC200 baseline 00252f2b, recorded no hash and are not checked.
+    """
+    run = get_run(entry["run_id"], Path(registry_path).with_name("run_log.jsonl"))
+    return (run or {}).get("checkpoint_sha256")
+
+
 def load_model(atlas: str, registry_path: Path = REGISTRY_PATH, device="cpu"):
     """Return (model, registry_entry) for the current model of `atlas`.
 
     The checkpoint is loaded onto `device` (CPU by default), so serving needs no GPU
-    (memo 0009). Raises KeyError if no model is registered for the atlas, and
-    FileNotFoundError if the registered checkpoint file is missing.
+    (memo 0009). Raises KeyError if no model is registered for the atlas,
+    FileNotFoundError if the registered checkpoint file is missing, and ValueError if
+    the file's SHA-256 differs from the one its training run recorded.
     """
     entry = get_model(atlas, registry_path)
     ckpt_path = checkpoint_path(entry, registry_path)
     if not ckpt_path.exists():
         raise FileNotFoundError(
             f"checkpoint for atlas '{atlas}' (run {entry['run_id']}) not found: {ckpt_path}"
+        )
+    expected = expected_checkpoint_sha256(entry, registry_path)
+    if expected and hashlib.sha256(ckpt_path.read_bytes()).hexdigest() != expected:
+        raise ValueError(
+            f"checkpoint {ckpt_path} does not match the SHA-256 its run {entry['run_id']} "
+            "recorded: it was changed or replaced after training (memo 0009)"
         )
     ckpt = torch.load(ckpt_path, map_location=device)
     model = model_from_checkpoint(ckpt).to(device)

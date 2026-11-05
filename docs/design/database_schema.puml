@@ -28,6 +28,8 @@ entity "run_log" as run_log {
   reload_identical : INTEGER (0 or 1)
   stage : TEXT (cv or final)
   repeat_frozen_measurement : INTEGER (0 or 1)
+  repeat_reason : TEXT
+  checkpoint_sha256 : TEXT
 }
 
 entity "model_registry" as model_registry {
