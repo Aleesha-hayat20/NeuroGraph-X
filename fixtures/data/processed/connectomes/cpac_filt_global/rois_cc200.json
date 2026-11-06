@@ -3,7 +3,7 @@
   "atlas_label": "CC200",
   "n_regions": 200,
   "n_edges": 19900,
-  "n_participants": 18,
+  "n_participants": 17,
   "participants_with_zero_variance": 1,
   "engine_version": "1.0.0",
   "parameters": {
@@ -22,8 +22,8 @@
     "diagonal_z": 0.0,
     "nan": "rows and columns of zero-variance regions, see zero_var"
   },
-  "input_fingerprint": "6c4b36fa15585de810c3680416a8284563839c3a30dfa4e1402e0435e80dda80",
-  "output_sha256": "9ceb6a46ce6ab0e64e60fec70e5d5593d656a05a106cff58b63249842199a086",
-  "created": "2026-10-26T23:22:51",
+  "input_fingerprint": "9bf902d2b630254379c4f55419d2e42c07a456f74824aad1a592bb622d823537",
+  "output_sha256": "27193d91ba3455864019a040e281161ad78ea4ec0fcff13c66a05fe75c30cd34",
+  "created": "2026-10-27T12:07:47",
   "numpy_version": "2.4.4"
 }

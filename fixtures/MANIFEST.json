@@ -1,23 +1,23 @@
 {
   "description": "SYNTHETIC fixture dataset, decision memo 0014. Regenerate with scripts/build_fixtures.py; never edit files by hand.",
-  "generator_version": "1.0.0",
+  "generator_version": "1.1.0",
   "seed": 20261024,
   "connectome_engine": "1.0.0",
   "files": {
-    "README.md": "08a645eb41f55cdb5fe55a8625a31cf28a7356cd05975221f1e6a3108009157c",
-    "checkpoints/cc200_1a9384db.pt": "ae554edc420ef5b57f8c6a794b29df6b5f59c6f257400ad9dd7b9862a7125886",
+    "README.md": "1cbd9aa97f545da8ddfd962494eda6e46e864928f358453b99f8fd651cc5d222",
+    "checkpoints/cc200_12ec5b8b.pt": "061f12958eb283057e9d6cee0f3e0b1656e314caf47d58405de6e2e2595e27bf",
     "configs/data.yaml": "432835bc28cf79b4e5341349ab912714224d2f5696687e15b14c492f255ae5f4",
     "data/frozen/frozen_eval_6.csv": "115cfd9274ecba90b0cbd6818011cdaf4b1db06cb462d834b605f1a37db61fd6",
-    "data/frozen/frozen_eval_6.meta.json": "ef9e6cdbf14642f18076e350fa017f76106e01a91b77207ba76d923d05d53f85",
-    "data/processed/connectomes/cpac_filt_global/rois_cc200.json": "a505bf3defc9ee576b13d597e28483f6b6b224fc5ecce8849fcff61316d7e26e",
-    "data/processed/connectomes/cpac_filt_global/rois_cc200.npz": "9ceb6a46ce6ab0e64e60fec70e5d5593d656a05a106cff58b63249842199a086",
-    "data/processed/connectomes/cpac_filt_global/rois_ho.json": "fedae3b79d1be1ba6f80632d3f87bcd47a24ff5b826ed9fb3549f712fa643087",
-    "data/processed/connectomes/cpac_filt_global/rois_ho.npz": "ce4b630dd77baf1d5fe6d42feee493f09d44f8858327cabf5b5b7731ce8422df",
+    "data/frozen/frozen_eval_6.meta.json": "711a941364c60935bbde97d6e33d8b183dfaa51836fbda14a7573f237543d01b",
+    "data/processed/connectomes/cpac_filt_global/rois_cc200.json": "06d1c879e45937548e9d506c4fb718c0a8a4c78792fb214040811849f3342959",
+    "data/processed/connectomes/cpac_filt_global/rois_cc200.npz": "27193d91ba3455864019a040e281161ad78ea4ec0fcff13c66a05fe75c30cd34",
+    "data/processed/connectomes/cpac_filt_global/rois_ho.json": "2705b05c3d06a1b9923179490734bfeeffd4cf757a8760cf545a43762042cfa4",
+    "data/processed/connectomes/cpac_filt_global/rois_ho.npz": "18056b948b2d62e5f85b171ff1637eb8acddddde4e4f8bf8eb7ddf9a1041e9ac",
     "data/raw/Phenotypic_V1_0b_preprocessed1.csv": "6108a12906e3e8232fa91806b742acfc2568c34e5d8278be13131674089973e3",
-    "data/splits/cv5_folds.csv": "113be9b176021e00f7bf4defb3f5adcb6d88b235ca5cb0a893790f86bbc54212",
-    "data/splits/qc_cohort.csv": "35de4526c8fc2128caa9a04e1b0acf38dc8cf7ca366347fa3148992b544f4cca",
-    "docs/reports/exclusion_log.csv": "b8c678efaabf7da5e8a258ecc27e88c45379f84076b4a7d95a65e7f22efd1668",
-    "runs/model_registry.json": "18ef49fc9c5fed24994bf35c6f53d72ac985767f9cd5ceda7ac78802e0e46190",
-    "runs/run_log.jsonl": "24380f919af00838b738a3b6b2936fe8bbd72f22f6690259aa82e3175e1af04a"
+    "data/splits/cv5_folds.csv": "966f9a22dd2e8cdcab36ab92ee2fa75e3083d53cb74323f5934bbfc0773eea46",
+    "data/splits/qc_cohort.csv": "884c252241fbe9e73b7b8ee2666bf275a1eaa70da068896c1585e189bb1a008a",
+    "docs/reports/exclusion_log.csv": "b9b9539413493369251fd1f8ef137421a2343a6608b04170256510b8f8355e64",
+    "runs/model_registry.json": "323520857616a3b7636336b1c5c35650d4b26db43f386457fbf9669483bcb74d",
+    "runs/run_log.jsonl": "836ae3dec6408942e2c0c8898ec0da9da6a4ca7f80cbc2358fe19b45fd02d589"
   }
 }

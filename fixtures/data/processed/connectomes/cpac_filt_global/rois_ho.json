@@ -3,7 +3,7 @@
   "atlas_label": "Harvard-Oxford",
   "n_regions": 111,
   "n_edges": 6105,
-  "n_participants": 18,
+  "n_participants": 17,
   "participants_with_zero_variance": 2,
   "engine_version": "1.0.0",
   "parameters": {
@@ -22,8 +22,8 @@
     "diagonal_z": 0.0,
     "nan": "rows and columns of zero-variance regions, see zero_var"
   },
-  "input_fingerprint": "b5961aac648dded257c593d3721a045e18ed8ed32c78269d8daca9cc8e8c04ac",
-  "output_sha256": "ce4b630dd77baf1d5fe6d42feee493f09d44f8858327cabf5b5b7731ce8422df",
-  "created": "2026-10-26T23:22:51",
+  "input_fingerprint": "286bc764bcd5360f8f08001bd7c2e9cf188676737b77fa18d040eb733e3e780b",
+  "output_sha256": "18056b948b2d62e5f85b171ff1637eb8acddddde4e4f8bf8eb7ddf9a1041e9ac",
+  "created": "2026-10-27T12:07:47",
   "numpy_version": "2.4.4"
 }
