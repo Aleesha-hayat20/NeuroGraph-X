@@ -59,22 +59,22 @@ scaffold merged (PR #88, W4-19).
   updated here: #94 introduced run-log schema 3 and prediction files, so the generator
   moved to 1.2.0 (memo 0014 amendment); and one #118 test pinned the Week 4 fixture's run
   ID (`1a9384db`), so it now reads the ID from the fixture registry.
-- **#93 checks on the Mac:** `pytest` 209 passed `NGX_DATA=fixtures python
-  scripts/predict_one.py --participant 0090001` data mode      : fixtures
-python / torch : 3.12.0 / 2.11.0 (device cpu)
-model          : run 1a9384db, /Users/AleeshaHayat/Documents/neurograph-x/fixtures/checkpoints/cc200_1a9384db.pt
-{"participant_id": "0090001", "atlas": "cc200", "prediction": "autism", "confidence": 0.9997, "calibrated": false, "run_id": "1a9384db"}; real CC200 check
-  `predict_one.py --participant 0050011 --atlas cc200 --expect control:0.7052`{"participant_id": "0090001", "atlas": "cc200", "prediction": "autism", "confidence": 0.9997, "calibrated": false, "run_id": "1a9384db"}. ABIDE licence for memo 0009 option A: CC BY-NC-SA 3.0, non-commercial
-  research use unrestricted (ABIDE I page).
+- **#93 checks on the Mac:** `pytest` 209 passed; the fixture example
+  `NGX_DATA=fixtures python scripts/predict_one.py --participant 0090001` predicts autism
+  (run `1a9384db`); real CC200 check on the CPU,
+  `predict_one.py --participant 0050011 --atlas cc200 --expect control:0.7052`:
+  `matches reference control:0.7052 (tolerance 0.001): True`. Checkpoint `cc200_00252f2b.pt` received from Laiba (sent as `.pt.zip`, renamed),
+  SHA-256 `4adb11ca…ecc9`. ABIDE licence for memo 0009 option A: CC BY-NC-SA 3.0,
+  non-commercial research use unrestricted (ABIDE I page).
 - **#94 checks on the Mac:** `python scripts/select_config.py` reproduces
   `docs/reports/tuning_selection.md` exactly; all 54 out-of-fold files pass `check_oof`
   and match their recorded SHA-256; the frozen set has been measured once in total (CC200,
   `00252f2b`); every tuning run is dated before the 2 November freeze.
-- **#118 checks on the Mac:** `pytest` 230 passed; `/models` and `/models/cc200` answer in
-  fixture mode, `/models/ho` gives 503 and `/models/cc400` gives 422 (fill in).
-- Merging `main` into this branch: one conflict, in `src/neurographx/api/main.py` (this
-  branch's rewrite and #118's router line), resolved by keeping both.
-- Tests after merging everything into the Week 5 branch and regenerating the fixture: final `pytest`: 308
+- **#118 checks on the Mac:** `pytest` 230 passed on `main` with #93, #94 and #118; in
+  fixture mode `/models` and `/models/cc200` answer, `/models/ho` gives 503 and
+  `/models/cc400` gives 422; on the real registry `/models/cc200` reports `00252f2b`.
+- Tests after merging everything into the Week 5 branch and regenerating the fixture:
+  `308 passed`.
 
 ## Decisions taken
 - `docs/decisions/0013-analysis-log-and-api-contract.md` (revised 27 October, for acceptance)
