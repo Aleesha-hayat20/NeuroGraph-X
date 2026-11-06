@@ -106,3 +106,76 @@ main {
 .api-error {
   color: var(--error);
 }
+
+.table-wrap {
+  max-height: 70vh;
+  overflow: auto;
+  border: 1px solid var(--line);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--paper);
+  border-bottom: 2px solid var(--line);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.filters select,
+.filters button {
+  font: inherit;
+  padding: 0.3rem 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.badge-included {
+  background: #e3f3e6;
+  border-color: #6fae7c;
+  color: #1f5130;
+}
+
+.badge-excluded {
+  background: #f4efe9;
+  border-color: #b9a58f;
+  color: #5a4630;
+}
+
+.data-table button {
+  font: inherit;
+  padding: 0.15rem 0.6rem;
+}
