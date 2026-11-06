@@ -17,9 +17,13 @@ Data side (this file):
     GET /analyses                            analysis history, newest first; filters
     GET /analyses/{analysis_id}              one analysis record
 
-Model side (Laiba, backlog W5-09 and W5-10): POST /analyses, GET /models, GET /models/{atlas}.
-POST /analyses runs analysis_checks.check_request first and writes its record with
-neurographx.analysis_log, so the error contract and the record format stay in one place.
+Model side (Laiba, api/models.py, W5-10):
+    GET /models                              every registered model, one per atlas
+    GET /models/{atlas}                      one atlas's model; 422 unknown atlas, 503 none
+
+Still to come (Laiba, W5-09): POST /analyses. It runs analysis_checks.check_request
+first and writes its record with neurographx.analysis_log, so the error contract and the
+record format stay in one place.
 
 Every error body is {"detail": "<plain sentence>"} (api/errors.py).
 """
@@ -34,6 +38,7 @@ from fastapi import Depends, FastAPI, Query
 from neurographx import __version__, analysis_log, datasource
 from neurographx.api import cohort, errors
 from neurographx.api import participants as pt
+from neurographx.api.models import router as models_router
 from neurographx.api.schemas import (
     AnalysisList,
     AnalysisRecord,
@@ -56,6 +61,7 @@ app = FastAPI(
     description="Research use only. Not a diagnostic device, not a medical device.",
 )
 errors.install(app)
+app.include_router(models_router)
 
 NOT_FOUND = {404: {"description": "Unknown participant or analysis"}}
 INVALID = {422: {"description": "Invalid filter or parameter value"}}

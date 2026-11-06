@@ -85,3 +85,50 @@ def test_missing_checkpoint_file_is_an_error(setup, tmp_path):
     (tmp_path / "model.pt").unlink()
     with pytest.raises(FileNotFoundError):
         predict("SYN_0000", ATLAS, get_graph, registry)
+
+
+def test_relative_checkpoint_resolves_against_the_registry_data_root(tmp_path, monkeypatch):
+    """Memo 0009: a registry in <root>/runs/ finds <root>/checkpoints/ from any folder."""
+    from neurographx.m3_model.inference import checkpoint_path, load_model
+
+    root = tmp_path / "root"
+    (root / "runs").mkdir(parents=True)
+    (root / "checkpoints").mkdir()
+    model = GCN(N_ROIS, 8, 2, num_layers=2, dropout=0.5)
+    torch.save({"state_dict": model.state_dict(), "in_dim": N_ROIS, "num_classes": 2,
+                "hidden": 8, "layers": 2, "dropout": 0.5}, root / "checkpoints" / "m.pt")
+    log, registry = root / "runs" / "run_log.jsonl", root / "runs" / "model_registry.json"
+    log_run({"run_id": "rel12345", "dataset": "synthetic_brain", "atlas": ATLAS, "seed": 0,
+             "hyperparameters": {}, "metrics": {}, "checkpoint_path": "checkpoints/m.pt"}, log)
+    entry = register_model("rel12345", log, registry)
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    monkeypatch.chdir(elsewhere)
+    assert checkpoint_path(entry, registry) == root / "checkpoints" / "m.pt"
+    loaded, _ = load_model(ATLAS, registry)
+    assert not loaded.training  # eval mode: dropout off
+
+
+def test_changed_checkpoint_is_refused_when_its_run_recorded_a_hash(tmp_path):
+    """Memo 0009: a schema-3 run records its checkpoint's SHA-256; a changed file is refused."""
+    import hashlib
+
+    from neurographx.m3_model.inference import load_model
+
+    root = tmp_path / "root"
+    (root / "runs").mkdir(parents=True)
+    (root / "checkpoints").mkdir()
+    ckpt = root / "checkpoints" / "m.pt"
+    model = GCN(N_ROIS, 8, 2, num_layers=2, dropout=0.5)
+    torch.save({"state_dict": model.state_dict(), "in_dim": N_ROIS, "num_classes": 2,
+                "hidden": 8, "layers": 2, "dropout": 0.5}, ckpt)
+    log, registry = root / "runs" / "run_log.jsonl", root / "runs" / "model_registry.json"
+    log_run({"run_id": "sha12345", "dataset": "synthetic_brain", "atlas": ATLAS, "seed": 0,
+             "hyperparameters": {}, "metrics": {}, "checkpoint_path": "checkpoints/m.pt",
+             "checkpoint_sha256": hashlib.sha256(ckpt.read_bytes()).hexdigest()}, log)
+    register_model("sha12345", log, registry)
+    load_model(ATLAS, registry)                      # unchanged file: loads
+    with open(ckpt, "ab") as f:
+        f.write(b"tampered")
+    with pytest.raises(ValueError, match="SHA-256"):
+        load_model(ATLAS, registry)

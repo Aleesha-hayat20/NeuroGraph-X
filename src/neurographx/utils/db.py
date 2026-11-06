@@ -33,6 +33,8 @@ RUN_LOG_COLUMNS = (
     "reload_identical",
     "stage",
     "repeat_frozen_measurement",
+    "repeat_reason",
+    "checkpoint_sha256",
 )
 REGISTRY_COLUMNS = (
     "atlas",

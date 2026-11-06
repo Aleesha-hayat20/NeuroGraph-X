@@ -68,7 +68,7 @@ function withQuery(path, params = {}) {
   return text ? `${path}?${text}` : path
 }
 
-/** GET /health -> { status, version, participant_table_found } */
+/** GET /health -> { status, version, participant_table_found, data_mode } where data_mode is "real" or "fixtures" */
 export function getHealth() {
   return request('/health')
 }
