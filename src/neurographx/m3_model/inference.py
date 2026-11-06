@@ -17,6 +17,7 @@ from pathlib import Path
 import torch
 
 from neurographx import datasource
+from neurographx.m3_model.calibration import apply_platt, read_calibration
 from neurographx.m3_model.model import model_from_checkpoint
 from neurographx.m3_model.run_logger import REGISTRY_PATH, get_model, get_run
 
@@ -74,6 +75,16 @@ def load_model(atlas: str, registry_path: Path = REGISTRY_PATH, device="cpu"):
     return model, entry
 
 
+def calibration_for(entry: dict, atlas: str, registry_path: Path = REGISTRY_PATH) -> dict | None:
+    """The calibration file of the registered run, or None (memo 0010, section 5).
+
+    It lives next to the registry: <data root>/runs/calibration/<atlas>_<run_id>.json, so
+    the real data and the fixture data each find their own.
+    """
+    folder = Path(registry_path).parent / "calibration"
+    return read_calibration(folder / f"{atlas}_{entry['run_id']}.json")
+
+
 @torch.no_grad()
 def predict_graph(model, graph, device="cpu") -> tuple[int, float]:
     """Class index and softmax probability of that class for ONE graph."""
@@ -105,11 +116,17 @@ def predict(participant_id: str, atlas: str, get_graph: Callable,
     model, entry = load_model(atlas, registry_path, device)
     graph = get_graph(participant_id)
     label, confidence = predict_graph(model, graph, device)
+    calibration = calibration_for(entry, atlas, registry_path)
+    if calibration is not None:
+        # memo 0010: q = calibrated probability of autism; confidence = max(q, 1 - q)
+        p_autism = confidence if label == 1 else 1.0 - confidence
+        q = float(apply_platt([p_autism], calibration["a"], calibration["b"])[0])
+        label, confidence = int(q >= 0.5), max(q, 1.0 - q)
     return {
         "participant_id": participant_id,
         "atlas": atlas,
         "prediction": LABELS[label],
         "confidence": round(confidence, 4),
-        "calibrated": False,  # raw softmax until calibration (after the midterm)
+        "calibrated": calibration is not None,  # raw softmax when the run has no calibrator
         "run_id": entry["run_id"],
     }
