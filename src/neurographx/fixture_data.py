@@ -46,7 +46,7 @@ from neurographx.m1_ingestion.splits import (
 )
 from neurographx.m2_connectome.engine import ENGINE_VERSION, build_atlas, sha256_file
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"   # 1.1.0: completeness case (memo 0014 amendment)
 SEED = 20261024
 
 # The 106 columns of Phenotypic_V1_0b_preprocessed1.csv, in file order, as listed in
@@ -107,6 +107,9 @@ EXCLUDED = {
     90023: {"func_mean_fd": None},                  # head motion missing
     90024: {"qc_rater_1": "maybe", "func_mean_fd": 0.71},  # two gates; "maybe" not OK for rater 1
 }
+# Completeness gate (memo 0003, gate 3): this participant passes raters and motion, but one
+# region time series file is never written, so scripts/05's rule excludes them.
+MISSING_TIMESERIES = {90012: "rois_dosenbach160"}
 RETAINED_EDGE_CASES = {
     90002: {"qc_anat_rater_2": "maybe"},            # "maybe" accepted for rater 2
     90003: {"qc_func_rater_2": "maybe"},
@@ -127,7 +130,7 @@ DENSITY = 0.10
 FILL_NAN = 0.0
 
 # Files that are written at run time in fixture mode and never committed.
-RUNTIME_FILES = ("runs/analysis_log.jsonl",)
+RUNTIME_FILES = ("runs/analysis_log.jsonl", "runs/neurographx.sqlite")
 
 
 # ---------------------------------------------------------------------------
@@ -262,6 +265,8 @@ def build(out: Path, train_model: bool = True, force: bool = False,
             if row.FILE_ID == "no_filename":
                 continue
             for key in atlases:
+                if MISSING_TIMESERIES.get(row.SUB_ID) == key:
+                    continue  # the planted completeness failure
                 ts = make_timeseries(row.SUB_ID, row.DX_GROUP, site_length[row.SITE_ID],
                                      REGION_COUNTS[key], key)
                 write_1d(ts_folder / f"{row.FILE_ID}_{key}.1D", ts)

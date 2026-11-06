@@ -143,18 +143,41 @@ def test_fixture_ids_cannot_collide_with_real_abide_ids(cohort, exclusions):
     assert not fixture_ids & real_ids
 
 
-def test_qc_outputs_are_exactly_what_the_real_qc_code_writes(cohort, exclusions):
-    """Re-run memo 0003's screen on the fixture table with the REAL rules."""
+def _write_timeseries(folder, df) -> None:
+    """The fixture's region time series for every participant with data, as the generator
+    writes them, minus the planted missing file (the completeness case)."""
+    length = {site: n for site, _, n in fd.SITES}
+    for row in df.itertuples(index=False):
+        if row.FILE_ID == "no_filename":
+            continue
+        for key in fd.REGION_COUNTS:
+            if fd.MISSING_TIMESERIES.get(row.SUB_ID) == key:
+                continue
+            ts = np.random.default_rng(row.SUB_ID).standard_normal((length[row.SITE_ID], 2))
+            fd.write_1d(folder / f"{row.FILE_ID}_{key}.1D", ts)
+
+
+def test_qc_outputs_are_exactly_what_the_real_qc_code_writes(cohort, exclusions, tmp_path):
+    """Re-run memo 0003's three gates on the fixture table with the REAL rules.
+
+    The completeness gate only asks whether each time series file exists and has at least
+    two timepoints, so two-region stand-ins are enough to re-run it here.
+    """
     df = md.load_phenotypic(fx("data/raw/Phenotypic_V1_0b_preprocessed1.csv"))
-    kept, log = apply_qc(df, load("qc_criteria.yaml"), None, [])
+    _write_timeseries(tmp_path, df)
+    atlas_keys = [a["key"] for a in CFG["atlases"]]
+    kept, log = apply_qc(df, load("qc_criteria.yaml"), tmp_path, atlas_keys)
     pd.testing.assert_frame_equal(kept, cohort, check_dtype=False)
     pd.testing.assert_frame_equal(log, exclusions, check_dtype=False)
 
 
 def test_every_gate_and_every_rule_edge_appears(cohort, exclusions):
     by_id = exclusions.set_index("SUB_ID")
-    assert set(by_id.index) == set(fd.EXCLUDED)
+    assert set(by_id.index) == set(fd.EXCLUDED) | set(fd.MISSING_TIMESERIES)
     assert by_id.loc[90007, "FILE_ID"] == "no_filename"
+    assert by_id.loc[90012, "first_gate_failed"] == "completeness"
+    assert by_id.loc[90012, "reasons"] == "missing rois_dosenbach160 file"
+    assert set(by_id.first_gate_failed) == {"rater", "motion", "completeness"}
     assert by_id.loc[90016, "first_gate_failed"] == "motion"
     assert by_id.loc[90023, "reasons"] == "func_mean_fd missing"
     assert by_id.loc[90024, "gates_failed"] == "rater;motion"
@@ -376,8 +399,13 @@ def test_participant_counts_match_the_fixture_qc_outputs(fixture_client, cohort,
 def test_exclusion_reasons_come_through_the_api(fixture_client):
     record = fixture_client.get("/participants/90007").json()
     assert record["qc_status"] == "excluded"
-    assert record["file_id"] is None
-    assert any("no_filename" in r for r in record["exclusion_reasons"])
+    assert record["file_id"] is None                  # FILE_ID was no_filename
+    assert record["exclusion_gate"] == "rater"
+    assert record["exclusion_reasons"] == ["qc_rater_1 = fail", "qc_func_rater_2 = fail",
+                                           "qc_func_rater_3 = fail"]
+    completeness = fixture_client.get("/participants/90012").json()
+    assert completeness["qc_status"] == "excluded"
+    assert completeness["exclusion_gate"] == "completeness"
     boundary = fixture_client.get("/participants/0090010").json()
     assert boundary["qc_status"] == "included" and boundary["exclusion_reasons"] == []
 

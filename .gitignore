@@ -51,3 +51,4 @@ node_modules/
 # analyses written while the API runs in fixture mode are not
 !fixtures/checkpoints/*.pt
 fixtures/runs/analysis_log.jsonl
+fixtures/runs/*.sqlite
