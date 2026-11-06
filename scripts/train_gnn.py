@@ -4,7 +4,9 @@ Two stages, run separately on purpose:
 
   cv     Five-fold cross-validation on the development pool (data/splits/cv5_folds.csv).
          Use it as often as you like to compare settings (density, hidden size, ...).
-         It never reads the frozen set.
+         It never builds a frozen-set graph. It also writes the out-of-fold
+         probabilities, one per development participant, to runs/oof/ (input to
+         calibration, memo 0010) and records their file hash in the run log.
 
   final  Trains ONE model on the whole development pool, for the number of epochs the
          cross-validation chose, then measures it ONCE on the frozen evaluation set
@@ -19,9 +21,11 @@ Usage (from the repository root):
 import argparse
 import statistics
 import subprocess
+import time
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import torch
 from sklearn.metrics import balanced_accuracy_score, confusion_matrix, roc_auc_score
 from torch_geometric.loader import DataLoader
@@ -35,6 +39,7 @@ from neurographx.m3_model.data import (
     short_atlas_name,
 )
 from neurographx.m3_model.model import GCN, model_from_checkpoint
+from neurographx.m3_model.oof import fold_rows, oof_path, write_oof
 from neurographx.m3_model.run_logger import (
     get_run,
     log_run,
@@ -116,36 +121,50 @@ def data_config(args, cset) -> dict:
             "connectome_sha256": cset.manifest.get("output_sha256")}
 
 
-def stage_cv(args, cset, folds, device):
-    print("\n== Cross-validation (development pool only; the frozen set is not read) ==")
+def stage_cv(args, cset, folds, frozen, device):
+    print("\n== Cross-validation (development pool only; no frozen-set graph is built) ==")
     print("Flat regions by group (development pool):", flat_region_summary(cset, folds))
+    started = time.perf_counter()
     graphs = build_graphs(cset, folds, args.density, args.fill_nan)
     fold_of = folds["fold"].to_numpy()
-    per_fold = []
+    per_fold, oof_parts = [], []
     for k in sorted(set(fold_of)):
+        fold_started = time.perf_counter()
         train = [g for g, f in zip(graphs, fold_of) if f != k]
         val = [g for g, f in zip(graphs, fold_of) if f == k]
         print(f"  fold {k}: train {len(train)} | validation {len(val)}")
         model, best = fit(train, val, args, device)
-        metrics, _ = scores(model, val, device, args.batch_size)
+        metrics, logits = scores(model, val, device, args.batch_size)
         metrics["best_epoch"] = best["epoch"]
+        metrics["seconds"] = round(time.perf_counter() - fold_started, 1)
         per_fold.append(metrics)
+        # out-of-fold: the probabilities this fold's model gave the participants it never saw
+        oof_parts.append(fold_rows(folds[fold_of == k], int(k),
+                                   [int(g.y) for g in val],
+                                   torch.softmax(logits, dim=1)[:, 1].numpy()))
         print(f"  fold {k}: best epoch {best['epoch']} | {metrics}")
 
     def summary(key):
         values = [m[key] for m in per_fold if m[key] is not None]
+        if not values:  # e.g. AUC when every validation fold holds one class only
+            return {"mean": None, "sd": None}
         return {"mean": round(statistics.mean(values), 4),
                 "sd": round(statistics.stdev(values), 4) if len(values) > 1 else 0.0}
 
     run_id = new_run_id()
+    atlas = short_atlas_name(args.atlas)
+    oof_file = oof_path(atlas, run_id)
+    oof_sha = write_oof(pd.concat(oof_parts, ignore_index=True), oof_file, folds, frozen)
     metrics = {"cv_accuracy": summary("accuracy"),
                "cv_balanced_accuracy": summary("balanced_accuracy"),
                "cv_auc": summary("auc"),
                "cv_majority_baseline": summary("majority_baseline"),
                "chosen_epochs": int(statistics.median(m["best_epoch"] for m in per_fold)),
-               "per_fold": per_fold}
+               "per_fold": per_fold,
+               "oof": {"file": oof_file.as_posix(), "sha256": oof_sha, "n": len(folds)},
+               "cv_seconds": round(time.perf_counter() - started, 1)}
     log_run({"run_id": run_id, "stage": "cv", "dataset": DATASET,
-             "atlas": short_atlas_name(args.atlas), "seed": args.seed,
+             "atlas": atlas, "seed": args.seed,
              "hyperparameters": hyperparameters(args), "metrics": metrics,
              "data_config": data_config(args, cset),
              "split_sizes": {"development_pool": len(folds), "folds": len(per_fold)},
@@ -153,6 +172,8 @@ def stage_cv(args, cset, folds, device):
     print(f"\nCV accuracy {metrics['cv_accuracy']} vs majority baseline "
           f"{metrics['cv_majority_baseline']} | balanced {metrics['cv_balanced_accuracy']}")
     print(f"Chosen number of epochs for the final model: {metrics['chosen_epochs']}")
+    print(f"Out-of-fold probabilities: {oof_file} ({len(folds)} participants)")
+    print(f"Cross-validation time: {metrics['cv_seconds']} s")
     print(f"Run logged. run_id = {run_id}")
     print(f"Next: python scripts/train_gnn.py --stage final --epochs-from-cv {run_id}")
 
@@ -247,7 +268,7 @@ def main():
     print(f"Atlas {args.atlas}: {cset.n_regions} regions, {len(cset)} participants")
 
     if args.stage == "cv":
-        stage_cv(args, cset, folds, device)
+        stage_cv(args, cset, folds, frozen, device)
     else:
         stage_final(args, cset, folds, frozen, device)
 
