@@ -9,6 +9,18 @@
 - **Manual tests (W5-17):** `docs/testing/manual_tests.md`, template and TC-01 to TC-10.
 - `CHANGELOG.md`, `.gitattributes` (`runs/*.jsonl merge=union`), README API table, Makefile `db` targets.
 
+## Merged in from `main`
+
+Laiba's #93, #94 and #118 and Alishba's #89 to #92 and #117. To fit them together:
+
+- **Fixture generator 1.2.0** (memo 0014 amendment): the fixture follows run-log schema 3
+  and writes out-of-fold and frozen prediction files with `m3_model.oof`, like the real runs.
+  Fixture regenerated: 24 participants, 17 retained, 7 excluded.
+- `api/main.py`: one merge conflict with #118, resolved by keeping both sides; the
+  `/models` router is included after the error handlers.
+- `tests/test_api_models.py`: reads the fixture's run ID from its registry instead of the
+  Week 4 value, so rebuilding the fixture never breaks it.
+
 ## For Alishba
 
 The Participants and Analysis pages can use `GET /participants` (with filters) and `GET /atlases` in fixture mode now (`make api-fixtures`). Please review `docs/testing/manual_tests.md`.
@@ -20,6 +32,6 @@ The Participants and Analysis pages can use `GET /participants` (with filters) a
 ## Checks
 
 - `ruff check src scripts tests` clean
-- `pytest`: all tests pass on fixture data
+- `pytest`: 308 passed
 - `python scripts/smoke_api.py --data fixtures`: every data-side endpoint answers
 - CI on this PR must be green before merging

@@ -1,7 +1,7 @@
 # 0014. Fixture dataset and fixture mode
 
-**Status:** Proposed, amended 2026-10-27 (completeness case added; see Amendments). For
-acceptance at the Week 5 Thursday stand-up (29 October 2026).
+**Status:** Proposed, amended 2026-10-27 (completeness case) and 2026-11-06 (run-log
+schema 3; see Amendments). For acceptance at the Week 5 Thursday stand-up (29 October 2026).
 Implemented on `feature/week4-fixtures-memos`.
 **Date:** 2026-10-24
 **Owner:** Aleesha Hayat
@@ -214,3 +214,20 @@ cannot wipe anything else.
   `python scripts/build_fixtures.py --force`.
 - `runs/neurographx.sqlite` (written by `python scripts/build_db.py --data fixtures`) is a
   runtime file like the analysis log: ignored by git and left out of the manifest.
+
+### 2026-11-06: run-log schema 3 and prediction files (generator 1.2.0)
+
+- Laiba's PRs #93 and #94 changed two real formats: the run log moved to schema 3
+  (`repeat_reason`, `checkpoint_sha256`; memos 0009 and 0011), and training now writes
+  out-of-fold probabilities (`runs/oof/`) for cross-validation runs and frozen-set
+  probabilities (`runs/frozen_predictions/`) for final runs (memo 0010). Section 6 of this
+  memo says the fixture follows any real format change, so the generator now writes all
+  four with the same code (`m3_model.run_logger`, `m3_model.oof`), and the regenerated
+  fixture was committed with it.
+- New tests: the fixture's runs carry the current schema version; the final run's
+  `checkpoint_sha256` matches its file and `load_model` refuses a changed copy; the
+  out-of-fold and frozen prediction files pass `check_oof` and match their recorded hashes.
+- The working-directory workaround is gone from the tests: since memo 0009,
+  `load_model` resolves checkpoints against the data root.
+- Participants, splits and connectomes are unchanged from 1.1.0 (17 retained, 7 excluded);
+  only the model files, run IDs and the new prediction files differ.

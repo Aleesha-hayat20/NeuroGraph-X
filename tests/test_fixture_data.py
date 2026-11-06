@@ -268,6 +268,41 @@ def test_time_series_are_reproducible_from_the_seed(cohort, tmp_path):
 # 3. Run log, registry, checkpoint: consistent with each other and with the data
 # ---------------------------------------------------------------------------
 
+def test_fixture_runs_follow_the_current_run_log_schema():
+    """Schema 3 (memos 0009 and 0011): regenerate the fixture whenever the schema changes."""
+    from neurographx.m3_model.run_logger import SCHEMA_VERSION
+
+    runs = read_runs(fx("runs/run_log.jsonl"))
+    assert {r["schema_version"] for r in runs} == {SCHEMA_VERSION}
+    final = next(r for r in runs if r["stage"] == "final")
+    assert final["repeat_reason"] is None
+    assert final["checkpoint_sha256"] == engine.sha256_file(fx(final["checkpoint_path"]))
+
+
+def test_out_of_fold_and_frozen_prediction_files_are_valid():
+    """The files memo 0010 calibrates on, written and checked by m3_model.oof."""
+    from neurographx.m3_model.oof import check_oof, read_oof
+
+    runs = read_runs(fx("runs/run_log.jsonl"))
+    cv = next(r for r in runs if r["stage"] == "cv")
+    final = next(r for r in runs if r["stage"] == "final")
+    folds = pd.read_csv(fx(CFG["development_splits"]["file"]))
+    frozen = pd.read_csv(fx(CFG["frozen_evaluation_set"]["file"]))
+
+    meta = cv["metrics"]["oof"]
+    assert meta["sha256"] == engine.sha256_file(fx(meta["file"]))
+    oof = read_oof(fx(meta["file"]))
+    check_oof(oof, folds, frozen)                 # every development participant once
+    assert meta["n"] == len(folds) == len(oof)
+
+    meta = final["metrics"]["frozen"]["predictions"]
+    assert meta["sha256"] == engine.sha256_file(fx(meta["file"]))
+    preds = read_oof(fx(meta["file"]))
+    assert sorted(preds.SUB_ID) == sorted(frozen.SUB_ID) and meta["n"] == len(frozen)
+    accuracy = float((preds.prediction == preds.label).mean())
+    assert abs(accuracy - final["metrics"]["frozen"]["accuracy"]) < 1e-4
+
+
 def test_registry_points_at_logged_runs_and_files_that_exist():
     registry = read_registry(fx("runs/model_registry.json"))
     assert set(registry) == {short_atlas_name(fd.MODEL_ATLAS)}   # cc200 only, ho has no model
@@ -305,14 +340,14 @@ def test_fixture_logs_import_into_the_real_database_schema(tmp_path):
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def fixture_model(monkeypatch):
+def fixture_model(monkeypatch, tmp_path):
     pytest.importorskip("torch")
     pytest.importorskip("torch_geometric")
     from neurographx.m3_model.data import make_get_graph
 
-    # inference.load_model resolves the registry's relative checkpoint path against the
-    # working directory, so run from the fixture root (memo 0014, open item for memo 0009).
-    monkeypatch.chdir(FX)
+    # Run from an unrelated folder: since memo 0009, load_model resolves the registry's
+    # relative checkpoint path against the data root, not the working directory.
+    monkeypatch.chdir(tmp_path)
     cset = engine.load_atlas(*engine.atlas_paths(fx(CFG["connectome"]["output_dir"]), *PIPE,
                                                  fd.MODEL_ATLAS))
     return cset, make_get_graph(cset, fd.DENSITY, fd.FILL_NAN)
@@ -412,3 +447,18 @@ def test_exclusion_reasons_come_through_the_api(fixture_client):
 
 def test_real_participants_are_not_served_in_fixture_mode(fixture_client):
     assert fixture_client.get("/participants/0050003").status_code == 404
+
+
+def test_a_changed_checkpoint_is_refused(fixture_root):
+    """Memo 0009: load_model checks the checkpoint against the hash its run recorded."""
+    pytest.importorskip("torch")
+    from neurographx.m3_model.inference import load_model
+
+    registry = fixture_root / "runs/model_registry.json"
+    model, _ = load_model("cc200", registry)          # the committed file loads
+    assert model is not None
+    entry = read_registry(registry)["cc200"]
+    with open(fixture_root / entry["checkpoint_path"], "ab") as fh:
+        fh.write(b"tampered")
+    with pytest.raises(ValueError, match="SHA-256"):
+        load_model("cc200", registry)

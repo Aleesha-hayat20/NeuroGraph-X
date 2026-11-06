@@ -92,7 +92,7 @@ def test_history_record_shape_is_the_contract(api, history):
     assert list(record) == list(al.FIELDS)
 
 
-def test_a_real_fixture_prediction_flows_into_history(api, fixture_root, monkeypatch):
+def test_a_real_fixture_prediction_flows_into_history(api, fixture_root):
     """The whole data path POST /analyses will use, minus the endpoint itself:
     check_request -> inference.predict on the fixture model -> log_prediction -> history."""
     pytest.importorskip("torch")
@@ -103,7 +103,6 @@ def test_a_real_fixture_prediction_flows_into_history(api, fixture_root, monkeyp
     from neurographx.m3_model.inference import predict
 
     ok = check_request("90001", "cc200", fixture_root)
-    monkeypatch.chdir(fixture_root)  # load_model opens the checkpoint path from here (memo 0014)
     npz = fixture_root / "data/processed/connectomes/cpac_filt_global/rois_cc200.npz"
     get_graph = make_get_graph(load_atlas(npz), density=0.10)
     out = predict(ok["participant"]["participant_id"], "cc200", get_graph,

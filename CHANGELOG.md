@@ -23,6 +23,22 @@ Section 8.8: `v1.0-fyp1` for the FYP-I final, hotfixes as `v1.0.1-fyp1`.
 - Dashboard scaffold: React and Vite in `dashboard/`, routing, seven placeholder pages, one
   API client module and the Vite proxy (memo 0012, W4-19; PR #88).
 - `.gitattributes`: append-only logs merge with `union`.
+- Dashboard: fixture-data banner and data mode in the footer (PR #90); ER diagram with `stage`
+  and `repeat_frozen_measurement` (PR #91); CI frontend job (PR #89) and CPU-only PyTorch with
+  coverage (PR #92); Participants page with filters, quality badge and Run (PR #117).
+- Laiba's Week 4 work (PR #93): CPU inference check
+  (`scripts/predict_one.py`), checkpoints resolved against the data root (memo 0009),
+  out-of-fold probabilities from cross-validation, baseline CV for AAL, Harvard-Oxford and
+  Dosenbach 160, memos 0009 and 0010 proposed.
+- Laiba's Week 5 work (PR #94): memo 0011 tuning grid (48 CV runs, frozen
+  set not read), class-weighted loss, selection (`docs/reports/tuning_selection.md`), run-log
+  schema 3 (`repeat_reason`, `checkpoint_sha256`).
+- Laiba's model endpoints (PR #118, W5-10): `GET /models` and `GET /models/{atlas}` in
+  `api/models.py`, with the registry entry, training settings, checkpoint presence and
+  calibration when it exists.
+- Fixture generator 1.2.0: schema 3 run log, out-of-fold and frozen prediction files.
+  `tests/test_api_models.py` now reads the fixture's run ID from its registry instead of
+  pinning it, because the ID changes whenever the fixture is rebuilt.
 
 ### Week 4 (19 to 25 October 2026)
 - Fixture dataset in the real file formats and fixture mode, `NGX_DATA=fixtures`
