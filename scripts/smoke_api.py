@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Start the real API server on a dataset and check it answers (memo 0014).
+"""Start the real API server on a dataset and check it answers (memos 0013 and 0014).
 
 Usage (from the repository root):
     python scripts/smoke_api.py                  # fixture dataset (the default; works anywhere)
     python scripts/smoke_api.py --data real      # real data (needs data/raw)
 
 Unlike the pytest API tests, this starts uvicorn as a separate process with only the
-environment variable NGX_DATA set, exactly as a teammate or CI would, then calls
-/health and /participants over HTTP and checks the counts against the dataset's QC
-outputs. Exit code 0 means the server ran and answered correctly.
+environment variable NGX_DATA set, exactly as a teammate or CI would, then calls every
+data-side endpoint over HTTP (/health, /participants, /atlases, /cohort/summary,
+/exclusions, /analyses) and checks the counts against the dataset's QC outputs.
+Exit code 0 means the server ran and answered correctly.
 """
 
 from __future__ import annotations
@@ -97,6 +98,25 @@ def main() -> int:
         print(f"/participants/{first}  {record['qc_status']}, site {record['site']}")
         if record["qc_status"] != "included":
             failures.append(f"participant {first} should be included")
+
+        atlases = get(f"{base}/atlases")
+        print(f"/atlases       {[a['atlas'] for a in atlases]}, models registered: "
+              f"{[a['atlas'] for a in atlases if a['model_registered']]}")
+        if len(atlases) != 4:
+            failures.append(f"expected 4 atlases, got {len(atlases)}")
+
+        summary = get(f"{base}/cohort/summary")
+        print(f"/cohort/summary  excluded by gate {summary['excluded_by_gate']}")
+        if (summary["included"], summary["excluded"]) != expected[1:]:
+            failures.append("cohort summary counts differ from the QC outputs")
+
+        excl = get(f"{base}/exclusions")
+        print(f"/exclusions    {excl['total']}")
+        if excl["total"] != len(excluded):
+            failures.append("exclusion count differs from the exclusion log")
+
+        history = get(f"{base}/analyses?limit=1")
+        print(f"/analyses      {history['total']} recorded")
     except urllib.error.HTTPError as err:
         print(f"FAIL: {err.url} answered {err.code}: {err.read().decode('utf-8', 'replace')}")
         return 1

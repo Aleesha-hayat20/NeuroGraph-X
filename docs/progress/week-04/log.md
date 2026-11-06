@@ -41,7 +41,7 @@
   cent" replaced with Heinsfeld et al. 2018 (70 per cent) and Parisot et al. 2018
   (70.4 per cent), both checked against the papers.
 - Tests: 198 passed.
-- Pull request: https://github.com/Aleesha-hayat20/NeuroGraph-X/pull/87. CI run on `main` after merge: (paste the link).
+- Pull request: https://github.com/Aleesha-hayat20/NeuroGraph-X/pull/87. CI run on `main` after merge: https://github.com/Aleesha-hayat20/NeuroGraph-X/commit/4748f88c7c10748ffae4a2138ea1573b2e8f6ea0
 
 ### 31 October (Laiba)
 - Repository state checked before starting: `main` at `7a2ed45` (PR #89). Suite: 198 passing.

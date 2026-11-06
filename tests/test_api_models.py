@@ -9,8 +9,10 @@ pytest.importorskip("fastapi")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+from neurographx import datasource  # noqa: E402
 from neurographx.api import models as api_models  # noqa: E402
 from neurographx.api.main import app  # noqa: E402
+from neurographx.m3_model.run_logger import read_registry  # noqa: E402
 
 
 @pytest.fixture
@@ -29,7 +31,11 @@ def test_fixture_registry_lists_its_one_model(client):
     body = client("fixtures").get("/models").json()
     assert [m["atlas"] for m in body] == ["cc200"]
     model = body[0]
-    assert model["run_id"] == "1a9384db"
+    # The fixture's run ID changes whenever the fixture is rebuilt (memo 0014), so the
+    # test reads it from the fixture registry instead of pinning one value.
+    registered = read_registry(datasource.model_registry())["cc200"]
+    assert model["run_id"] == registered["run_id"]
+    assert model["checkpoint_path"] == registered["checkpoint_path"]
     assert model["checkpoint_available"] is True        # committed fixture checkpoint
     assert model["graph"] == {"atlas_key": "rois_cc200", "density": 0.1, "fill_nan": 0.0}
     assert model["hyperparameters"]["layers"] >= 1
@@ -66,7 +72,7 @@ def test_real_registry_reports_the_cc200_baseline(client):
 
 def test_calibration_file_is_reported_when_it_exists(client, monkeypatch, tmp_path):
     cal = {"method": "platt", "a": 1.1, "b": -0.2, "cv_run_id": "7d994761"}
-    path = tmp_path / "cc200_1a9384db.json"
+    path = tmp_path / "cc200_calibration.json"
     path.write_text(json.dumps(cal), encoding="utf-8")
     monkeypatch.setattr(api_models, "calibration_file", lambda atlas, run_id: path)
     body = client("fixtures").get("/models/cc200").json()

@@ -39,3 +39,22 @@ def test_rules_are_read_from_the_config():
     rules = screening.rater_criteria()
     assert set(rules) == set(md.QC_ACCEPTED)
     assert all(isinstance(v, list) and v for v in rules.values())
+
+
+def test_screen_agrees_with_the_qc_script_logic(synthetic_phenotypic):
+    """One set of rules: with the closed memo 0003 rules (raters plus head motion), the
+    screen passes exactly the participants m1_ingestion.qc.apply_qc retains.
+
+    (Moved here from tests/test_api.py when the API switched to the committed QC
+    outputs, memo 0013.)
+    """
+    from neurographx.config import load
+    from neurographx.m1_ingestion.qc import apply_qc
+
+    df = md.load_phenotypic(synthetic_phenotypic)
+    df["FILE_ID"] = [f"S_{i}" for i in df.SUB_ID]
+    kept, _ = apply_qc(df, load("qc_criteria.yaml"), None, [])
+    criteria, motion = screening.rater_criteria(), screening.motion_rule()
+    passed = {int(row.SUB_ID) for _, row in df.iterrows()
+              if not screening.exclusion_reasons(row, criteria, motion)}
+    assert passed == set(kept.SUB_ID)
