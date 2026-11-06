@@ -11,6 +11,7 @@ Endpoints:
     GET /health                          the server is up; is the participant table there
     GET /participants[?qc_status=...]    participant list with quality status and reasons
     GET /participants/{participant_id}   one participant
+    GET /models, GET /models/{atlas}     registered models (api/models.py, memo 0013)
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 
 from neurographx import __version__, datasource
 from neurographx.api import participants as pt
+from neurographx.api.models import router as models_router
 from neurographx.api.schemas import Health, Participant, ParticipantList
 from neurographx.m1_ingestion import screening
 
@@ -32,6 +34,7 @@ app = FastAPI(
     version=__version__,
     description="Research use only. Not a diagnostic device.",
 )
+app.include_router(models_router)
 
 
 def get_table_path() -> Path:
