@@ -1,4 +1,4 @@
-"""Out-of-fold predictions from cross-validation (Week 4, input to memo 0010).
+"""Out-of-fold predictions from cross-validation, and frozen-set predictions (memo 0010).
 
 In 5-fold cross-validation every development participant is in the validation fold
 exactly once. The probability the fold's model gave that participant, while it was
@@ -91,3 +91,34 @@ def write_oof(oof: pd.DataFrame, path: Path, development: pd.DataFrame,
 
 def read_oof(path: Path) -> pd.DataFrame:
     return pd.read_csv(path, dtype={"FILE_ID": str, "SITE_ID": str})
+
+
+# ---------------------------------------------------------------------------
+# Frozen-set predictions (memo 0010): the one measurement, kept per participant
+# ---------------------------------------------------------------------------
+
+FROZEN_DIR = Path("runs/frozen_predictions")
+FROZEN_COLUMNS = ("SUB_ID", "FILE_ID", "SITE_ID", "label", "prob_autism", "prediction")
+
+
+def frozen_predictions_path(atlas: str, run_id: str, folder: Path = FROZEN_DIR) -> Path:
+    return Path(folder) / f"{atlas}_{run_id}_frozen.csv"
+
+
+def write_frozen_predictions(rows: pd.DataFrame, path: Path, frozen: pd.DataFrame,
+                             development: pd.DataFrame) -> str:
+    """Write the final model's frozen-set probabilities. Returns the file's SHA-256.
+
+    Written by `train_gnn.py --stage final` from the same single measurement that gives
+    the frozen accuracy, so keeping it is not a second look. It must cover the frozen
+    set exactly and contain no development participant.
+    """
+    check_oof(rows.assign(fold=-1), frozen)
+    leaked = set(rows["SUB_ID"].astype(int)) & set(development["SUB_ID"].astype(int))
+    if leaked:
+        raise ValueError(f"development participants in frozen predictions: {sorted(leaked)[:10]}")
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    out = rows.loc[:, list(FROZEN_COLUMNS)].sort_values("SUB_ID").reset_index(drop=True)
+    out.to_csv(path, index=False, float_format="%.6f", lineterminator="\n")
+    return hashlib.sha256(path.read_bytes()).hexdigest()

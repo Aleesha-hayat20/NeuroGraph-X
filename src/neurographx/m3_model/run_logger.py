@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from importlib import metadata
 from pathlib import Path
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3  # 3: repeat_reason, checkpoint_sha256 (memos 0009, 0011)
 LOG_PATH = Path("runs/run_log.jsonl")
 REGISTRY_PATH = Path("runs/model_registry.json")
 
