@@ -80,3 +80,17 @@ export function getHealth() {
 export function getParticipants(params = {}) {
   return request(withQuery('/participants', params))
 }
+
+/**
+ * GET /analyses -> { total, analyses: [...] }, newest first.
+ * `params.participant_id` (0050003 or 50003), `params.atlas` and `params.limit` (default 50)
+ * are all optional. `total` counts every match, `analyses` holds at most `limit` of them.
+ */
+export function getAnalyses(params = {}) {
+  return request(withQuery('/analyses', params))
+}
+
+/** GET /analyses/{analysis_id} -> one analysis record with the ten fields of memo 0013. */
+export function getAnalysis(analysisId) {
+  return request(`/analyses/${encodeURIComponent(analysisId)}`)
+}
