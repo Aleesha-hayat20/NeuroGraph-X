@@ -104,6 +104,26 @@ python scripts/build_fixtures.py --force      # regenerate after a file format c
 
 `/health` reports `"data_mode": "fixtures"`. Nothing measured on the fixture is a result.
 
+## The REST API
+
+Start it with `make api` (real data) or `make api-fixtures`, then open
+http://127.0.0.1:8000/docs for the interactive reference. The contract, including every
+error, is decision memo 0013.
+
+| Endpoint | Returns |
+|---|---|
+| `GET /health` | server status and data mode |
+| `GET /participants` | every participant with quality status, gate, reasons and split; filters `site`, `group`, `qc_status` |
+| `GET /participants/{id}` | one participant (`0050003` or `50003`) |
+| `GET /atlases` | the four atlases: regions, data present, registered model |
+| `GET /cohort/summary` | counts by quality gate, group, site and split |
+| `GET /exclusions` | the exclusion log; filter `gate` |
+| `GET /analyses`, `GET /analyses/{id}` | analysis history, newest first; filters `participant_id`, `atlas` |
+
+Errors always come back as `{"detail": "<plain sentence>"}` with 404, 409, 422 or 503.
+`python scripts/build_db.py` rebuilds the SQLite view of the run log, the model registry
+and the analysis log (`runs/neurographx.sqlite`, not committed).
+
 > **Never request the `func_preproc` derivative.** The `rois_*` derivatives are small
 > `.1D` text files. Everything else is a large `.nii.gz` volume.
 

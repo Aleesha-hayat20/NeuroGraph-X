@@ -143,18 +143,41 @@ def test_fixture_ids_cannot_collide_with_real_abide_ids(cohort, exclusions):
     assert not fixture_ids & real_ids
 
 
-def test_qc_outputs_are_exactly_what_the_real_qc_code_writes(cohort, exclusions):
-    """Re-run memo 0003's screen on the fixture table with the REAL rules."""
+def _write_timeseries(folder, df) -> None:
+    """The fixture's region time series for every participant with data, as the generator
+    writes them, minus the planted missing file (the completeness case)."""
+    length = {site: n for site, _, n in fd.SITES}
+    for row in df.itertuples(index=False):
+        if row.FILE_ID == "no_filename":
+            continue
+        for key in fd.REGION_COUNTS:
+            if fd.MISSING_TIMESERIES.get(row.SUB_ID) == key:
+                continue
+            ts = np.random.default_rng(row.SUB_ID).standard_normal((length[row.SITE_ID], 2))
+            fd.write_1d(folder / f"{row.FILE_ID}_{key}.1D", ts)
+
+
+def test_qc_outputs_are_exactly_what_the_real_qc_code_writes(cohort, exclusions, tmp_path):
+    """Re-run memo 0003's three gates on the fixture table with the REAL rules.
+
+    The completeness gate only asks whether each time series file exists and has at least
+    two timepoints, so two-region stand-ins are enough to re-run it here.
+    """
     df = md.load_phenotypic(fx("data/raw/Phenotypic_V1_0b_preprocessed1.csv"))
-    kept, log = apply_qc(df, load("qc_criteria.yaml"), None, [])
+    _write_timeseries(tmp_path, df)
+    atlas_keys = [a["key"] for a in CFG["atlases"]]
+    kept, log = apply_qc(df, load("qc_criteria.yaml"), tmp_path, atlas_keys)
     pd.testing.assert_frame_equal(kept, cohort, check_dtype=False)
     pd.testing.assert_frame_equal(log, exclusions, check_dtype=False)
 
 
 def test_every_gate_and_every_rule_edge_appears(cohort, exclusions):
     by_id = exclusions.set_index("SUB_ID")
-    assert set(by_id.index) == set(fd.EXCLUDED)
+    assert set(by_id.index) == set(fd.EXCLUDED) | set(fd.MISSING_TIMESERIES)
     assert by_id.loc[90007, "FILE_ID"] == "no_filename"
+    assert by_id.loc[90012, "first_gate_failed"] == "completeness"
+    assert by_id.loc[90012, "reasons"] == "missing rois_dosenbach160 file"
+    assert set(by_id.first_gate_failed) == {"rater", "motion", "completeness"}
     assert by_id.loc[90016, "first_gate_failed"] == "motion"
     assert by_id.loc[90023, "reasons"] == "func_mean_fd missing"
     assert by_id.loc[90024, "gates_failed"] == "rater;motion"
@@ -245,6 +268,41 @@ def test_time_series_are_reproducible_from_the_seed(cohort, tmp_path):
 # 3. Run log, registry, checkpoint: consistent with each other and with the data
 # ---------------------------------------------------------------------------
 
+def test_fixture_runs_follow_the_current_run_log_schema():
+    """Schema 3 (memos 0009 and 0011): regenerate the fixture whenever the schema changes."""
+    from neurographx.m3_model.run_logger import SCHEMA_VERSION
+
+    runs = read_runs(fx("runs/run_log.jsonl"))
+    assert {r["schema_version"] for r in runs} == {SCHEMA_VERSION}
+    final = next(r for r in runs if r["stage"] == "final")
+    assert final["repeat_reason"] is None
+    assert final["checkpoint_sha256"] == engine.sha256_file(fx(final["checkpoint_path"]))
+
+
+def test_out_of_fold_and_frozen_prediction_files_are_valid():
+    """The files memo 0010 calibrates on, written and checked by m3_model.oof."""
+    from neurographx.m3_model.oof import check_oof, read_oof
+
+    runs = read_runs(fx("runs/run_log.jsonl"))
+    cv = next(r for r in runs if r["stage"] == "cv")
+    final = next(r for r in runs if r["stage"] == "final")
+    folds = pd.read_csv(fx(CFG["development_splits"]["file"]))
+    frozen = pd.read_csv(fx(CFG["frozen_evaluation_set"]["file"]))
+
+    meta = cv["metrics"]["oof"]
+    assert meta["sha256"] == engine.sha256_file(fx(meta["file"]))
+    oof = read_oof(fx(meta["file"]))
+    check_oof(oof, folds, frozen)                 # every development participant once
+    assert meta["n"] == len(folds) == len(oof)
+
+    meta = final["metrics"]["frozen"]["predictions"]
+    assert meta["sha256"] == engine.sha256_file(fx(meta["file"]))
+    preds = read_oof(fx(meta["file"]))
+    assert sorted(preds.SUB_ID) == sorted(frozen.SUB_ID) and meta["n"] == len(frozen)
+    accuracy = float((preds.prediction == preds.label).mean())
+    assert abs(accuracy - final["metrics"]["frozen"]["accuracy"]) < 1e-4
+
+
 def test_registry_points_at_logged_runs_and_files_that_exist():
     registry = read_registry(fx("runs/model_registry.json"))
     assert set(registry) == {short_atlas_name(fd.MODEL_ATLAS)}   # cc200 only, ho has no model
@@ -282,14 +340,14 @@ def test_fixture_logs_import_into_the_real_database_schema(tmp_path):
 # ---------------------------------------------------------------------------
 
 @pytest.fixture
-def fixture_model(monkeypatch):
+def fixture_model(monkeypatch, tmp_path):
     pytest.importorskip("torch")
     pytest.importorskip("torch_geometric")
     from neurographx.m3_model.data import make_get_graph
 
-    # inference.load_model resolves the registry's relative checkpoint path against the
-    # working directory, so run from the fixture root (memo 0014, open item for memo 0009).
-    monkeypatch.chdir(FX)
+    # Run from an unrelated folder: since memo 0009, load_model resolves the registry's
+    # relative checkpoint path against the data root, not the working directory.
+    monkeypatch.chdir(tmp_path)
     cset = engine.load_atlas(*engine.atlas_paths(fx(CFG["connectome"]["output_dir"]), *PIPE,
                                                  fd.MODEL_ATLAS))
     return cset, make_get_graph(cset, fd.DENSITY, fd.FILL_NAN)
@@ -376,11 +434,31 @@ def test_participant_counts_match_the_fixture_qc_outputs(fixture_client, cohort,
 def test_exclusion_reasons_come_through_the_api(fixture_client):
     record = fixture_client.get("/participants/90007").json()
     assert record["qc_status"] == "excluded"
-    assert record["file_id"] is None
-    assert any("no_filename" in r for r in record["exclusion_reasons"])
+    assert record["file_id"] is None                  # FILE_ID was no_filename
+    assert record["exclusion_gate"] == "rater"
+    assert record["exclusion_reasons"] == ["qc_rater_1 = fail", "qc_func_rater_2 = fail",
+                                           "qc_func_rater_3 = fail"]
+    completeness = fixture_client.get("/participants/90012").json()
+    assert completeness["qc_status"] == "excluded"
+    assert completeness["exclusion_gate"] == "completeness"
     boundary = fixture_client.get("/participants/0090010").json()
     assert boundary["qc_status"] == "included" and boundary["exclusion_reasons"] == []
 
 
 def test_real_participants_are_not_served_in_fixture_mode(fixture_client):
     assert fixture_client.get("/participants/0050003").status_code == 404
+
+
+def test_a_changed_checkpoint_is_refused(fixture_root):
+    """Memo 0009: load_model checks the checkpoint against the hash its run recorded."""
+    pytest.importorskip("torch")
+    from neurographx.m3_model.inference import load_model
+
+    registry = fixture_root / "runs/model_registry.json"
+    model, _ = load_model("cc200", registry)          # the committed file loads
+    assert model is not None
+    entry = read_registry(registry)["cc200"]
+    with open(fixture_root / entry["checkpoint_path"], "ab") as fh:
+        fh.write(b"tampered")
+    with pytest.raises(ValueError, match="SHA-256"):
+        load_model("cc200", registry)

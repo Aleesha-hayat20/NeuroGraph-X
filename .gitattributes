@@ -1,0 +1,4 @@
+# Append-only JSON Lines logs (memos 0008 and 0013): when two branches both add records,
+# keep the lines from both sides instead of reporting a conflict. The integrity check
+# verifies afterwards that every run_id and analysis_id is still unique.
+runs/*.jsonl merge=union

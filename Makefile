@@ -1,5 +1,5 @@
 .PHONY: install test lint phenotypic metadata pilot atlases atlases-trial qc frozen \
-	connectomes verify week2 fixtures api api-fixtures smoke clean
+	connectomes verify week2 fixtures api api-fixtures smoke db db-fixtures clean
 
 install:
 	pip install -r requirements-dev.txt
@@ -52,6 +52,13 @@ api-fixtures:
 
 smoke:
 	python scripts/smoke_api.py --data fixtures
+
+# SQLite view of the run log, registry and analysis log (memos 0008 and 0013)
+db:
+	python scripts/build_db.py
+
+db-fixtures:
+	python scripts/build_db.py --data fixtures
 
 clean:
 	rm -rf .pytest_cache __pycache__ */__pycache__ .coverage

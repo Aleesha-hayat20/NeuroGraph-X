@@ -1,9 +1,9 @@
-"""SQLite view of the run log and model registry.
+"""SQLite view of the run log, the model registry and the analysis log.
 
-The JSON files written by `m3_model.run_logger` stay the source of truth.
-This module loads them into a SQLite database built from `db/schema.sql`, so
-the run log and registry can be queried and so a mismatch between the logger
-and the schema fails loudly instead of going unnoticed.
+The JSON files written by `m3_model.run_logger` and `neurographx.analysis_log` stay
+the source of truth (memos 0008 and 0013). This module loads them into a SQLite
+database built from `db/schema.sql`, so they can be queried and so a mismatch between
+a writer and the schema fails loudly instead of going unnoticed.
 """
 import json
 import sqlite3
@@ -43,6 +43,18 @@ REGISTRY_COLUMNS = (
     "metrics",
     "registered_at",
     "previous_run_ids",
+)
+ANALYSIS_COLUMNS = (
+    "analysis_id",
+    "timestamp",
+    "participant_id",
+    "atlas",
+    "run_id",
+    "prediction",
+    "confidence",
+    "calibrated",
+    "git_commit",
+    "reproduces_analysis_id",
 )
 # Columns whose value is a JSON object or array, stored as text.
 JSON_COLUMNS = frozenset({
@@ -107,6 +119,35 @@ def import_registry(conn: sqlite3.Connection, registry_path=REGISTRY_PATH) -> in
     with conn:
         conn.executemany(
             f"INSERT INTO model_registry ({', '.join(REGISTRY_COLUMNS)}) VALUES ({marks})",
+            rows,
+        )
+    return len(rows)
+
+
+def import_analysis_log(conn: sqlite3.Connection, analysis_path) -> int:
+    """Load every analysis record into `analysis_log`. Returns the number of rows.
+
+    Import the run log first: every analysis must point at a logged run, and the
+    foreign keys reject one that does not. Records are inserted in file order, so an
+    analysis that reproduces another always comes after it. A missing file means no
+    analyses yet and imports nothing.
+    """
+    path = Path(analysis_path)
+    if not path.exists():
+        return 0
+    rows = []
+    with path.open(encoding="utf-8") as fh:
+        for line in fh:
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            row = _row(record, ANALYSIS_COLUMNS, f"analysis {record.get('analysis_id')}")
+            row[ANALYSIS_COLUMNS.index("calibrated")] = int(bool(record.get("calibrated")))
+            rows.append(row)
+    marks = ", ".join("?" for _ in ANALYSIS_COLUMNS)
+    with conn:
+        conn.executemany(
+            f"INSERT INTO analysis_log ({', '.join(ANALYSIS_COLUMNS)}) VALUES ({marks})",
             rows,
         )
     return len(rows)
