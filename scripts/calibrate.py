@@ -36,15 +36,23 @@ from neurographx.m3_model.run_logger import LOG_PATH, get_run
 FIGURES = Path("docs/reports/figures")
 
 
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def matches_logged_hash(path: Path, logged: str) -> bool:
+    """True if the file's SHA-256 equals the logged one with either line ending.
+
+    A text file copied through a Windows checkout gets CRLF line endings, so the same
+    content can have two hashes; the run log holds whichever the training session saw
+    (Aleesha's review of #93). Any other difference in content still fails.
+    """
+    data = Path(path).read_bytes()
+    lf = data.replace(b"\r\n", b"\n")
+    return logged in {hashlib.sha256(v).hexdigest() for v in (data, lf, lf.replace(b"\n", b"\r\n"))}
 
 
 def _checked(meta: dict, what: str) -> Path:
     path = Path(meta["file"])
     if not path.exists():
         raise SystemExit(f"{what} file not found: {path}")
-    if _sha256(path) != meta["sha256"]:
+    if not matches_logged_hash(path, meta["sha256"]):
         raise SystemExit(f"{what} file {path} does not match the SHA-256 in the run log")
     return path
 
@@ -66,7 +74,7 @@ def calibrate_run(run_id: str, log_path: Path = LOG_PATH, out_dir: Path | None =
     dc = final["data_config"]
     folds_file, frozen_file = Path(dc["folds_file"]), Path(dc["frozen_file"])
     for path, key in ((folds_file, "folds_sha256"), (frozen_file, "frozen_sha256")):
-        if _sha256(path) != dc[key]:
+        if not matches_logged_hash(path, dc[key]):
             raise SystemExit(f"{path} differs from the file run {run_id} trained with")
     development, frozen = pd.read_csv(folds_file), pd.read_csv(frozen_file)
 

@@ -330,8 +330,13 @@ def test_calibrate_run_writes_the_file_and_figure_from_logged_runs(tmp_path, mon
     assert written["oof_sha256"] == _sha(oof_path) and written["cv_run_id"] == "cv000001"
     assert Path("docs/reports/figures/calibration_cc200_fin00001.png").exists()
 
-    # a changed OOF file no longer matches its logged hash: refuse
-    oof_path.write_text(oof_path.read_text() + "\n")
+    # the same content with Windows line endings still matches its logged hash ...
+    Path("runs/calibration/cc200_fin00001.json").unlink()
+    oof_path.write_bytes(oof_path.read_bytes().replace(b"\n", b"\r\n"))
+    assert script.calibrate_run("fin00001", log_path=log)["a"] == record["a"]
+
+    # ... but changed content does not: refuse
+    oof_path.write_bytes(oof_path.read_bytes() + b"1,2,3\r\n")
     Path("runs/calibration/cc200_fin00001.json").unlink()
     with pytest.raises(SystemExit, match="does not match the SHA-256"):
         script.calibrate_run("fin00001", log_path=log)
