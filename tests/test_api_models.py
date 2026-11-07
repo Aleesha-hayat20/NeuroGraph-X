@@ -61,13 +61,17 @@ def test_unknown_atlas_is_422_with_one_sentence(client):
         "Unknown atlas 'cc400'. Use one of: aal, cc200, ho, dosenbach160"
 
 
-def test_real_registry_reports_the_cc200_baseline(client):
-    body = client("real").get("/models/cc200").json()
-    assert body["run_id"] == "00252f2b"
-    assert body["metrics"]["frozen"]["accuracy"] == 0.63
-    assert body["metrics"]["frozen"]["majority_baseline"] == 0.54
-    assert body["hyperparameters"]["hidden"] == 64
-    assert isinstance(body["checkpoint_available"], bool)  # not in git (memo 0009)
+def test_real_registry_serves_the_four_final_models(client):
+    """Week 6: one measured, calibrated final model per atlas (memos 0010 and 0011)."""
+    models = {m["atlas"]: m for m in client("real").get("/models").json()}
+    assert set(models) == {"aal", "cc200", "ho", "dosenbach160"}
+    # the CC200 baseline is replaced, not erased: it stays in the registry's history
+    assert "00252f2b" in models["cc200"]["previous_run_ids"]
+    for m in models.values():
+        assert m["metrics"]["frozen"]["n"] == 100
+        assert m["metrics"]["frozen"]["majority_baseline"] == 0.54
+        assert m["calibrated"] is True
+        assert isinstance(m["checkpoint_available"], bool)  # memo 0009
 
 
 def test_calibration_file_is_reported_when_it_exists(client, monkeypatch, tmp_path):

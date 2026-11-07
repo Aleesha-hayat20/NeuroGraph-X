@@ -1,16 +1,117 @@
 {
-  "cc200": {
-    "atlas": "cc200",
-    "checkpoint_path": "checkpoints/cc200_00252f2b.pt",
+  "aal": {
+    "atlas": "aal",
+    "checkpoint_path": "checkpoints/aal_57900b0d.pt",
     "metrics": {
       "cv_accuracy": {
-        "mean": 0.6728,
-        "sd": 0.0147
+        "mean": 0.6872,
+        "sd": 0.0153
       },
-      "cv_run_id": "df8dd345",
+      "cv_run_id": "d3611e1d",
+      "frozen": {
+        "accuracy": 0.65,
+        "auc": 0.6659,
+        "balanced_accuracy": 0.6518,
+        "confusion_tn_fp_fn_tp": [
+          34,
+          20,
+          15,
+          31
+        ],
+        "majority_baseline": 0.54,
+        "n": 100,
+        "predicted_autism": 51,
+        "predictions": {
+          "file": "runs/frozen_predictions/aal_57900b0d_frozen.csv",
+          "n": 100,
+          "sha256": "69059a21cfd07b3887a08bbfd645bfc54ed71331cdd31e1bc9dfb0e9a8be9969"
+        }
+      }
+    },
+    "previous_run_ids": [],
+    "registered_at": "2026-11-07T21:39:22+00:00",
+    "run_id": "57900b0d"
+  },
+  "cc200": {
+    "atlas": "cc200",
+    "checkpoint_path": "checkpoints/cc200_cf60f29e.pt",
+    "metrics": {
+      "cv_accuracy": {
+        "mean": 0.6833,
+        "sd": 0.0259
+      },
+      "cv_run_id": "c2516a5f",
+      "frozen": {
+        "accuracy": 0.55,
+        "auc": 0.6248,
+        "balanced_accuracy": 0.5479,
+        "confusion_tn_fp_fn_tp": [
+          31,
+          23,
+          22,
+          24
+        ],
+        "majority_baseline": 0.54,
+        "n": 100,
+        "predicted_autism": 47,
+        "predictions": {
+          "file": "runs/frozen_predictions/cc200_cf60f29e_frozen.csv",
+          "n": 100,
+          "sha256": "694af60b433c435edcd5325bc1d0a42f0b3505f72401fda511f81150a03a2c70"
+        }
+      }
+    },
+    "previous_run_ids": [
+      "00252f2b"
+    ],
+    "registered_at": "2026-11-07T21:39:40+00:00",
+    "run_id": "cf60f29e"
+  },
+  "dosenbach160": {
+    "atlas": "dosenbach160",
+    "checkpoint_path": "checkpoints/dosenbach160_5ee28510.pt",
+    "metrics": {
+      "cv_accuracy": {
+        "mean": 0.6583,
+        "sd": 0.0257
+      },
+      "cv_run_id": "f9f7e584",
+      "frozen": {
+        "accuracy": 0.62,
+        "auc": 0.6679,
+        "balanced_accuracy": 0.6176,
+        "confusion_tn_fp_fn_tp": [
+          35,
+          19,
+          19,
+          27
+        ],
+        "majority_baseline": 0.54,
+        "n": 100,
+        "predicted_autism": 46,
+        "predictions": {
+          "file": "runs/frozen_predictions/dosenbach160_5ee28510_frozen.csv",
+          "n": 100,
+          "sha256": "ce4192afa49b855c54830ec76397c9a4df2c450f978af480277fe658342836b5"
+        }
+      }
+    },
+    "previous_run_ids": [],
+    "registered_at": "2026-11-07T21:40:24+00:00",
+    "run_id": "5ee28510"
+  },
+  "ho": {
+    "atlas": "ho",
+    "checkpoint_path": "checkpoints/ho_76533df4.pt",
+    "metrics": {
+      "cv_accuracy": {
+        "mean": 0.6754,
+        "sd": 0.0194
+      },
+      "cv_run_id": "d1873b17",
       "frozen": {
         "accuracy": 0.63,
-        "auc": 0.655,
+        "auc": 0.6816,
         "balanced_accuracy": 0.6236,
         "confusion_tn_fp_fn_tp": [
           38,
@@ -20,11 +121,16 @@
         ],
         "majority_baseline": 0.54,
         "n": 100,
-        "predicted_autism": 41
+        "predicted_autism": 41,
+        "predictions": {
+          "file": "runs/frozen_predictions/ho_76533df4_frozen.csv",
+          "n": 100,
+          "sha256": "099fe78c7363a02557e9c0b0c0b6f064908d884e97e70c155bec6e2f5cf6ce35"
+        }
       }
     },
     "previous_run_ids": [],
-    "registered_at": "2026-10-12T10:49:14+00:00",
-    "run_id": "00252f2b"
+    "registered_at": "2026-11-07T21:39:59+00:00",
+    "run_id": "76533df4"
   }
 }

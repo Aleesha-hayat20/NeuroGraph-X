@@ -1,0 +1,289 @@
+{
+  "atlas": "ho",
+  "run_id": "76533df4",
+  "cv_run_id": "d1873b17",
+  "oof_file": "runs/oof/ho_d1873b17_oof.csv",
+  "oof_sha256": "132d8a96fcec341ed3f1422a433d7bebe6fead3ea816bf234c1a73e85629ec76",
+  "method": "platt",
+  "a": 0.114932,
+  "b": -0.110496,
+  "n": 761,
+  "oof": {
+    "before": {
+      "ece": 0.2338,
+      "brier": 0.2828
+    },
+    "after_cross_fitted": {
+      "ece": 0.0843,
+      "brier": 0.2311
+    },
+    "reliability_before": [
+      {
+        "lower": 0.0,
+        "upper": 0.1,
+        "n": 239,
+        "mean_prob": 0.0173,
+        "observed": 0.2803
+      },
+      {
+        "lower": 0.1,
+        "upper": 0.2,
+        "n": 58,
+        "mean_prob": 0.1422,
+        "observed": 0.3621
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.3,
+        "n": 39,
+        "mean_prob": 0.2483,
+        "observed": 0.359
+      },
+      {
+        "lower": 0.3,
+        "upper": 0.4,
+        "n": 37,
+        "mean_prob": 0.3454,
+        "observed": 0.3514
+      },
+      {
+        "lower": 0.4,
+        "upper": 0.5,
+        "n": 33,
+        "mean_prob": 0.4459,
+        "observed": 0.1818
+      },
+      {
+        "lower": 0.5,
+        "upper": 0.6,
+        "n": 36,
+        "mean_prob": 0.5499,
+        "observed": 0.6389
+      },
+      {
+        "lower": 0.6,
+        "upper": 0.7,
+        "n": 29,
+        "mean_prob": 0.6569,
+        "observed": 0.5517
+      },
+      {
+        "lower": 0.7,
+        "upper": 0.8,
+        "n": 35,
+        "mean_prob": 0.7537,
+        "observed": 0.6857
+      },
+      {
+        "lower": 0.8,
+        "upper": 0.9,
+        "n": 31,
+        "mean_prob": 0.8555,
+        "observed": 0.7419
+      },
+      {
+        "lower": 0.9,
+        "upper": 1.0,
+        "n": 224,
+        "mean_prob": 0.9816,
+        "observed": 0.6384
+      }
+    ],
+    "reliability_after": [
+      {
+        "lower": 0.0,
+        "upper": 0.1,
+        "n": 20,
+        "mean_prob": 0.0878,
+        "observed": 0.3
+      },
+      {
+        "lower": 0.1,
+        "upper": 0.2,
+        "n": 42,
+        "mean_prob": 0.1567,
+        "observed": 0.3095
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.3,
+        "n": 54,
+        "mean_prob": 0.2588,
+        "observed": 0.2778
+      },
+      {
+        "lower": 0.3,
+        "upper": 0.4,
+        "n": 109,
+        "mean_prob": 0.3617,
+        "observed": 0.2844
+      },
+      {
+        "lower": 0.4,
+        "upper": 0.5,
+        "n": 251,
+        "mean_prob": 0.4529,
+        "observed": 0.3865
+      },
+      {
+        "lower": 0.5,
+        "upper": 0.6,
+        "n": 160,
+        "mean_prob": 0.5491,
+        "observed": 0.6813
+      },
+      {
+        "lower": 0.6,
+        "upper": 0.7,
+        "n": 99,
+        "mean_prob": 0.6412,
+        "observed": 0.6162
+      },
+      {
+        "lower": 0.7,
+        "upper": 0.8,
+        "n": 20,
+        "mean_prob": 0.7417,
+        "observed": 0.6
+      },
+      {
+        "lower": 0.8,
+        "upper": 0.9,
+        "n": 6,
+        "mean_prob": 0.8512,
+        "observed": 1.0
+      }
+    ]
+  },
+  "frozen": {
+    "n": 100,
+    "before": {
+      "ece": 0.334,
+      "brier": 0.3323
+    },
+    "after": {
+      "ece": 0.1853,
+      "brier": 0.2246
+    },
+    "prediction_flips": 3,
+    "accuracy_before": 0.63,
+    "accuracy_after": 0.62,
+    "reliability_before": [
+      {
+        "lower": 0.0,
+        "upper": 0.1,
+        "n": 46,
+        "mean_prob": 0.0136,
+        "observed": 0.3696
+      },
+      {
+        "lower": 0.1,
+        "upper": 0.2,
+        "n": 9,
+        "mean_prob": 0.1459,
+        "observed": 0.4444
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.3,
+        "n": 3,
+        "mean_prob": 0.2435,
+        "observed": 0.0
+      },
+      {
+        "lower": 0.3,
+        "upper": 0.4,
+        "n": 1,
+        "mean_prob": 0.3239,
+        "observed": 0.0
+      },
+      {
+        "lower": 0.5,
+        "upper": 0.6,
+        "n": 1,
+        "mean_prob": 0.5538,
+        "observed": 1.0
+      },
+      {
+        "lower": 0.6,
+        "upper": 0.7,
+        "n": 1,
+        "mean_prob": 0.6828,
+        "observed": 0.0
+      },
+      {
+        "lower": 0.7,
+        "upper": 0.8,
+        "n": 4,
+        "mean_prob": 0.7409,
+        "observed": 0.75
+      },
+      {
+        "lower": 0.8,
+        "upper": 0.9,
+        "n": 9,
+        "mean_prob": 0.8649,
+        "observed": 0.3333
+      },
+      {
+        "lower": 0.9,
+        "upper": 1.0,
+        "n": 26,
+        "mean_prob": 0.9744,
+        "observed": 0.6923
+      }
+    ],
+    "reliability_after": [
+      {
+        "lower": 0.1,
+        "upper": 0.2,
+        "n": 1,
+        "mean_prob": 0.1836,
+        "observed": 0.0
+      },
+      {
+        "lower": 0.2,
+        "upper": 0.3,
+        "n": 13,
+        "mean_prob": 0.2706,
+        "observed": 0.0
+      },
+      {
+        "lower": 0.3,
+        "upper": 0.4,
+        "n": 30,
+        "mean_prob": 0.345,
+        "observed": 0.5667
+      },
+      {
+        "lower": 0.4,
+        "upper": 0.5,
+        "n": 18,
+        "mean_prob": 0.4359,
+        "observed": 0.3333
+      },
+      {
+        "lower": 0.5,
+        "upper": 0.6,
+        "n": 25,
+        "mean_prob": 0.5426,
+        "observed": 0.44
+      },
+      {
+        "lower": 0.6,
+        "upper": 0.7,
+        "n": 12,
+        "mean_prob": 0.6277,
+        "observed": 0.9167
+      },
+      {
+        "lower": 0.7,
+        "upper": 0.8,
+        "n": 1,
+        "mean_prob": 0.7032,
+        "observed": 1.0
+      }
+    ]
+  },
+  "fitted_at": "2026-11-07T21:40:26+00:00"
+}
