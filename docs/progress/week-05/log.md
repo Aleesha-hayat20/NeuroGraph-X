@@ -90,6 +90,26 @@ scaffold merged (PR #88, W4-19).
   leaves the region count out in that case (second commit of PR #120).
 - Next: Vitest tests for both pages (W5-16, not written yet).
 
+### 8 November (Laiba): tuning grid record, calibration, checkpoint
+- **First grid run lost, re-run unchanged.** The first run of the memo 0011 grid (all 48
+  CV runs, 31 October to 1 November) was in an interactive Kaggle session that ended
+  before its files were downloaded, so its run log and OOF files were lost. The full grid
+  was re-run unchanged (same code, settings, seed and tag `0011-v1`) as a committed Kaggle
+  run on 1 November, before the 2 November freeze. Only the re-run is in the run log
+  (60 lines, 54 OOF files, PR #94).
+- **Were first-run results seen?** I do not remember whether I saw any of its results
+  while it ran; the notebook shows progress as runs finish, so it cannot be ruled out. It
+  could not affect the selection: the rule was fixed in memo 0011 before any tuning run;
+  `scripts/select_config.py` computes the selection from the re-run's log alone (Aleesha
+  reproduced it exactly); the re-run was not changed; neither run read the frozen set.
+- **Calibration (W5-13) carried to Week 6** per memo 0010: each calibrator is fitted on
+  the OOF table of the CV run its final model comes from, so it follows the final models.
+  Code in PR #126 (#77).
+- **Checkpoint confirmed (#93):** my `cc200_00252f2b.pt` has SHA-256 `4adb11ca…ecc9`, the
+  same as the copy tested on Aleesha's Mac.
+- **W5-09 `POST /analyses` (#73)** built once the analysis-log writer was merged (#119);
+  in the Week 6 pull request.
+
 ## Decisions taken
 - `docs/decisions/0013-analysis-log-and-api-contract.md` (revised 27 October, for acceptance)
 - `docs/decisions/0014-fixture-data.md` (amended 27 October)
