@@ -4,8 +4,8 @@
 // (vite.config.js) forwards /api/... to the FastAPI server and removes the /api prefix,
 // so the API needs no CORS setting and its routes stay as documented.
 //
-// Only the endpoints that exist on main today are here. Each later issue adds its own
-// function next to these (GET /atlases, POST /analyses, GET /models, ...), using request().
+// Each issue adds its own function next to these, using request(). getAtlases and
+// createAnalysis follow memo 0013 and work once those endpoints are merged on main.
 
 const BASE = '/api'
 
@@ -79,4 +79,28 @@ export function getHealth() {
  */
 export function getParticipants(params = {}) {
   return request(withQuery('/participants', params))
+}
+
+
+/**
+ * GET /atlases -> [{ atlas, label, n_regions, data_available, model_registered, run_id }, ...]
+ * All four atlases are listed, whether or not a model exists for them (memo 0013).
+ */
+export function getAtlases() {
+  return request('/atlases')
+}
+
+/**
+ * POST /analyses with { participant_id, atlas } -> 201 and the analysis record (memo 0013):
+ * { analysis_id, timestamp, participant_id, atlas, run_id, prediction, confidence,
+ *   calibrated, git_commit, reproduces_analysis_id }
+ * Errors carry a plain-language `detail`: 404 unknown participant, 409 excluded,
+ * 422 unknown atlas, 503 no connectomes or no model.
+ */
+export function createAnalysis(participantId, atlas) {
+  return request('/analyses', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ participant_id: participantId, atlas }),
+  })
 }
