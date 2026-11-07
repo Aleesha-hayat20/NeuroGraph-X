@@ -4,7 +4,7 @@ Rules come from configs/qc_criteria.yaml, never from code. What is applied today
 
 - Gate 1, rater criteria: applied, to every rater column the file has.
 - Gate 2, head motion: applied when a motion rule is passed (memo 0003, closed 6 October:
-  func_mean_fd at most 0.5 mm; a missing value fails). The API passes it.
+  func_mean_fd at most 0.5 mm; a missing value fails).
 - Gate 3, part one: a FILE_ID of "no_filename" means ABIDE has no preprocessed data for
   that participant, so the participant is excluded.
 
@@ -15,6 +15,10 @@ written by scripts/05_apply_qc.py (m1_ingestion/qc.py). A test checks the two ag
 
 Not applied here: the rest of gate 3 (time series files present and non-empty), which needs
 the downloaded data. qc.py applies it; it excluded nobody in the Week 2 run.
+
+Since memo 0013 the API no longer screens live: it serves the committed outputs of
+scripts/05_apply_qc.py, which include gate 3 in full. This screen stays as M1's
+per-participant rule check, and tests/test_screening.py pins its agreement with qc.py.
 """
 
 from __future__ import annotations

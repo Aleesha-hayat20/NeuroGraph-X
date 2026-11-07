@@ -8,10 +8,10 @@ Use it with one setting: `NGX_DATA=fixtures` (see `src/neurographx/datasource.py
 ## Contents
 
 - **Participants:** 24 invented people at 3 invented sites (SUB_ID 90001 onwards), in the 106-column format of the real phenotypic file.
-- **Quality control** (the real rules in `configs/qc_criteria.yaml`): 18 retained, 6 excluded (rater 4, motion 2, completeness 0).
-- **Frozen set:** 6 participants; **development pool:** 12 in 5 folds.
+- **Quality control** (the real rules in `configs/qc_criteria.yaml`): 17 retained, 7 excluded (rater 4, motion 2, completeness 1).
+- **Frozen set:** 6 participants; **development pool:** 11 in 5 folds.
 - **Connectomes:** rois_cc200, rois_ho with the real region counts (200 and 111). AAL and Dosenbach 160 have no stored connectomes here, so the "data unavailable" path can be tested.
-- **Model:** cc200, final run `1a9384db` (cross-validation run `7d994761`), 1770 parameters, checkpoint `checkpoints/cc200_1a9384db.pt`. Harvard-Oxford has connectomes but no model, so the API's "no model registered" path can be tested.
+- **Model:** cc200, final run `1bf121a5` (cross-validation run `f54257bd`), 1770 parameters, checkpoint `checkpoints/cc200_1bf121a5.pt`. Its out-of-fold and frozen-set probabilities are in `runs/oof/` and `runs/frozen_predictions/` (memo 0010). Harvard-Oxford has connectomes but no model, so the API's "no model registered" path can be tested.
 
 ## What the numbers mean
 

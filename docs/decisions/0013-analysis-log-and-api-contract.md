@@ -1,6 +1,7 @@
 # 0013. Analysis log storage and the API contract
 
-**Status:** Proposed. For acceptance at the Week 5 Thursday stand-up (29 October 2026).
+**Status:** Proposed, revised 2026-10-27 (see Revisions at the end). For acceptance at the
+Week 5 Thursday stand-up (29 October 2026).
 Once accepted, the contract below is **frozen**: any change is an amendment to this memo,
 agreed by both the API side (Aleesha, Laiba) and the dashboard side (Alishba).
 **Date:** 2026-10-24
@@ -34,11 +35,12 @@ Plain-language terms used below:
    `fixtures/` is used, and that file is ignored by git (memo 0014). The path comes from
    `datasource.analysis_log()`.
 2. **SQLite is a rebuilt view.** `scripts/build_db.py` also loads the analysis log into the
-   existing `analysis_log` table, whose columns already match the record below. The schema
-   test is extended to cover it.
+   existing `analysis_log` table, whose columns already match the record below
+   (`python scripts/build_db.py`, or `--data fixtures`). A test checks the two agree.
 3. **One writer module** (Aleesha, Week 5): `src/neurographx/analysis_log.py` with
-   `new_analysis_id()`, `write_analysis(record, path)` and
-   `read_analyses(path, participant_id=None, atlas=None)`. The writer:
+   `new_analysis_id()`, `make_record(prediction)`, `write_analysis(record, path)`,
+   `log_prediction(prediction)` (make and write in one call),
+   `read_analyses(path, participant_id=None, atlas=None)` and `get_analysis(id)`. The writer:
    - checks every field and type before writing, and refuses unknown fields;
    - refuses a duplicate `analysis_id`, a `run_id` that is not in the run log of the same
      dataset, and a `reproduces_analysis_id` that is not already in the analysis log;
@@ -93,14 +95,14 @@ All paths are relative to the API root. Participant identifiers are accepted as
 | Method and path | Request | Success response | Owner, week |
 |---|---|---|---|
 | `GET /health` | | `{status, version, participant_table_found, data_mode}` | done |
-| `GET /participants` | filters: `site`, `group` (`autism`/`control`), `qc_status` (`included`/`excluded`) | `{total, included, excluded, participants: [Participant]}`; counts cover the whole table, the list is filtered | Aleesha, 5 |
+| `GET /participants` | filters: `site` (any case; an unknown site is 422 and the detail lists the sites), `group` (`autism`/`control`), `qc_status` (`included`/`excluded`); filters combine | `{total, included, excluded, participants: [Participant]}`; counts cover the whole table, the list is filtered | Aleesha, 5 |
 | `GET /participants/{participant_id}` | | `Participant` | done; `split` added in 5 |
 | `GET /atlases` | | `[{atlas, key, label, family, n_regions, data_available, model_registered, run_id}]`, all four | Aleesha, 5 |
-| `GET /cohort/summary` | | `{total, included, excluded, excluded_by_gate: {rater, motion, completeness}, by_group, by_site}` | Aleesha, 5 |
-| `GET /exclusions` | optional `gate` | `[{participant_id, file_id, site, group, first_gate_failed, gates_failed, reasons}]` from the exclusion log | Aleesha, 5 |
+| `GET /cohort/summary` | | `{total, included, excluded, excluded_by_gate: {rater, motion, completeness}, by_group: {autism: {included, excluded}, control: {...}}, by_site: [{site, included, excluded}], by_split: {frozen, development}}` | Aleesha, 5 |
+| `GET /exclusions` | optional `gate`: keeps participants whose **first** failed gate it is, so the count equals `excluded_by_gate` | `{total, exclusions: [{participant_id, file_id, site, group, first_gate_failed, gates_failed: [gate], reasons: [text]}]}` from the exclusion log | Aleesha, 5 |
 | `GET /models`, `GET /models/{atlas}` | | registry entries with metrics and calibration | Laiba, 5 |
 | `POST /analyses` | `{"participant_id": "...", "atlas": "..."}` | **201** and the analysis record | Laiba, 5 (writes through Aleesha's writer) |
-| `GET /analyses` | filters: `participant_id`, `atlas`; `limit` (default 50) | `{total, analyses: [record]}`, newest first | Aleesha, 5 |
+| `GET /analyses` | filters: `participant_id` (either id form), `atlas`; `limit` (default 50, 1 to 1000) | `{total, analyses: [record]}`, newest first; `total` counts every match before the limit; no analyses yet is an empty list, not an error | Aleesha, 5 |
 | `GET /analyses/{analysis_id}` | | the record | Aleesha, 5 |
 | `POST /analyses/{analysis_id}/regenerate` | | **201** and `{analysis: record, original: record, identical: bool, differences: [field]}` | Aleesha, 6 |
 | `GET /analyses/{analysis_id}/export` | `format=json` (default) or `csv` | the record as a downloaded file, `analysis_<id>.json` or `.csv` (a header row of the 10 fields, then one row) | Aleesha, 6 |
@@ -152,20 +154,28 @@ The order of checks for `POST /analyses` is fixed, so the same request always ge
 same error: atlas name (422), participant exists (404), participant included (409),
 connectomes available for the atlas (503), model registered and checkpoint present (503).
 
-## Decision, part 5: cross-origin access
+## Decision, part 5: how the dashboard reaches the API (no CORS rule)
 
 The dashboard's development server (Vite, `http://localhost:5173`) and the API
-(`http://127.0.0.1:8000`) are different origins, so the browser blocks the calls unless
-the API allows them. The API adds FastAPI's `CORSMiddleware` with the allowed origins read
-from `NGX_CORS_ORIGINS` (comma-separated), defaulting to `http://localhost:5173`. Week 5,
-Aleesha; Alishba confirms under memo 0012.
+(`http://127.0.0.1:8000`) are different origins: a browser normally blocks a page from
+calling a server at a different address unless that server sends permission headers
+(CORS, cross-origin resource sharing). Memo 0012 (accepted 26 October) solves this on the
+dashboard side instead: Vite's development proxy forwards every request under `/api` to
+`http://127.0.0.1:8000` and removes the prefix, and `vite preview` uses the same proxy.
+To the browser, the dashboard and the API then share one origin.
+
+So the API adds **no** CORS middleware, its routes stay exactly as listed in part 3, and
+memo 0012 records "a CORS rule in the API" as a rejected alternative. If the dashboard is
+ever served from somewhere the proxy does not cover (for example the FYP-II Docker
+package), the rule is decided then, as an amendment to this memo.
 
 ## Rationale
 
 - **JSON Lines as the source, SQLite as a view** is the pattern the run log already uses
   (memo 0008): readable without tools, diffable, and nothing to keep in sync by hand.
 - **The record equals the table row** so that the writer, the database, the API response
-  and the export cannot drift apart; the schema test enforces it.
+  and the export cannot drift apart; `tests/test_analysis_log.py` checks the writer's fields
+  against the table's columns.
 - **A longer `analysis_id`** costs nothing and prevents a run and an analysis from being
   mistaken for each other in the dashboard or the report.
 - **Status from the committed QC outputs** gives one answer to "who is in the cohort"
@@ -177,20 +187,41 @@ Aleesha; Alishba confirms under memo 0012.
 
 ## Consequences
 
-- New module `analysis_log.py` and its tests; `scripts/build_db.py` and
-  `tests/test_schema.py` extended to the analysis log (Aleesha, Week 5).
-- `tests/test_api.py` changes where reason strings change, and the existing test that the
-  live screen matches the QC code is replaced by one that the API matches the committed QC
-  outputs (on real data in the integrity check, on fixture data in CI).
-- Laiba's `POST /analyses` calls `inference.predict` and then `write_analysis`; it never
-  writes the file itself.
+- New module `src/neurographx/analysis_log.py` and its tests
+  (`tests/test_analysis_log.py`); `scripts/build_db.py` and `src/neurographx/utils/db.py`
+  extended to the analysis log (Aleesha, Week 5).
+- `tests/test_api.py` changes where reason strings change. The test that the live screen
+  agrees with the QC script moves to `tests/test_screening.py`, and the API is tested
+  against the committed QC outputs (on fixture data in CI; on real data in the integrity
+  check).
+- Laiba's `POST /analyses` makes three calls and writes nothing itself:
+  `api.analysis_checks.check_request(participant_id, atlas)` (checks 1 to 5 of part 4, in
+  order, raising the documented errors), then `inference.predict(...)` with the 7-digit
+  participant id, then `analysis_log.log_prediction(prediction)`, whose return value is the
+  response body.
 - From the Week 5 Thursday stand-up the contract is frozen. A change needs an amendment
   here and a matching change on both sides in the same pull request.
 
 ## To confirm
 
 - [ ] Laiba: `POST /analyses` and the model endpoints follow parts 3 and 4.
-- [ ] Alishba: the single API client module (memo 0012) uses these shapes; CORS default works.
+- [ ] Alishba: the single API client module (memo 0012) uses these shapes through the Vite
+  proxy.
 - [ ] Aleesha: writer, history, and data-side endpoints with tests on fixture data.
 - [ ] `.gitattributes` with `runs/*.jsonl merge=union` committed.
 - [ ] Accepted at the Week 5 Thursday stand-up.
+
+## Revisions
+
+### 2026-10-27, before acceptance
+
+- **Part 5 replaced.** It proposed a CORS rule in the API. Memo 0012, accepted on
+  26 October, routes the dashboard's calls through Vite's proxy and lists a CORS rule as a
+  rejected alternative, so the two memos contradicted each other. Part 5 now adopts the
+  proxy, and the API has no CORS middleware.
+- **Shapes made exact while building them (part 3):** the fields of `GET /cohort/summary`
+  (adds `by_split`); `GET /exclusions` returns `{total, exclusions}` like the other lists
+  rather than a bare list, and its `gate` filter is on the first failed gate; `site`
+  matching ignores case and an unknown site is a 422; `limit` on `GET /analyses` runs from
+  1 to 1000.
+- **Consequences:** the three calls `POST /analyses` makes are named.

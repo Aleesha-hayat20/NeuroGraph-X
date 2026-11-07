@@ -1,6 +1,7 @@
 # 0014. Fixture dataset and fixture mode
 
-**Status:** Proposed. For acceptance at the Week 5 Thursday stand-up (29 October 2026).
+**Status:** Proposed, amended 2026-10-27 (completeness case) and 2026-11-06 (run-log
+schema 3; see Amendments). For acceptance at the Week 5 Thursday stand-up (29 October 2026).
 Implemented on `feature/week4-fixtures-memos`.
 **Date:** 2026-10-24
 **Owner:** Aleesha Hayat
@@ -33,9 +34,9 @@ datasets only changes the root folder.
 | File under `fixtures/` | Real counterpart | Contents |
 |---|---|---|
 | `data/raw/Phenotypic_V1_0b_preprocessed1.csv` | same path | 24 invented participants, 3 invented sites (`SYN_A`, `SYN_B`, `SYN_C`), the **106 real columns in the real order** |
-| `data/splits/qc_cohort.csv`, `docs/reports/exclusion_log.csv` | same paths | 18 retained, 6 excluded |
+| `data/splits/qc_cohort.csv`, `docs/reports/exclusion_log.csv` | same paths | 17 retained, 7 excluded (rater 4, motion 2, completeness 1) |
 | `data/frozen/frozen_eval_6.csv` + `.meta.json` | `frozen_eval_100.*` | 6 participants, one per (site, group) cell |
-| `data/splits/cv5_folds.csv` | same path | development pool of 12 in 5 folds |
+| `data/splits/cv5_folds.csv` | same path | development pool of 11 in 5 folds |
 | `data/processed/connectomes/cpac_filt_global/rois_cc200.npz/.json`, `rois_ho.npz/.json` | same paths | two atlases at their real sizes, 200 and 111 regions |
 | `runs/run_log.jsonl`, `runs/model_registry.json` | same paths | one cross-validation run and one final run; CC200 registered |
 | `checkpoints/cc200_<run_id>.pt` | `checkpoints/cc200_00252f2b.pt` | a tiny GCN (2 layers, 8 hidden units, 1,770 parameters, about 11 KB) |
@@ -102,6 +103,7 @@ Each rule of memo 0003, and each edge of each rule, appears at least once.
 | 90016 | `func_mean_fd` 0.62 | excluded, motion |
 | 90023 | `func_mean_fd` missing | excluded, motion |
 | 90024 | `qc_rater_1` "maybe" and `func_mean_fd` 0.71 | excluded, two gates (`rater;motion`) |
+| 90012 | passes raters and motion, but its Dosenbach 160 time series file is never written | excluded, completeness ("missing rois_dosenbach160 file") |
 | 90002, 90003 | "maybe" from rater 2 | retained ("maybe" is accepted there) |
 | 90010 | `func_mean_fd` exactly 0.5 | retained (the limit is "at most 0.5 mm") |
 | 90011 | one flat CC200 region | retained; NaN row on disk, filled with 0 for the model |
@@ -185,11 +187,9 @@ cannot wipe anything else.
   Today's fixture test changes directory to `fixtures/` to work around it. **Open item for
   Laiba (memo 0009, Week 5):** resolve checkpoint paths with `datasource.checkpoint()` in
   the `POST /analyses` path.
-- The API's live screen applies the rater and motion gates but not the completeness gate,
-  which needs the downloaded time series. The real run excluded nobody at that gate, and
-  the fixture plants no completeness case, so the API and the QC outputs agree on both.
-  Memo 0013 moves the participant status to the committed QC outputs; once that lands, a
-  completeness case is added to the fixture.
+- Since memo 0013 the API reads participant status from the committed QC outputs, which
+  include the completeness gate, so the fixture now plants a completeness case (90012; see
+  Amendments). The real run excluded nobody at that gate.
 - Analyses run in fixture mode are written to `fixtures/runs/analysis_log.jsonl`, which is
   ignored by git and excluded from the manifest.
 - No accuracy, confidence or calibration figure measured on the fixture may appear in the
@@ -201,3 +201,33 @@ cannot wipe anything else.
 - [ ] Alishba runs the dashboard skeleton against `make api-fixtures` (memo 0012).
 - [ ] Laiba resolves checkpoints through `datasource.checkpoint()` in `POST /analyses` (memo 0009).
 - [ ] Accepted at the Week 5 Thursday stand-up.
+
+## Amendments
+
+### 2026-10-27: a completeness case (generator 1.1.0)
+
+- Participant 90012 passes the rater and motion gates, but the generator never writes its
+  Dosenbach 160 time series file, so the real QC code excludes it at the completeness gate
+  (memo 0003, gate 3). Every gate is now planted at least once.
+- Counts change: 17 retained and 7 excluded (rater 4, motion 2, completeness 1); frozen set
+  still 6 (one per site and group cell); development pool 11. Regenerated with
+  `python scripts/build_fixtures.py --force`.
+- `runs/neurographx.sqlite` (written by `python scripts/build_db.py --data fixtures`) is a
+  runtime file like the analysis log: ignored by git and left out of the manifest.
+
+### 2026-11-06: run-log schema 3 and prediction files (generator 1.2.0)
+
+- Laiba's PRs #93 and #94 changed two real formats: the run log moved to schema 3
+  (`repeat_reason`, `checkpoint_sha256`; memos 0009 and 0011), and training now writes
+  out-of-fold probabilities (`runs/oof/`) for cross-validation runs and frozen-set
+  probabilities (`runs/frozen_predictions/`) for final runs (memo 0010). Section 6 of this
+  memo says the fixture follows any real format change, so the generator now writes all
+  four with the same code (`m3_model.run_logger`, `m3_model.oof`), and the regenerated
+  fixture was committed with it.
+- New tests: the fixture's runs carry the current schema version; the final run's
+  `checkpoint_sha256` matches its file and `load_model` refuses a changed copy; the
+  out-of-fold and frozen prediction files pass `check_oof` and match their recorded hashes.
+- The working-directory workaround is gone from the tests: since memo 0009,
+  `load_model` resolves checkpoints against the data root.
+- Participants, splits and connectomes are unchanged from 1.1.0 (17 retained, 7 excluded);
+  only the model files, run IDs and the new prediction files differ.

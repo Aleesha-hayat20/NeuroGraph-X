@@ -12,6 +12,8 @@ written by the same project code that wrote the real one:
     region time series (temporary .1D)      frozen set + meta, CV folds    m1_ingestion.splits
                                             connectome .npz + manifest     m2_connectome.engine
                                             run log, registry              m3_model.run_logger
+                                            out-of-fold and frozen-set     m3_model.oof
+                                            prediction files (memo 0010)
                                             checkpoint                     m3_model.model (GCN)
 
 The layout under the output folder mirrors the repository, so `NGX_DATA=fixtures`
@@ -46,7 +48,8 @@ from neurographx.m1_ingestion.splits import (
 )
 from neurographx.m2_connectome.engine import ENGINE_VERSION, build_atlas, sha256_file
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.2.0"   # 1.1.0: completeness case; 1.2.0: run-log schema 3, OOF and
+                              # frozen-prediction files (memos 0009, 0010, 0011)
 SEED = 20261024
 
 # The 106 columns of Phenotypic_V1_0b_preprocessed1.csv, in file order, as listed in
@@ -107,6 +110,9 @@ EXCLUDED = {
     90023: {"func_mean_fd": None},                  # head motion missing
     90024: {"qc_rater_1": "maybe", "func_mean_fd": 0.71},  # two gates; "maybe" not OK for rater 1
 }
+# Completeness gate (memo 0003, gate 3): this participant passes raters and motion, but one
+# region time series file is never written, so scripts/05's rule excludes them.
+MISSING_TIMESERIES = {90012: "rois_dosenbach160"}
 RETAINED_EDGE_CASES = {
     90002: {"qc_anat_rater_2": "maybe"},            # "maybe" accepted for rater 2
     90003: {"qc_func_rater_2": "maybe"},
@@ -121,13 +127,13 @@ FLAT_REGIONS = {
 
 # Tiny model: small enough to train in seconds on a laptop CPU.
 MODEL_HYPERPARAMETERS = {"hidden": 8, "layers": 2, "dropout": 0.2, "lr": 0.02,
-                         "batch_size": 4, "epochs": 60}
+                         "batch_size": 4, "epochs": 60, "class_weighted": False}
 MODEL_SEED = 42
 DENSITY = 0.10
 FILL_NAN = 0.0
 
 # Files that are written at run time in fixture mode and never committed.
-RUNTIME_FILES = ("runs/analysis_log.jsonl",)
+RUNTIME_FILES = ("runs/analysis_log.jsonl", "runs/neurographx.sqlite")
 
 
 # ---------------------------------------------------------------------------
@@ -262,6 +268,8 @@ def build(out: Path, train_model: bool = True, force: bool = False,
             if row.FILE_ID == "no_filename":
                 continue
             for key in atlases:
+                if MISSING_TIMESERIES.get(row.SUB_ID) == key:
+                    continue  # the planted completeness failure
                 ts = make_timeseries(row.SUB_ID, row.DX_GROUP, site_length[row.SITE_ID],
                                      REGION_COUNTS[key], key)
                 write_1d(ts_folder / f"{row.FILE_ID}_{key}.1D", ts)
@@ -364,12 +372,27 @@ def _fit(train, val, hp, device):
 
 def train_tiny_model(out: Path, cfg: dict, log=print) -> dict:
     """Cross-validate, train once on the development pool, measure the frozen set once,
-    log both runs and register the model: the same steps as scripts/train_gnn.py."""
+    log both runs and register the model: the same steps as scripts/train_gnn.py.
+
+    The run-log records follow schema 3 (memos 0009 and 0011): the cross-validation run
+    writes its out-of-fold probabilities and the final run its frozen-set probabilities
+    (memo 0010) with m3_model.oof, and the final run records its checkpoint's SHA-256 and
+    an empty repeat_reason, exactly as train_gnn.py does.
+    """
+    import time
+
     import torch
 
     from neurographx.m2_connectome.engine import atlas_paths, load_atlas
     from neurographx.m3_model.data import build_graphs, short_atlas_name
     from neurographx.m3_model.model import model_from_checkpoint
+    from neurographx.m3_model.oof import (
+        fold_rows,
+        frozen_predictions_path,
+        oof_path,
+        write_frozen_predictions,
+        write_oof,
+    )
     from neurographx.m3_model.run_logger import log_run, new_run_id, register_model
 
     device = torch.device("cpu")
@@ -394,14 +417,20 @@ def train_tiny_model(out: Path, cfg: dict, log=print) -> dict:
     # Cross-validation on the development pool. The frozen set is not read.
     graphs = build_graphs(cset, folds, DENSITY, FILL_NAN)
     fold_of = folds["fold"].to_numpy()
-    per_fold = []
+    per_fold, oof_parts = [], []
+    started = time.perf_counter()
     for k in sorted(set(fold_of)):
+        fold_started = time.perf_counter()
         train = [g for g, f in zip(graphs, fold_of) if f != k]
         val = [g for g, f in zip(graphs, fold_of) if f == k]
         model, best_epoch = _fit(train, val, hp, device)
-        metrics, _ = _scores(model, val, device, hp["batch_size"])
+        metrics, logits = _scores(model, val, device, hp["batch_size"])
         metrics["best_epoch"] = best_epoch
+        metrics["seconds"] = round(time.perf_counter() - fold_started, 1)
         per_fold.append(metrics)
+        # out-of-fold: what this fold's model gave the participants it never trained on
+        oof_parts.append(fold_rows(folds[fold_of == k], int(k), [int(g.y) for g in val],
+                                   torch.softmax(logits, dim=1)[:, 1].numpy()))
 
     def summary(key):
         values = [m[key] for m in per_fold if m[key] is not None]
@@ -416,12 +445,16 @@ def train_tiny_model(out: Path, cfg: dict, log=print) -> dict:
                   "cv_majority_baseline": summary("majority_baseline"),
                   "chosen_epochs": int(statistics.median(m["best_epoch"] for m in per_fold)),
                   "per_fold": per_fold}
-    cv_id = log_run({"run_id": new_run_id(), "stage": "cv", "dataset": DATASET_NAME,
-                     "atlas": atlas, "seed": MODEL_SEED, "hyperparameters": hp,
-                     "metrics": cv_metrics, "data_config": data_config,
-                     "split_sizes": {"development_pool": len(folds),
-                                     "folds": len(per_fold)},
-                     "checkpoint_path": "none (cross-validation)"}, log_path)
+    cv_id = new_run_id()
+    oof_rel = oof_path(atlas, cv_id)                       # runs/oof/<atlas>_<run_id>_oof.csv
+    oof_sha = write_oof(pd.concat(oof_parts, ignore_index=True), out / oof_rel, folds, frozen)
+    cv_metrics["oof"] = {"file": oof_rel.as_posix(), "sha256": oof_sha, "n": len(folds)}
+    cv_metrics["cv_seconds"] = round(time.perf_counter() - started, 1)
+    log_run({"run_id": cv_id, "stage": "cv", "dataset": DATASET_NAME,
+             "atlas": atlas, "seed": MODEL_SEED, "hyperparameters": hp,
+             "metrics": cv_metrics, "data_config": data_config,
+             "split_sizes": {"development_pool": len(folds), "folds": len(per_fold)},
+             "checkpoint_path": "none (cross-validation)"}, log_path)
     log(f"tiny model, cross-validation run {cv_id}: accuracy {cv_metrics['cv_accuracy']}")
 
     # One final model on the whole pool. Unlike scripts/train_gnn.py it trains for the full
@@ -444,6 +477,14 @@ def train_tiny_model(out: Path, cfg: dict, log=print) -> dict:
     frozen_metrics, logits_a = _scores(reloaded, frozen_graphs, device, hp["batch_size"])
     again = model_from_checkpoint(torch.load(out / ckpt_rel, map_location="cpu"))
     _, logits_b = _scores(again, frozen_graphs, device, hp["batch_size"])
+    # the same single measurement, kept per participant (memo 0010)
+    pred_rel = frozen_predictions_path(atlas, run_id)  # runs/frozen_predictions/...
+    pred_sha = write_frozen_predictions(
+        fold_rows(frozen, -1, [int(g.y) for g in frozen_graphs],
+                  torch.softmax(logits_a, dim=1)[:, 1].numpy()).drop(columns="fold"),
+        out / pred_rel, frozen, folds)
+    frozen_metrics["predictions"] = {"file": pred_rel.as_posix(), "sha256": pred_sha,
+                                     "n": len(frozen_graphs)}
 
     log_run({"run_id": run_id, "stage": "final", "dataset": DATASET_NAME, "atlas": atlas,
              "seed": MODEL_SEED, "hyperparameters": final_hp,
@@ -453,7 +494,8 @@ def train_tiny_model(out: Path, cfg: dict, log=print) -> dict:
              "split_sizes": {"train": len(graphs), "frozen": len(frozen_graphs)},
              "checkpoint_path": ckpt_rel.as_posix(),
              "reload_identical": bool(torch.allclose(logits_a, logits_b, atol=1e-6)),
-             "repeat_frozen_measurement": False}, log_path)
+             "repeat_frozen_measurement": False, "repeat_reason": None,
+             "checkpoint_sha256": sha256_file(out / ckpt_rel)}, log_path)
     register_model(run_id, log_path, registry_path)
     n_params = sum(p.numel() for p in model.parameters())
     log(f"tiny model, final run {run_id}: {n_params} parameters, registered for '{atlas}'")
@@ -514,6 +556,8 @@ def write_readme(out: Path, cfg: dict, cohort: pd.DataFrame, excl: pd.DataFrame,
     model_line = (f"- **Model:** {model['atlas']}, final run `{model['run_id']}` "
                   f"(cross-validation run `{model['cv_run_id']}`), {model['parameters']} "
                   f"parameters, checkpoint `{model['checkpoint']}`. "
+                  "Its out-of-fold and frozen-set probabilities are in `runs/oof/` and "
+                  "`runs/frozen_predictions/` (memo 0010). "
                   "Harvard-Oxford has connectomes but no model, so the API's "
                   "\"no model registered\" path can be tested.\n"
                   if model else "- **Model:** not built (generated with --skip-model).\n")
