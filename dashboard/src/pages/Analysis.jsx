@@ -90,7 +90,8 @@ export default function Analysis() {
                 checked={atlas === a.atlas}
                 onChange={() => setAtlas(a.atlas)}
               />
-              {a.label} ({a.n_regions} regions)
+              {a.label}
+              {a.n_regions !== null && ` (${a.n_regions} regions)`}
               {!a.data_available && <small className="muted"> no connectomes</small>}
               {a.data_available && !a.model_registered && (
                 <small className="muted"> no model registered</small>
