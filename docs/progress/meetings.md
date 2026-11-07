@@ -7,14 +7,13 @@ carries the supervisor's signature on the paper log) and its spreadsheet copy
 
 This file is the CLO5 evidence (supervisor meetings): one dated entry per meeting, in date
 order, with the week of the work plan in the heading, and the attendees, decisions and actions
-exactly as recorded in the paper log. A week with no entry here has no signed meeting; the
-backlog item is carried in that week's `log.md` under "Carried into next week".
+exactly as recorded in the paper log.
 
 ---
 
 ## 28 September 2026 (Week 1)
 
-**Attendees:** Dr. Hafeez Anwar; team members present: (Alishba to confirm)
+**Attendees:** Dr. Hafeez Anwar; Aleesha Hayat, Laiba Afridi
 
 **Topics discussed**
 - PC allocation form
@@ -29,7 +28,7 @@ backlog item is carried in that week's `log.md` under "Carried into next week".
 
 ## 13 October 2026 (Week 3)
 
-**Attendees:** Dr. Hafeez Anwar; team members present: (Alishba to confirm)
+**Attendees:** Dr. Hafeez Anwar; Alishba Fayaz, Aleesha Hayat, Laiba Afridi
 
 **Topics discussed**
 - Slides presentation: meeting to show progress before the midterm.
@@ -43,9 +42,21 @@ backlog item is carried in that week's `log.md` under "Carried into next week".
 
 ---
 
+## Week 4 (19 to 25 October 2026): no meeting
+
+No supervisor meeting took place this week.
+
+---
+
+## Week 5 (26 October to 1 November 2026): no meeting
+
+No supervisor meeting took place this week.
+
+---
+
 ## 3 November 2026 (Week 6)
 
-**Attendees:** Dr. Hafeez Anwar; team members present: (Alishba to confirm)
+**Attendees:** Dr. Hafeez Anwar; Laiba Afridi
 
 **Topics discussed**
 - Model and architecture review.
