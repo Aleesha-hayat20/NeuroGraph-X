@@ -179,6 +179,51 @@ main {
   font: inherit;
   padding: 0.15rem 0.6rem;
 }
+/* History page (W6-12) */
+.filters input {
+  font: inherit;
+  padding: 0.3rem 0.5rem;
+}
+
+.detail-panel {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.detail-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.detail-header button {
+  font: inherit;
+  padding: 0.3rem 0.5rem;
+}
+
+.detail-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.4rem 1.5rem;
+  margin: 1rem 0 0;
+}
+
+.detail-list dt {
+  color: var(--muted);
+}
+
+.detail-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
 
 .analysis-form {
   display: flex;
