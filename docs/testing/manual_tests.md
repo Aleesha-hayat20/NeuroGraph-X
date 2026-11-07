@@ -54,7 +54,7 @@ and the page shows the research-use notice.
 |---|---|
 | **ID** | TC-01 |
 | **Use case** | Supporting view: cohort overview (no use case in the diagram) |
-| **Preconditions** | Common preconditions; the Overview page is merged |
+| **Preconditions** | Common preconditions; the Overview page is merged (W7-16) |
 | **Steps** | 1. Open the Overview page. 2. Read the totals. 3. Read the quality-gate counts. 4. Look at the charts. |
 | **Expected result** | 1,112 participants in the table; 861 retained; 251 excluded. Excluded by first gate: rater 241, motion 10, completeness 0. Retained by split: 100 frozen, 761 development. Charts by group and site agree with these totals. Same numbers as `GET /cohort/summary`. |
 | **Actual result** | |
@@ -144,7 +144,7 @@ and the page shows the research-use notice.
 |---|---|
 | **ID** | TC-06 |
 | **Use case** | View run history |
-| **Preconditions** | TC-04 and TC-05 passed |
+| **Preconditions** | TC-04 and TC-05 passed; the History page is merged (W6-12) |
 | **Steps** | 1. Open History. 2. Filter by participant 0050011. 3. Filter by atlas CC200. 4. Open one record. |
 | **Expected result** | Both analyses listed, newest first. Step 3 leaves only the CC200 analysis. Step 4 shows all ten fields of the record, the same as `GET /analyses/{analysis_id}`. |
 | **Actual result** | |
@@ -189,7 +189,7 @@ and the page shows the research-use notice.
 |---|---|
 | **ID** | TC-09 |
 | **Use case** | Supporting view: models and calibration (no use case in the diagram) |
-| **Preconditions** | Common preconditions; final models registered (backlog W6-04) |
+| **Preconditions** | Common preconditions; final models registered (backlog W6-04); the Models page is merged (W6-11) |
 | **Steps** | 1. Open Models. 2. Check each atlas. 3. Open the reliability diagram of one atlas. |
 | **Expected result** | All four atlases with cross-validation and frozen-set metrics, the majority-class baseline, calibration error before and after calibration, and a reliability diagram. Figures equal the registry (`GET /models`) and the model cards in `docs/models/`. |
 | **Actual result** | |
@@ -204,7 +204,7 @@ and the page shows the research-use notice.
 |---|---|
 | **ID** | TC-10 |
 | **Use case** | View exclusion log |
-| **Preconditions** | Common preconditions |
+| **Preconditions** | Common preconditions; the Exclusions page is merged (W7-15) |
 | **Steps** | 1. Open Exclusions. 2. Filter by gate = motion. 3. Find participant 0050039. |
 | **Expected result** | 251 excluded participants, each with gate and reason. Step 2: 10 participants. Step 3: PITT, control, reason "func_mean_fd = 0.602 > 0.5". Same as `GET /exclusions` and `docs/reports/exclusion_log.csv`. |
 | **Actual result** | |
