@@ -76,13 +76,28 @@ scaffold merged (PR #88, W4-19).
 - Tests after merging everything into the Week 5 branch and regenerating the fixture:
   `308 passed`.
 
+### 7 November (Alishba)
+- **Participants page (W5-14)** merged (PR #117). **Analysis page (W5-15)** in review
+  (PR #120): participant and atlas choice, run, result card; API errors are shown as the
+  API's own sentence.
+- **React or Streamlit (W5-18): React kept.** All seven checks of memo 0012 (P1 to C1)
+  pass on fixture data; evidence in `docs/progress/week-05/react-check/`. Decided on
+  7 November, six days after the 1 November date, because the test needs both pages.
+- `POST /analyses` (W5-09) is not on `main`, so A1 to A3 ran against a local stand-in that
+  uses the real `check_request` and invents only the prediction. Reported as a backend
+  delay; it does not count against React (memo 0012).
+- The real `GET /atlases` sends `n_regions: null` for atlases without data; the page now
+  leaves the region count out in that case (second commit of PR #120).
+- Next: Vitest tests for both pages (W5-16, not written yet).
+
 ## Decisions taken
 - `docs/decisions/0013-analysis-log-and-api-contract.md` (revised 27 October, for acceptance)
 - `docs/decisions/0014-fixture-data.md` (amended 27 October)
+- `docs/decisions/0012-dashboard-stack.md` (decision of 7 November: React kept)
 
 ## Week close, Sunday 1 November
 **Gate items met:**
 **Gate items missed, and why:**
-**React or Streamlit (W5-18):**
+**React or Streamlit (W5-18):** React kept (7 November); all seven checks pass, evidence in `docs/progress/week-05/react-check/` (memo 0012).
 **Carried into next week:**
 **Board screenshot:** `board.png`
