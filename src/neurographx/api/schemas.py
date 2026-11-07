@@ -108,6 +108,14 @@ class AnalysisRecord(BaseModel):
     reproduces_analysis_id: str | None
 
 
+class AnalysisRequest(BaseModel):
+    """Body of POST /analyses. The atlas is checked by the endpoint (memo 0013, check 1),
+    so an unknown name gets the documented sentence, not a schema error."""
+
+    participant_id: str = Field(description="0050003 or 50003")
+    atlas: str = Field(description="aal, cc200, ho or dosenbach160")
+
+
 class AnalysisList(BaseModel):
     total: int = Field(description="Analyses matching the filters, before the limit")
     analyses: list[AnalysisRecord] = Field(description="Newest first")

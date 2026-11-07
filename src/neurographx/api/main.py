@@ -21,9 +21,9 @@ Model side (Laiba, api/models.py, W5-10):
     GET /models                              every registered model, one per atlas
     GET /models/{atlas}                      one atlas's model; 422 unknown atlas, 503 none
 
-Still to come (Laiba, W5-09): POST /analyses. It runs analysis_checks.check_request
-first and writes its record with neurographx.analysis_log, so the error contract and the
-record format stay in one place.
+Model side (Laiba, api/analyses.py, W5-09):
+    POST /analyses                           one analysis: checks of memo 0013 part 4 in
+                                             order, prediction, record written; 201
 
 Every error body is {"detail": "<plain sentence>"} (api/errors.py).
 """
@@ -38,10 +38,12 @@ from fastapi import Depends, FastAPI, Query
 from neurographx import __version__, analysis_log, datasource
 from neurographx.api import cohort, errors
 from neurographx.api import participants as pt
+from neurographx.api.analyses import run_analysis
 from neurographx.api.models import router as models_router
 from neurographx.api.schemas import (
     AnalysisList,
     AnalysisRecord,
+    AnalysisRequest,
     AtlasInfo,
     CohortSummary,
     ExclusionList,
@@ -233,3 +235,22 @@ def get_analysis(analysis_id: str, root: Root) -> dict:
     if record is None:
         raise errors.not_found("analysis", analysis_id)
     return record
+
+
+@app.post(
+    "/analyses",
+    response_model=AnalysisRecord,
+    status_code=201,
+    tags=["analyses"],
+    summary="Run one analysis and record it",
+    responses={404: {"description": "Unknown participant"},
+               409: {"description": "Participant excluded by quality control"},
+               422: {"description": "Unknown atlas or invalid request body"},
+               503: {"description": "No data, model or checkpoint for this atlas"}},
+)
+def create_analysis(request: AnalysisRequest, root: Root) -> dict:
+    """Predict with the registered model of `atlas` and append the record to the analysis log.
+
+    Research use only: the prediction is a model output for research, not a diagnosis.
+    """
+    return run_analysis(request.participant_id, request.atlas, root)
