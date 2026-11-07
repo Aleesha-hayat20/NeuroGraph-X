@@ -50,5 +50,8 @@ node_modules/
 # fixture dataset (memo 0014): its tiny checkpoint IS committed, unlike real checkpoints;
 # analyses written while the API runs in fixture mode are not
 !fixtures/checkpoints/*.pt
+# final models of the four atlases are committed (memo 0009 option A, licence in
+# checkpoints/README.md); other checkpoints stay local
+!checkpoints/*.pt
 fixtures/runs/analysis_log.jsonl
 fixtures/runs/*.sqlite
