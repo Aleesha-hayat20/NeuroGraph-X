@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 
 // The dashboard talks to the FastAPI server only through /api (memo 0012).
 // The proxy forwards /api/... to the server and removes the /api prefix, so the API
@@ -17,4 +17,9 @@ export default defineConfig({
   plugins: [react()],
   server: { proxy: api },
   preview: { proxy: api },
+  // Unit tests (W5-16): Vitest with React Testing Library, in a simulated browser.
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+  },
 })
