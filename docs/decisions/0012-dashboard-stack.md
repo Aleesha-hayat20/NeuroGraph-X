@@ -192,21 +192,42 @@ first time on 1 November.
 These are requests, not conditions. The decision above stands without them; they only
 confirm that the API side matches what the dashboard will call.
 
-- [ ] Aleesha: fixture mode (memo 0014) serves every endpoint the Participants and Analysis
-  pages call, and `GET /health` reports the data mode (fixtures or real).
+- [x] Aleesha: fixture mode (memo 0014) serves every endpoint the Participants and Analysis
+  pages call, and `GET /health` reports the data mode (fixtures or real). Confirmed on
+  7 November for `/health`, `/participants` and `/atlases`; `POST /analyses` is Laiba's
+  and is not on `main` yet.
 - [ ] Laiba: the `POST /analyses` response in memo 0013 carries `participant_id`, `atlas`,
   `prediction`, `confidence`, `calibrated`, `run_id` and `analysis_id`.
 
 ## To do by the owner
 
-- [ ] Alishba: the Streamlit readiness check is done by 29 October.
+- [x] Alishba: the Streamlit readiness check was not run. It is no longer needed: the
+  fallback was closed on 7 November (W5-18).
 
 ## Decision on 1 November (W5-18)
 
-To be filled in on the day.
+Made on 7 November 2026, six days after the date above. The test needs both pages, and
+the Analysis page (pull request #120) was finished on 7 November. The delay does not
+change the outcome. API in fixture mode (24 participants, 17 included, 7 excluded; model
+run 1bf121a5); dashboard run from its branches.
 
-- Checks P1 to C1:
-- Result (React kept, or switched to Streamlit):
-- Evidence (file in `docs/progress/week-05/`):
+- **Checks P1 to C1:** all seven pass.
+
+| # | Result | Evidence (`docs/progress/week-05/react-check/`) |
+|---|---|---|
+| P1 | pass | `P1-P3-participants.png` |
+| P2 | pass | `P2-filters.png` |
+| P3 | pass | `P1-P3-participants.png` |
+| A1 | pass, against the stand-in below | `A1-A2-result.png` |
+| A2 | pass, against the stand-in below | `A1-A2-result.png` |
+| A3 | pass: 409 and 503 show the API's own sentence | `A3-409-excluded.png`, `A3-503-no-model.png` |
+| C1 | pass | `C1-ci-green.png` |
+
+- **Result: React kept.** The fallback is closed and there is no later switch.
+- **Backend delay, reported as this memo provides:** `POST /analyses` (W5-09) is not on
+  `main` yet. Checks A1 to A3 ran against a local stand-in that applies the real checks of
+  `analysis_checks.check_request` (so the 409 and 503 sentences are the real ones) and
+  invents only the prediction. It is not part of the repository. This does not count
+  against React.
 
 Sources for the version check: vite.dev/releases, endoflife.date/react, endoflife.date/nodejs.

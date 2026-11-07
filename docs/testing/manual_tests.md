@@ -22,8 +22,10 @@ Vitest, Playwright) check the parts; these check the whole system as a user meet
 - Expected results are written for the **real ABIDE data** (1,112 participants). The same
   steps work in fixture mode (`NGX_DATA=fixtures`), where the counts are those in
   `fixtures/README.md`; a fixture run is a rehearsal, not a round result.
-- Use case names follow the FYP-I use case diagram. If the diagram's numbering changes,
-  update the **Use case** row, not the test ID.
+- Use case names follow the FYP-I use case diagram. Four cases (TC-01, TC-02, TC-03, TC-09)
+  are supporting dashboard views that the diagram has no use case for; their **Use case**
+  row says so. If the diagram's numbering changes, update the **Use case** row, not the
+  test ID.
 
 ## Template
 
@@ -51,8 +53,8 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-01 |
-| **Use case** | View cohort overview |
-| **Preconditions** | Common preconditions |
+| **Use case** | Supporting view: cohort overview (no use case in the diagram) |
+| **Preconditions** | Common preconditions; the Overview page is merged (W7-16) |
 | **Steps** | 1. Open the Overview page. 2. Read the totals. 3. Read the quality-gate counts. 4. Look at the charts. |
 | **Expected result** | 1,112 participants in the table; 861 retained; 251 excluded. Excluded by first gate: rater 241, motion 10, completeness 0. Retained by split: 100 frozen, 761 development. Charts by group and site agree with these totals. Same numbers as `GET /cohort/summary`. |
 | **Actual result** | |
@@ -66,7 +68,7 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-02 |
-| **Use case** | Browse and filter participants |
+| **Use case** | Select participant (supporting view: browse and filter) |
 | **Preconditions** | Common preconditions |
 | **Steps** | 1. Open Participants. 2. Filter site = NYU. 3. Add quality status = included. 4. Add group = autism. 5. Clear all filters. |
 | **Expected result** | Step 2: 184 NYU participants. Step 3: 172. Step 4: 74. Step 5: all 1,112 again. The header totals (1,112 / 861 / 251) do not change while filtering. Each row shows a quality badge. |
@@ -81,10 +83,10 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-03 |
-| **Use case** | Inspect an excluded participant |
+| **Use case** | Select participant (an excluded participant) |
 | **Preconditions** | Common preconditions |
-| **Steps** | 1. Open Participants. 2. Select participant 0050002 (PITT). |
-| **Expected result** | Status "excluded", gate "rater", reasons "qc_rater_1 = fail", "qc_func_rater_2 = fail", "qc_func_rater_3 = fail". The Run button is disabled. No analysis is created (History unchanged). |
+| **Steps** | 1. Open Participants. 2. Find participant 0050002 (PITT) in the table. |
+| **Expected result** | Quality badge "excluded", with the reasons "qc_rater_1 = fail", "qc_func_rater_2 = fail", "qc_func_rater_3 = fail". The Run button is disabled and its reason is shown. No analysis is created: History shows no new record (check this once the History page is merged). |
 | **Actual result** | |
 | **Status** | Not run |
 | **Tester** | |
@@ -96,10 +98,25 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-04 |
-| **Use case** | Run an analysis |
+| **Use case** | Run analysis |
 | **Preconditions** | Common preconditions; a model is registered for CC200 (`GET /atlases`) |
-| **Steps** | 1. Select participant 0050011 (frozen set). 2. Open Analysis; check the four atlases are offered. 3. Choose CC200. 4. Run. |
-| **Expected result** | Four atlases listed, each showing whether a model is registered. The result shows the prediction (autism or control), the confidence (0.5 to 1), the calibrated flag, the atlas, the model's run ID and a new 12-character analysis ID, with the research-use notice. A note says the participant is in the frozen evaluation set. |
+| **Steps** | 1. In Participants, press Run on participant 0050011 (frozen set). 2. On the Analysis page, check the four atlases are offered. 3. Choose CC200. 4. Run. |
+| **Expected result** | Four atlases listed, each showing its number of regions and whether a model is registered. The result shows the prediction (autism or control), the confidence as a percentage from 50 to 100 under the label "Confidence in this prediction", a badge "calibrated" or "not calibrated" that matches the calibrated flag, the atlas, the model's run ID and a new 12-character analysis ID, with the research-use notice. No development-pool note appears, because 0050011 is in the frozen evaluation set. |
+| **Actual result** | |
+| **Status** | Not run |
+| **Tester** | |
+| **Date** | |
+| **Build** | |
+
+## TC-04b Development-pool note
+
+| Field | |
+|---|---|
+| **ID** | TC-04b |
+| **Use case** | Run analysis (development-pool participant) |
+| **Preconditions** | TC-04 passed; the development-pool note is merged (memo 0013) |
+| **Steps** | 1. Pick any retained participant from `data/splits/cv5_folds.csv` (the development pool) and write the ID in the Actual result. 2. In Participants, press Run on that participant. 3. Choose CC200. 4. Run. |
+| **Expected result** | The result is shown as in TC-04, with a note that the participant is in the development pool: the final models were trained on all 761 development participants, so the prediction is not an independent test (memo 0013). |
 | **Actual result** | |
 | **Status** | Not run |
 | **Tester** | |
@@ -111,10 +128,10 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-05 |
-| **Use case** | Run an analysis on another atlas |
+| **Use case** | Run analysis (another atlas) |
 | **Preconditions** | TC-04 passed; a model is registered for a second atlas |
-| **Steps** | 1. Keep participant 0050011. 2. Choose a second atlas with a registered model. 3. Run. |
-| **Expected result** | A second result with a different analysis ID and that atlas's run ID. Choosing an atlas without a registered model shows "No model is registered for atlas '...'" and creates no analysis. |
+| **Steps** | 1. Keep participant 0050011. 2. Choose a second atlas with a registered model. 3. Run. 4. Look at an atlas that has no registered model, if one exists. |
+| **Expected result** | A second result with a different analysis ID and that atlas's run ID. An atlas without a registered model cannot be chosen: its option is disabled with the note "no model registered", and no analysis is created. A direct request to the API for such an atlas returns 503 "No model is registered for atlas '...'." If every atlas has a model at test time, run step 4 in fixture mode, where Harvard-Oxford has data but no model. |
 | **Actual result** | |
 | **Status** | Not run |
 | **Tester** | |
@@ -126,8 +143,8 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-06 |
-| **Use case** | View analysis history |
-| **Preconditions** | TC-04 and TC-05 passed |
+| **Use case** | View run history |
+| **Preconditions** | TC-04 and TC-05 passed; the History page is merged (W6-12) |
 | **Steps** | 1. Open History. 2. Filter by participant 0050011. 3. Filter by atlas CC200. 4. Open one record. |
 | **Expected result** | Both analyses listed, newest first. Step 3 leaves only the CC200 analysis. Step 4 shows all ten fields of the record, the same as `GET /analyses/{analysis_id}`. |
 | **Actual result** | |
@@ -141,7 +158,7 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-07 |
-| **Use case** | Regenerate an analysis |
+| **Use case** | Regenerate past result |
 | **Preconditions** | TC-06 passed; regenerate is merged (backlog W6-06, W7-17) |
 | **Steps** | 1. In History, open the CC200 analysis of 0050011. 2. Press Regenerate. |
 | **Expected result** | A new record appears, pointing to the original (`reproduces_analysis_id`), with the same run ID. The dashboard shows the result is identical: same prediction, same confidence to 4 decimals, same calibrated flag. |
@@ -156,7 +173,7 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-08 |
-| **Use case** | Export an analysis |
+| **Use case** | Export report |
 | **Preconditions** | TC-06 passed; export is merged (backlog W6-07) |
 | **Steps** | 1. Open one analysis. 2. Export as JSON. 3. Export as CSV. 4. Open both files. |
 | **Expected result** | Files named `analysis_<id>.json` and `analysis_<id>.csv`. JSON holds the ten fields; CSV has one header row of the ten field names and one data row. Values match the record on screen. |
@@ -171,8 +188,8 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-09 |
-| **Use case** | View models |
-| **Preconditions** | Common preconditions; final models registered (backlog W6-04) |
+| **Use case** | Supporting view: models and calibration (no use case in the diagram) |
+| **Preconditions** | Common preconditions; final models registered (backlog W6-04); the Models page is merged (W6-11) |
 | **Steps** | 1. Open Models. 2. Check each atlas. 3. Open the reliability diagram of one atlas. |
 | **Expected result** | All four atlases with cross-validation and frozen-set metrics, the majority-class baseline, calibration error before and after calibration, and a reliability diagram. Figures equal the registry (`GET /models`) and the model cards in `docs/models/`. |
 | **Actual result** | |
@@ -186,8 +203,8 @@ and the page shows the research-use notice.
 | Field | |
 |---|---|
 | **ID** | TC-10 |
-| **Use case** | View exclusions |
-| **Preconditions** | Common preconditions |
+| **Use case** | View exclusion log |
+| **Preconditions** | Common preconditions; the Exclusions page is merged (W7-15) |
 | **Steps** | 1. Open Exclusions. 2. Filter by gate = motion. 3. Find participant 0050039. |
 | **Expected result** | 251 excluded participants, each with gate and reason. Step 2: 10 participants. Step 3: PITT, control, reason "func_mean_fd = 0.602 > 0.5". Same as `GET /exclusions` and `docs/reports/exclusion_log.csv`. |
 | **Actual result** | |
@@ -205,7 +222,7 @@ and the page shows the research-use notice.
 | 1 Cohort overview | TC-01 |
 | 2 Participants, filters, excluded participant | TC-02, TC-03 |
 | 3 Four atlases offered | TC-04 |
-| 4 Run an analysis | TC-04 |
+| 4 Run an analysis | TC-04, TC-04b |
 | 5 Second atlas | TC-05 |
 | 6 History | TC-06 |
 | 7 Regenerate | TC-07 |
