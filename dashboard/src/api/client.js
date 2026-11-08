@@ -117,3 +117,12 @@ export function createAnalysis(participantId, atlas) {
     body: JSON.stringify({ participant_id: participantId, atlas }),
   })
 }
+
+
+/**
+ * GET /models -> one entry per registered atlas model: { atlas, run_id, registered_at,
+ * checkpoint_available, hyperparameters, metrics, calibrated, calibration, ... } (memo 0013).
+ */
+export function getModels() {
+  return request('/models')
+}

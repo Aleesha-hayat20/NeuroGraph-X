@@ -309,3 +309,65 @@ main {
 .result-details dd {
   margin: 0;
 }
+
+
+/* Models page (W6-11) */
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.model-card {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.model-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.reliability {
+  display: block;
+  width: 100%;
+  max-width: 20rem;
+  height: auto;
+}
+
+.rel-frame {
+  fill: none;
+  stroke: var(--line);
+}
+
+.rel-diagonal {
+  stroke: var(--muted);
+  stroke-dasharray: 1 3;
+}
+
+.rel-before {
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 3;
+}
+
+.rel-after {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.rel-before-dot {
+  fill: var(--muted);
+}
+
+.rel-after-dot {
+  fill: var(--accent);
+}
+
+.rel-tick,
+.rel-label {
+  font-size: 9px;
+  fill: var(--muted);
+}
