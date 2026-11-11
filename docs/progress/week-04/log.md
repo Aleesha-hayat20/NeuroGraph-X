@@ -1,7 +1,8 @@
 # Week 4 log
 
 ## Monday 19 October, stand-up
-**Closed since last time:** (fill in)
+**Closed since last time:** Week 3: the CC200 baseline (PRs #34 and #35) and the PyTorch
+pin (PR #38).
 **Next:** midterm freeze and rehearsal Monday and Tuesday; defence Wednesday.
 **Blocked:** nothing
 
@@ -83,20 +84,25 @@
   about 1 point between tuning settings are noise. Memo 0011 timing check: about 100 to
   120 s per CV run, so the 48 tuning runs take roughly 2.5 GPU hours; the grid fits and
   does not need shrinking.
-- **CPU check on the Mac:** (paste `predict_one.py` output from Aleesha's Mac).
-- Pull request: (paste the link).
+- **CPU check on the Mac** (6 November, once the checkpoint reached the Mac):
+  `predict_one.py --participant 0050011 --atlas cc200 --expect control:0.7052` printed
+  `matches reference control:0.7052 (tolerance 0.001): True`.
+- Pull request: #93.
 
 ## Decisions taken
-- `docs/decisions/0011-tuning-protocol.md` (proposed)
-- `docs/decisions/0013-analysis-log-and-api-contract.md` (proposed)
-- `docs/decisions/0014-fixture-data.md` (proposed)
-- `docs/decisions/0009-serving-checkpoints.md` (proposed)
-- `docs/decisions/0010-calibration.md` (proposed)
+- `docs/decisions/0011-tuning-protocol.md` (drafted; accepted 29 October)
+- `docs/decisions/0013-analysis-log-and-api-contract.md` (drafted; accepted 29 October)
+- `docs/decisions/0014-fixture-data.md` (drafted; accepted 29 October)
+- `docs/decisions/0009-serving-checkpoints.md` (drafted; accepted 12 November, option A)
+- `docs/decisions/0010-calibration.md` (drafted; accepted 29 October)
 
 ## Week close, Sunday 25 October
-**Gate items met:** (tick in `plan.md` and list here)
-**Gate items missed, and why:**
+**Gate items met:** midterm defended (21 October); the API runs on fixture data (PR #87,
+CI smoke test); memos 0011, 0013 and 0014 drafted, and 0012 accepted (26 October).
+**Gate items met later:** memos 0009 and 0010 and baseline cross-validation for the three
+remaining atlases (31 October, PR #93); the dashboard skeleton and the CI frontend and
+PyTorch jobs (PRs #88, #89, #92, in Week 5); `predict()` on the Mac with the CC200
+checkpoint (6 November).
 **Carried into next week:** memos 0011, 0013, 0014 to be accepted at the Thursday stand-up;
 open items for Laiba (checkpoint paths through `datasource.checkpoint()`, class-weighted
 loss, `repeat_reason`) and Alishba (dashboard against `make api-fixtures`, CORS).
-**Board screenshot:** `board.png`

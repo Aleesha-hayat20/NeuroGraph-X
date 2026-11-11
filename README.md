@@ -118,11 +118,24 @@ error, is decision memo 0013.
 | `GET /atlases` | the four atlases: regions, data present, registered model |
 | `GET /cohort/summary` | counts by quality gate, group, site and split |
 | `GET /exclusions` | the exclusion log; filter `gate` |
+| `GET /models`, `GET /models/{atlas}` | the registered model per atlas, with metrics and calibration |
+| `POST /analyses` | run one analysis (participant and atlas) and record it |
 | `GET /analyses`, `GET /analyses/{id}` | analysis history, newest first; filters `participant_id`, `atlas` |
+| `POST /analyses/{id}/regenerate` | re-run a past analysis with its original model; reports whether the result is identical |
+| `GET /analyses/{id}/export` | one analysis record as a JSON or CSV file (`format=json` or `csv`) |
 
 Errors always come back as `{"detail": "<plain sentence>"}` with 404, 409, 422 or 503.
 `python scripts/build_db.py` rebuilds the SQLite view of the run log, the model registry
 and the analysis log (`runs/neurographx.sqlite`, not committed).
+
+## Checks before a demonstration
+
+```bash
+python scripts/check_integrity.py      # registry, run log, checkpoints, data files and analysis log agree
+python scripts/confound_check.py       # rewrites docs/reports/confound_check.md (site, motion, flat regions)
+```
+
+The integrity check also runs in CI on the fixture dataset (`--data fixtures`).
 
 > **Never request the `func_preproc` derivative.** The `rois_*` derivatives are small
 > `.1D` text files. Everything else is a large `.nii.gz` volume.

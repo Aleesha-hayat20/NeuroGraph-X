@@ -60,19 +60,15 @@
 - Call `assert_no_leakage(train_ids, frozen)` from
   `neurographx.m1_ingestion.splits` before fitting.
 
-## Thursday 8 October, stand-up
-**Closed since last time:**
-**Next:**
-**Blocked:**
-
 ## Decisions taken
 - `docs/decisions/0003-qc-criteria.md` (closed 6 October)
 - `docs/decisions/0005-frozen-evaluation-set.md` (accepted 6 October)
 - `docs/decisions/0007-connectome-engine.md` (new)
 
 ## Week close, Sunday 11 October
-**Gate items met:**
-**Gate items missed, and why:**
-**Carried into next week:**
-**CI run for the Week 2 pull request:** (paste the Actions link once green)
-**Board screenshot:** `board.png`
+**Gate items met:** connectomes for all four atlases (memo 0007, `scripts/07` and the
+verification in `scripts/08`); the frozen 100 committed (memo 0005) with the leakage test
+in CI (`tests/test_leakage.py`). Merged in PR #33 on 11 October.
+**Gate items missed, and why:** the first frozen-set number came the next day: CC200 run
+`00252f2b` on 12 October (PRs #34 and #35).
+**CI run for the Week 2 pull request:** [run 38086491571](https://github.com/Aleesha-hayat20/NeuroGraph-X/actions/runs/38086491571)

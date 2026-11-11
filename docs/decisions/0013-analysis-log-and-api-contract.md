@@ -1,8 +1,8 @@
 # 0013. Analysis log storage and the API contract
 
-**Status:** Proposed, revised 2026-10-27 (see Revisions at the end). For acceptance at the
-Week 5 Thursday stand-up (29 October 2026).
-Once accepted, the contract below is **frozen**: any change is an amendment to this memo,
+**Status:** Accepted at the Week 5 Thursday stand-up (29 October 2026), as revised on
+2026-10-27 (see Revisions at the end).
+From acceptance, the contract below is **frozen**: any change is an amendment to this memo,
 agreed by both the API side (Aleesha, Laiba) and the dashboard side (Alishba).
 **Date:** 2026-10-24
 **Owner:** Aleesha Hayat
@@ -204,12 +204,13 @@ package), the rule is decided then, as an amendment to this memo.
 
 ## To confirm
 
-- [ ] Laiba: `POST /analyses` and the model endpoints follow parts 3 and 4.
-- [ ] Alishba: the single API client module (memo 0012) uses these shapes through the Vite
-  proxy.
-- [ ] Aleesha: writer, history, and data-side endpoints with tests on fixture data.
-- [ ] `.gitattributes` with `runs/*.jsonl merge=union` committed.
-- [ ] Accepted at the Week 5 Thursday stand-up.
+- [x] Laiba: `POST /analyses` and the model endpoints follow parts 3 and 4 (PRs #118, #126).
+- [x] Alishba: the single API client module (memo 0012) uses these shapes through the Vite
+  proxy (`dashboard/src/api/client.js`).
+- [x] Aleesha: writer, history, and data-side endpoints with tests on fixture data
+  (PR #119); regenerate and export in Week 6.
+- [x] `.gitattributes` with `runs/*.jsonl merge=union` committed.
+- [x] Accepted at the Week 5 Thursday stand-up (29 October).
 
 ## Revisions
 

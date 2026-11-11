@@ -6,6 +6,37 @@ Section 8.8: `v1.0-fyp1` for the FYP-I final, hotfixes as `v1.0.1-fyp1`.
 
 ## [Unreleased]
 
+### Week 6 (2 to 8 November 2026)
+- Regenerate and export (memo 0013, part 3; W6-06, W6-07):
+  `POST /analyses/{analysis_id}/regenerate` re-runs a past analysis with the model of its
+  original training run, records the repeat with `reproduces_analysis_id` and reports
+  whether the result is identical; `GET /analyses/{analysis_id}/export` returns the record
+  as `analysis_<id>.json` or `.csv`. `inference.predict` and `load_model` accept an explicit
+  run entry, and POST /analyses and regenerate share one graph builder, so both go through
+  the same code.
+- Integrity check, `scripts/check_integrity.py` (`neurographx.integrity`): run log, registry,
+  checkpoints and their hashes, split, out-of-fold and frozen-prediction files, calibration
+  files, cohort partition, connectome store and analysis log; a replay of each registered
+  model on its saved frozen-set predictions confirms the models get the same inputs from a
+  store built on another machine. New CI step on the fixture dataset; `make integrity`.
+- Confound check, `scripts/confound_check.py` (`neurographx.m3_model.confounds`):
+  out-of-fold accuracy by site, by motion quartile and with flat regions, written to
+  `docs/reports/confound_check.md` as a limitation analysis; `make confounds`.
+- The API smoke test also runs, regenerates and exports one analysis on the fixture data.
+- `.gitattributes`: text files use LF line endings on every platform.
+- Report v2.0 structure, chapter owners (work plan Section 9), formatting and schedule in
+  `docs/report/README.md`, and the software requirements specification,
+  `docs/report/srs.md` (version 1.1).
+- Memos 0010, 0011, 0013 and 0014 marked accepted (29 October) and memo 0009 accepted with
+  option A (12 November); their open items closed.
+- Progress logs of Weeks 1, 2, 4 and 5 completed from the records.
+- Laiba's Week 6 work (PR #126): `POST /analyses`, calibration (Platt scaling on
+  out-of-fold probabilities), the four final models measured once on the frozen set, model
+  cards and the results table.
+- Alishba's Week 6 work: History page (PR #124), supervisor meetings log (PR #125), unit
+  tests for the result card and History page (PR #127), Models page with reliability
+  diagrams (PR #128), and the Playwright end-to-end test in CI (PR #129).
+
 ### Week 5 (26 October to 1 November 2026)
 - API error contract: every error is `{"detail": "<plain sentence>"}` with 404, 409, 422 or
   503; FastAPI's validation errors are turned into one sentence (memo 0013 part 4).

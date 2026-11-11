@@ -41,4 +41,3 @@
 **Gate items met:**
 **Gate items missed, and why:**
 **Carried into next week:**
-**Board screenshot:** `board.png`

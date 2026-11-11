@@ -1,7 +1,7 @@
 # 0014. Fixture dataset and fixture mode
 
-**Status:** Proposed, amended 2026-10-27 (completeness case) and 2026-11-06 (run-log
-schema 3; see Amendments). For acceptance at the Week 5 Thursday stand-up (29 October 2026).
+**Status:** Accepted at the Week 5 Thursday stand-up (29 October 2026); amended
+2026-10-27 (completeness case) and 2026-11-06 (run-log schema 3; see Amendments).
 Implemented on `feature/week4-fixtures-memos`.
 **Date:** 2026-10-24
 **Owner:** Aleesha Hayat
@@ -197,10 +197,12 @@ cannot wipe anything else.
 
 ## To confirm
 
-- [ ] CI is green with the new smoke step on the Week 4 pull request.
-- [ ] Alishba runs the dashboard skeleton against `make api-fixtures` (memo 0012).
-- [ ] Laiba resolves checkpoints through `datasource.checkpoint()` in `POST /analyses` (memo 0009).
-- [ ] Accepted at the Week 5 Thursday stand-up.
+- [x] CI is green with the new smoke step on the Week 4 pull request (PR #87).
+- [x] Alishba runs the dashboard against `make api-fixtures` (memo 0012; evidence in
+  `docs/progress/week-05/react-check/`).
+- [x] Laiba resolves checkpoints through `datasource.checkpoint()` in `POST /analyses`
+  (memo 0009; through `api/analysis_checks.py`, PR #126).
+- [x] Accepted at the Week 5 Thursday stand-up (29 October).
 
 ## Amendments
 

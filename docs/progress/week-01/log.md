@@ -49,7 +49,6 @@
 - `docs/decisions/0004-node-count-handling.md`
 
 ## Week close, Sunday 4 October
-**Gate items met:**
-**Gate items missed, and why:**
-**Carried into next week:**
-**Board screenshot:** `board.png`
+**Gate items met:** the phenotypic file is loaded and its columns documented
+(`docs/reports/metadata_report.md`); the pilot connectome was computed and checked; the
+atlas decision is written down (memo 0001). The Week 1 data work was merged in PR #25.
