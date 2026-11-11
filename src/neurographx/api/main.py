@@ -16,6 +16,8 @@ Data side (this file):
     GET /exclusions                          the exclusion log; filter: gate
     GET /analyses                            analysis history, newest first; filters
     GET /analyses/{analysis_id}              one analysis record
+    POST /analyses/{analysis_id}/regenerate  re-run with the original model; identical?
+    GET /analyses/{analysis_id}/export       one record as a JSON or CSV file
 
 Model side (Laiba, api/models.py, W5-10):
     GET /models                              every registered model, one per atlas
@@ -34,9 +36,10 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Query
+from fastapi.responses import Response
 
 from neurographx import __version__, analysis_log, datasource
-from neurographx.api import cohort, errors
+from neurographx.api import cohort, errors, reproduce
 from neurographx.api import participants as pt
 from neurographx.api.analyses import run_analysis
 from neurographx.api.models import router as models_router
@@ -53,6 +56,7 @@ from neurographx.api.schemas import (
     Participant,
     ParticipantList,
     QCStatus,
+    RegenerateResult,
 )
 
 datasource.mode()  # an unknown NGX_DATA value stops the server at start-up, not mid-demo
@@ -254,3 +258,44 @@ def create_analysis(request: AnalysisRequest, root: Root) -> dict:
     Research use only: the prediction is a model output for research, not a diagnosis.
     """
     return run_analysis(request.participant_id, request.atlas, root)
+
+
+# ---------------------------------------------------------------------------
+# Regenerate and export (W6, memo 0013 part 3)
+# ---------------------------------------------------------------------------
+
+@app.post(
+    "/analyses/{analysis_id}/regenerate",
+    response_model=RegenerateResult,
+    status_code=201,
+    tags=["analyses"],
+    summary="Re-run a past analysis with its original model",
+    description="Runs the original participant and atlas again with the model of the "
+    "original analysis's training run (not necessarily the one registered today), records "
+    "the result as a new analysis whose `reproduces_analysis_id` is the original, and "
+    "reports whether prediction, confidence and calibrated flag are identical.",
+    responses={**NOT_FOUND,
+               503: {"description": "The original run or its checkpoint is not available"}},
+)
+def regenerate_analysis(analysis_id: str, root: Root) -> dict:
+    return reproduce.regenerate(analysis_id, root)
+
+
+@app.get(
+    "/analyses/{analysis_id}/export",
+    tags=["analyses"],
+    summary="Download one analysis record as JSON or CSV",
+    description="The stored record, unchanged: `analysis_<id>.json`, or `analysis_<id>.csv` "
+    "with a header row of the ten fields and one row.",
+    responses={200: {"description": "The record as a file",
+                     "content": {"application/json": {}, "text/csv": {}}},
+               **NOT_FOUND, **INVALID},
+)
+def export_analysis(
+    analysis_id: str,
+    root: Root,
+    format: str = Query(default="json", description="json or csv"),
+) -> Response:
+    content, media_type, name = reproduce.export(analysis_id, format.strip().lower(), root)
+    return Response(content=content, media_type=media_type,
+                    headers={"Content-Disposition": f'attachment; filename="{name}"'})

@@ -49,15 +49,20 @@ def expected_checkpoint_sha256(entry: dict, registry_path: Path = REGISTRY_PATH)
     return (run or {}).get("checkpoint_sha256")
 
 
-def load_model(atlas: str, registry_path: Path = REGISTRY_PATH, device="cpu"):
+def load_model(atlas: str, registry_path: Path = REGISTRY_PATH, device="cpu",
+               entry: dict | None = None):
     """Return (model, registry_entry) for the current model of `atlas`.
 
     The checkpoint is loaded onto `device` (CPU by default), so serving needs no GPU
     (memo 0009). Raises KeyError if no model is registered for the atlas,
     FileNotFoundError if the registered checkpoint file is missing, and ValueError if
     the file's SHA-256 differs from the one its training run recorded.
+
+    `entry` replaces the registry lookup with an explicit {atlas, run_id,
+    checkpoint_path}. Regenerate (memo 0013, part 3) uses it to load the model of the
+    run that made the original analysis, which may no longer be the registered one.
     """
-    entry = get_model(atlas, registry_path)
+    entry = entry if entry is not None else get_model(atlas, registry_path)
     ckpt_path = checkpoint_path(entry, registry_path)
     if not ckpt_path.exists():
         raise FileNotFoundError(
@@ -105,15 +110,20 @@ def predict_graph(model, graph, device="cpu") -> tuple[int, float]:
 
 
 def predict(participant_id: str, atlas: str, get_graph: Callable,
-            registry_path: Path = REGISTRY_PATH, device="cpu") -> dict:
+            registry_path: Path = REGISTRY_PATH, device="cpu",
+            entry: dict | None = None) -> dict:
     """Prediction-response contract for one participant.
 
     `get_graph(participant_id)` must return that participant's graph for
     `atlas`, and raise KeyError for an unknown participant. The data loader
     supplies it; keeping it a parameter means this function is the same for
     synthetic graphs, real ABIDE graphs and the REST API.
+
+    `entry` (optional) names the run to use instead of the registered model; see
+    `load_model`. Calibration is then that run's own, so a regenerated analysis goes
+    through exactly the steps of the original one.
     """
-    model, entry = load_model(atlas, registry_path, device)
+    model, entry = load_model(atlas, registry_path, device, entry=entry)
     graph = get_graph(participant_id)
     label, confidence = predict_graph(model, graph, device)
     calibration = calibration_for(entry, atlas, registry_path)

@@ -119,3 +119,15 @@ class AnalysisRequest(BaseModel):
 class AnalysisList(BaseModel):
     total: int = Field(description="Analyses matching the filters, before the limit")
     analyses: list[AnalysisRecord] = Field(description="Newest first")
+
+
+class RegenerateResult(BaseModel):
+    """Answer of POST /analyses/{analysis_id}/regenerate (memo 0013, part 3)."""
+
+    analysis: AnalysisRecord = Field(
+        description="The new analysis; its reproduces_analysis_id is the original's id")
+    original: AnalysisRecord = Field(description="The analysis that was regenerated")
+    identical: bool = Field(
+        description="True when prediction, confidence and calibrated all match")
+    differences: list[Literal["prediction", "confidence", "calibrated"]] = Field(
+        description="The compared fields that differ; empty when identical")

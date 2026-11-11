@@ -9,6 +9,11 @@ Unlike the pytest API tests, this starts uvicorn as a separate process with only
 environment variable NGX_DATA set, exactly as a teammate or CI would, then calls every
 data-side endpoint over HTTP (/health, /participants, /atlases, /cohort/summary,
 /exclusions, /analyses) and checks the counts against the dataset's QC outputs.
+
+On the fixture dataset it also runs one analysis, regenerates it and exports it
+(POST /analyses, POST /analyses/{id}/regenerate, GET /analyses/{id}/export). These write
+to fixtures/runs/analysis_log.jsonl, which git ignores. On the real data nothing is
+written: real analyses are recorded only on the demo machine (memo 0013).
 Exit code 0 means the server ran and answered correctly.
 """
 
@@ -37,6 +42,19 @@ def free_port() -> int:
 
 def get(url: str) -> dict:
     with urllib.request.urlopen(url, timeout=5) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def get_text(url: str) -> str:
+    with urllib.request.urlopen(url, timeout=5) as response:
+        return response.read().decode("utf-8")
+
+
+def post(url: str, body: dict | None = None) -> dict:
+    data = json.dumps(body or {}).encode("utf-8")
+    request = urllib.request.Request(url, data=data, method="POST",
+                                     headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(request, timeout=60) as response:
         return json.loads(response.read().decode("utf-8"))
 
 
@@ -117,6 +135,22 @@ def main() -> int:
 
         history = get(f"{base}/analyses?limit=1")
         print(f"/analyses      {history['total']} recorded")
+
+        servable = [a["atlas"] for a in atlases if a["model_registered"] and a["data_available"]]
+        if args.data == "fixtures" and servable:
+            made = post(f"{base}/analyses", {"participant_id": first, "atlas": servable[0]})
+            print(f"POST /analyses  {made['analysis_id']}: {made['prediction']} "
+                  f"{made['confidence']} ({servable[0]}, run {made['run_id']})")
+            again = post(f"{base}/analyses/{made['analysis_id']}/regenerate")
+            print(f"POST /analyses/{{id}}/regenerate  identical: {again['identical']}")
+            if not again["identical"] or \
+                    again["analysis"]["reproduces_analysis_id"] != made["analysis_id"]:
+                failures.append("regenerate did not reproduce the analysis")
+            exported = get_text(f"{base}/analyses/{made['analysis_id']}/export?format=csv")
+            header = exported.splitlines()[0]
+            print(f"GET /analyses/{{id}}/export  csv header: {header}")
+            if not header.startswith("analysis_id,") or len(exported.splitlines()) != 2:
+                failures.append("the CSV export is not a header and one row")
     except urllib.error.HTTPError as err:
         print(f"FAIL: {err.url} answered {err.code}: {err.read().decode('utf-8', 'replace')}")
         return 1

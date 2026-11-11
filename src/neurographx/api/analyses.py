@@ -49,6 +49,20 @@ def _connectome_stamp(connectome_dir: Path, atlas_key: str) -> int:
     return npz.stat().st_mtime_ns if npz.exists() else 0
 
 
+def graph_source(run: dict, root: Path | None = None):
+    """`get_graph` for the graph settings a training run used (its `data_config`).
+
+    Shared by POST /analyses and regenerate (api/reproduce.py), so both build a
+    participant's graph in exactly the same way.
+    """
+    from neurographx.m3_model.data import make_get_graph
+
+    cfg = run["data_config"]
+    cdir = datasource.connectome_dir(root)
+    cset = _connectomes(str(cdir), cfg["atlas_key"], _connectome_stamp(cdir, cfg["atlas_key"]))
+    return make_get_graph(cset, cfg["density"], cfg["fill_nan"])
+
+
 def run_analysis(participant_id: str, atlas: str, root: Path | None = None) -> dict:
     """Check, predict, log. Returns the analysis record (memo 0013, part 2)."""
     ok = check_request(participant_id, atlas, root)                    # 1
@@ -59,14 +73,10 @@ def run_analysis(participant_id: str, atlas: str, root: Path | None = None) -> d
         raise errors.unavailable(
             f"The model registered for atlas '{atlas}' (run {entry['run_id']}) is not in "
             "the run log, so its graph settings are unknown.")
-    cfg = run["data_config"]
+    get_graph = graph_source(run, root)
 
-    from neurographx.m3_model.data import make_get_graph
     from neurographx.m3_model.inference import predict
 
-    cdir = datasource.connectome_dir(root)
-    cset = _connectomes(str(cdir), cfg["atlas_key"], _connectome_stamp(cdir, cfg["atlas_key"]))
-    get_graph = make_get_graph(cset, cfg["density"], cfg["fill_nan"])
     try:                                                                # 2
         prediction = predict(pid, atlas, get_graph, datasource.model_registry(root),
                              device="cpu")
