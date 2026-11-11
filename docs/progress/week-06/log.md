@@ -1,15 +1,5 @@
 # Week 6 log
 
-## Monday 2 November, stand-up
-**Closed since last time:** (fill in)
-**Next:** (fill in)
-**Blocked:** (fill in)
-
-## Thursday 5 November, stand-up
-**Closed since last time:** (fill in)
-**Next:** (fill in)
-**Blocked:** (fill in)
-
 ## Entries
 
 ### 5 to 8 November (Laiba): tuning committed, final models, calibration
@@ -48,14 +38,8 @@
   `docs/reports/final_results.md` generated from the logs (`scripts/make_model_cards.py`,
   #99).
 - **`POST /analyses` (#73, PR #126)** once the analysis-log writer was merged (#119).
-- **Checkpoints (memo 0009 option A, #98):** licence note in
-  `checkpoints/README.md`; the four files are added once Aleesha confirms option A.
+- **Checkpoints committed (memo 0009 option A, accepted 12 November, #98)** with the
+  licence note in `checkpoints/README.md`.
 
 ## Decisions taken
 - `docs/decisions/0009-serving-checkpoints.md`: option A (final checkpoints in the repository).
-
-## Week close, Sunday 8 November
-**Gate items met:** (fill in)
-**Gate items missed, and why:** (fill in)
-**Carried into next week:** (fill in)
-**Board screenshot:** `board.png`
