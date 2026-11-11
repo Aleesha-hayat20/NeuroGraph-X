@@ -1,7 +1,7 @@
 # Model checkpoints
 
-The final model of each atlas is committed here (memo 0009, option A, agreed at the Week 6
-Monday stand-up), so the API and the dashboard serve exactly the measured models on any
+The final model of each atlas is committed here (memo 0009, option A,
+pending team confirmation), so the API and the dashboard serve exactly the measured models on any
 machine without Kaggle.
 
 - Which file serves which atlas: `runs/model_registry.json`.

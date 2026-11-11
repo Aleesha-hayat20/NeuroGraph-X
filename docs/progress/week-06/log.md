@@ -48,8 +48,8 @@
   `docs/reports/final_results.md` generated from the logs (`scripts/make_model_cards.py`,
   #99).
 - **`POST /analyses` (#73, PR #126)** once the analysis-log writer was merged (#119).
-- **Checkpoints committed (memo 0009 option A, #98)** with the licence note in
-  `checkpoints/README.md`, after confirmation with Aleesha.
+- **Checkpoints (memo 0009 option A, #98):** licence note in
+  `checkpoints/README.md`; the four files are added once Aleesha confirms option A.
 
 ## Decisions taken
 - `docs/decisions/0009-serving-checkpoints.md`: option A (final checkpoints in the repository).
