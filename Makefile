@@ -1,5 +1,6 @@
 .PHONY: install test lint phenotypic metadata pilot atlases atlases-trial qc frozen \
-	connectomes verify week2 fixtures api api-fixtures smoke db db-fixtures clean
+	connectomes verify week2 fixtures api api-fixtures smoke db db-fixtures integrity \
+	integrity-fixtures confounds clean
 
 install:
 	pip install -r requirements-dev.txt
@@ -59,6 +60,17 @@ db:
 
 db-fixtures:
 	python scripts/build_db.py --data fixtures
+
+# Registry, run log, checkpoints, data files and analysis log agree (before every demo)
+integrity:
+	python scripts/check_integrity.py
+
+integrity-fixtures:
+	python scripts/check_integrity.py --data fixtures
+
+# Confound check on the out-of-fold predictions (docs/reports/confound_check.md)
+confounds:
+	python scripts/confound_check.py
 
 clean:
 	rm -rf .pytest_cache __pycache__ */__pycache__ .coverage

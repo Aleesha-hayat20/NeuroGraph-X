@@ -36,6 +36,9 @@ jobs:
       - name: API smoke test on the fixture dataset (memo 0014)
         run: python scripts/smoke_api.py --data fixtures
 
+      - name: Integrity check on the fixture dataset
+        run: python scripts/check_integrity.py --data fixtures
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

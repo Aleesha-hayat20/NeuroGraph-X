@@ -257,5 +257,8 @@ def test_build_db_command_line_on_the_fixture(tmp_path):
     result = subprocess.run(
         [sys.executable, "scripts/build_db.py", str(out), "--data", "fixtures"],
         capture_output=True, text=True, cwd=project_root(), check=True)
-    assert "2 runs, 1 registered models, 0 analyses (fixtures data)" in result.stdout
+    # fixture mode is used for development, so analyses may already be recorded there
+    log = project_root() / "fixtures/runs/analysis_log.jsonl"
+    n = sum(1 for line in log.read_text().splitlines() if line.strip()) if log.exists() else 0
+    assert f"2 runs, 1 registered models, {n} analyses (fixtures data)" in result.stdout
     assert out.exists()
