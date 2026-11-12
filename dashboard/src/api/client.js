@@ -82,6 +82,15 @@ export function getParticipants(params = {}) {
 }
 
 /**
+ * GET /exclusions -> { total, exclusions: [...] }, one entry per excluded participant:
+ * { participant_id, file_id, site, group, first_gate_failed, gates_failed, reasons }.
+ * `params.gate` ("rater", "motion" or "completeness") keeps those whose first failed gate it is.
+ */
+export function getExclusions(params = {}) {
+  return request(withQuery('/exclusions', params))
+}
+
+/**
  * GET /analyses -> { total, analyses: [...] }, newest first.
  * `params.participant_id` (0050003 or 50003), `params.atlas` and `params.limit` (default 50)
  * are all optional. `total` counts every match, `analyses` holds at most `limit` of them.
