@@ -8,7 +8,9 @@ pin (PR #38).
 
 ## Thursday 22 October, stand-up
 **Closed since last time:** midterm defended on Wednesday 21 October.
-**Jury comments turned into issues:** currently pending
+**Jury comments turned into issues:** the written remarks were released on 17 November
+2026 and logged that day as #000 (Aleesha), #000 and #000 (Alishba); see
+`docs/progress/midterm_jury_remarks.md` and memo 0015 (board task #44).
 **Next:** production track, tasks in `plan.md`.
 **Blocked:** nothing
 

@@ -35,6 +35,17 @@ Parisot, S., Ktena, S. I., Ferrante, E., Lee, M., Guerrero, R., Glocker, B., and
 spectrum disorder and Alzheimer's disease. *Medical Image Analysis*, 48, 117 to 130.
 https://doi.org/10.1016/j.media.2018.06.001 (preprint: https://arxiv.org/abs/1806.01738)
 
+## Who it is for
+
+In FYP-I, researchers and reviewers explore the ABIDE cohort through the platform: every
+analysis is calibrated, traceable to its trained model, reproducible and exportable. In
+FYP-II the platform opens to research groups and hospital research units that hold their
+own resting-state fMRI. They upload a participant's preprocessed brain-region time series;
+the platform checks how far the data resemble its training data, and every result reports
+how far it can be trusted on a scanner the model never saw. The direction and its order of
+work are set in [memo 0015](docs/decisions/0015-real-world-repositioning.md), following the
+advice of the midterm jury.
+
 ## Modules
 
 | Module | Layer | Function |

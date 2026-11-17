@@ -40,7 +40,8 @@ From work plan Section 9; front matter and references are shared.
 contents, list of figures, list of tables.
 
 **1 Introduction.** 1.1 Background. 1.2 Problem statement. 1.3 Objectives. 1.4 Scope.
-1.5 Why a graph neural network, and why fMRI. 1.6 Report outline.
+1.5 Intended users and real-world use (memo 0015). 1.6 Why a graph neural network, and why
+fMRI. 1.7 Report outline.
 
 **2 Literature review and software requirements.** 2.1 ABIDE and connectome-based
 classification of autism. 2.2 Graph neural networks on brain networks. 2.3 Confounds: site,
@@ -51,7 +52,7 @@ motion and data quality. 2.4 Calibration and reproducibility in medical machine 
 (DFD levels 0 and 1). 3.4 Behaviour (activity diagram; sequence diagrams for running and for
 regenerating an analysis). 3.5 Structure (class or component diagram). 3.6 Data design (ER
 diagram, analysis record, registry entry, connectome store). 3.7 Algorithm design.
-3.8 Design decisions (memos 0001 to 0014).
+3.8 Design decisions (memos 0001 to 0015).
 
 **4 Implementation.** 4.1 Data acquisition and quality control. 4.2 Connectome engine.
 4.3 Model and training. 4.4 Calibration. 4.5 REST API and the analysis log. 4.6 Dashboard.
@@ -61,7 +62,7 @@ diagram, analysis record, registry entry, connectome store). 3.7 Algorithm desig
 5.7 Performance and robustness. 5.8 Limitations.
 
 **6 Conclusion and future work.** 6.1 Summary of the work. 6.2 Objectives achieved.
-6.3 Future work in FYP-II.
+6.3 Future work in FYP-II, in the order set by memo 0015.
 
 **References.** IEEE style, numbered in order of first citation.
 
@@ -96,10 +97,10 @@ D Decision memos.
 
 | Chapter | Main sources |
 |---|---|
-| 1, 2 | work plan, `README.md`, cited literature; `srs.md` |
+| 1, 2 | work plan, `README.md`, cited literature; `srs.md`; memo 0015 and `docs/progress/midterm_jury_remarks.md` |
 | 3 | `docs/design/`; memos 0007, 0008, 0012, 0013 |
 | 4.1, 4.2 | memos 0001 to 0005 and 0007; `docs/reports/metadata_report.md`, `connectome_summary.md`, `connectome_verification.md` |
 | 4.3, 4.4 | memos 0006, 0009, 0010, 0011; `docs/reports/tuning_selection.md`, `final_results.md`; `docs/model_cards/` |
 | 4.5, 4.6 | memo 0013; the OpenAPI page at `/docs`; `dashboard/` |
 | 5 | `docs/testing/`; CI runs; `scripts/check_integrity.py`; `docs/reports/confound_check.md` |
-| 6 | work plan Section 10 (forward work into FYP-II) |
+| 6 | memo 0015 (FYP-II direction and order of work), which reorders work plan Section 10 (forward work into FYP-II) |

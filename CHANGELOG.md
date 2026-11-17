@@ -6,6 +6,19 @@ Section 8.8: `v1.0-fyp1` for the FYP-I final, hotfixes as `v1.0.1-fyp1`.
 
 ## [Unreleased]
 
+### Midterm jury remarks and memo 0015 (17 November 2026)
+- The three written remarks of the midterm jury, released on 17 November, logged as issues
+  with owners (#000, #000, #000; board task #44) and recorded in
+  `docs/progress/midterm_jury_remarks.md`.
+- Memo 0015, real-world repositioning, approved by the supervisor on 17 November: the same
+  disorder, data, models and modules, with a named user (research groups and hospital
+  research units with their own resting-state fMRI). FYP-II opens the system to uploaded
+  data, with a data compatibility check and per-result reliability. No FYP-I feature or
+  result changes.
+- README: "Who it is for". SRS version 1.2: product scope and references point to memo
+  0015; no requirement changed. Report outline: intended users in Chapter 1; Chapter 6
+  takes the FYP-II future work from memo 0015.
+
 ### Week 6 (2 to 8 November 2026)
 - Regenerate and export (memo 0013, part 3; W6-06, W6-07):
   `POST /analyses/{analysis_id}/regenerate` re-runs a past analysis with the model of its
