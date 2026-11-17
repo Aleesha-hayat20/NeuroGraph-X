@@ -5,7 +5,7 @@ import ApiStatus from './ApiStatus.jsx'
 import FixtureNotice from './FixtureNotice.jsx'
 import ResearchNotice from './ResearchNotice.jsx'
 
-// The seven pages of memo 0012, in the order of the dashboard's use cases.
+// The seven pages of memo 0012, then two planned for FYP-II (memo 0015).
 const PAGES = [
   { to: '/', label: 'Overview', end: true },
   { to: '/participants', label: 'Participants' },
@@ -13,6 +13,8 @@ const PAGES = [
   { to: '/history', label: 'History' },
   { to: '/models', label: 'Models' },
   { to: '/exclusions', label: 'Exclusions' },
+  { to: '/explanation', label: 'Explanation (FYP-II)' },
+  { to: '/reliability', label: 'Reliability (FYP-II)' },
   { to: '/about', label: 'About' },
 ]
 
