@@ -1,6 +1,6 @@
 # Software Requirements Specification: NeuroGraph-X
 
-**Version:** 1.1 (draft, 8 November 2026; final 15 November 2026)
+**Version:** 1.2 (17 November 2026; version 1.1 final on 15 November 2026)
 **Owners:** Aleesha Hayat, Alishba Fayaz
 **Scope:** FYP-I, the system demonstrated at the FYP-I final evaluation
 
@@ -8,6 +8,7 @@
 |---|---|---|
 | 1.0 | October 2026 | Requirements as listed in the FYP-I final work plan (Definition of Done, Section 2; interface contracts, Section 5); no separate document |
 | 1.1 | 8 November 2026 | First full SRS, written against the built system: every endpoint, error and record field as implemented on `main`, with the test that verifies each requirement |
+| 1.2 | 17 November 2026 | Product scope and references point to memo 0015 (real-world repositioning for FYP-II); no requirement changed |
 
 ## 1 Introduction
 
@@ -29,6 +30,10 @@ shown in a web dashboard.
 The system is for research and teaching. It is **not a diagnostic or medical device**, and
 its predictions must not inform any decision about a person.
 
+FYP-II extends the system to research groups that upload their own preprocessed data, with
+a data compatibility check and per-result reliability (memo 0015). Those requirements belong
+to SRS version 2.0; this version covers FYP-I only.
+
 ### 1.3 Definitions
 
 | Term | Meaning |
@@ -46,7 +51,7 @@ its predictions must not inform any decision about a person.
 
 ### 1.4 References
 
-FYP-I final work plan; decision memos 0001 to 0014 in `docs/decisions/`; the API's generated
+FYP-I final work plan; decision memos 0001 to 0015 in `docs/decisions/`; the API's generated
 OpenAPI page at `/docs`; `docs/testing/manual_tests.md`.
 
 ## 2 Overall description
