@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getParticipants } from '../api/client.js'
+import { formatCount } from '../format.js'
 
 // Participants page (W5-14): table, site / group / quality filters, quality badge and Run.
 // The filters run in the browser: GET /participants only filters by qc_status today.
@@ -60,7 +61,7 @@ export default function Participants() {
     <section>
       <h1>Participants</h1>
       <p>
-        {total} participants: {included} included, {excluded} excluded.
+        {`${formatCount(total)} participants: ${formatCount(included)} included, ${formatCount(excluded)} excluded.`}
       </p>
 
       <div className="filters">
@@ -96,7 +97,7 @@ export default function Participants() {
         </button>
       </div>
       <p className="muted">
-        Showing {shown.length} of {participants.length}.
+        {`Showing ${formatCount(shown.length)} of ${formatCount(participants.length)}.`}
       </p>
 
       {shown.length === 0 ? (

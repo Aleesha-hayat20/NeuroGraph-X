@@ -40,7 +40,7 @@ describe('ResultCard', () => {
 
   it('shows participant, atlas, run, analysis ID and time', () => {
     render(<ResultCard record={RECORD} />)
-    for (const text of ['0090001', 'cc200', '1bf121a5', 'a1b2c3d4e5f6', '2026-11-07T09:00:00+00:00']) {
+    for (const text of ['0090001', 'CC200', '1bf121a5', 'a1b2c3d4e5f6', '2026-11-07 09:00:00']) {
       expect(screen.getByText(text)).toBeTruthy()
     }
   })
