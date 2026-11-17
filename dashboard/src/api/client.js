@@ -91,6 +91,18 @@ export function getExclusions(params = {}) {
 }
 
 /**
+ * GET /cohort/summary -> { total, included, excluded,
+ *   excluded_by_gate: { rater, motion, completeness },
+ *   by_group: { autism: { included, excluded }, control: { included, excluded } },
+ *   by_site: [{ site, included, excluded }],
+ *   by_split: { frozen, development } }.
+ * Excluded participants are counted at the first gate they failed.
+ */
+export function getCohortSummary() {
+  return request('/cohort/summary')
+}
+
+/**
  * GET /analyses -> { total, analyses: [...] }, newest first.
  * `params.participant_id` (0050003 or 50003), `params.atlas` and `params.limit` (default 50)
  * are all optional. `total` counts every match, `analyses` holds at most `limit` of them.
