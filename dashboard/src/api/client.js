@@ -135,3 +135,21 @@ export function createAnalysis(participantId, atlas) {
 export function getModels() {
   return request('/models')
 }
+/**
+ * POST /analyses/{analysis_id}/regenerate -> 201 { analysis, original, identical, differences }
+ * `analysis` is the new record (its reproduces_analysis_id is the original), `original` the
+ * stored one, `identical` is true when prediction, confidence and calibrated all match, and
+ * `differences` names the fields that do not. 404 unknown analysis; 503 the original model,
+ * checkpoint or connectome is not available (plain-language `detail`).
+ */
+export function regenerateAnalysis(analysisId) {
+  return request(`/analyses/${encodeURIComponent(analysisId)}/regenerate`, { method: 'POST' })
+}
+
+/**
+ * URL of GET /analyses/{analysis_id}/export?format=json|csv. The API sends the record as a
+ * file download, so the page uses this as a link and does not fetch it.
+ */
+export function exportUrl(analysisId, format) {
+  return `${BASE}/analyses/${encodeURIComponent(analysisId)}/export?format=${format}`
+}
