@@ -1,6 +1,7 @@
 # 0009. Serving checkpoints: where they live, how they are found, CPU inference
 
-**Status:** Proposed. For acceptance at the Week 5 Thursday stand-up, together with 0013.
+**Status:** Accepted on 12 November 2026, option A. Held open at the Week 5 Thursday
+stand-up until the ABIDE data terms were checked; see Acceptance at the end.
 **Date:** 2026-10-31
 **Owner:** Laiba Afridi
 **Related:** 0004 (one model per atlas), 0005 (frozen set), 0006 (model architecture),
@@ -107,9 +108,28 @@ new run-log field, so it goes in the same `schema_version` 3 change as memo 0011
 
 ## To confirm
 
-- [ ] `predict_one.py` on the Mac with the CC200 checkpoint matches the reference
-  (`control`, 0.7052 within 0.001); output pasted in the Week 4 log (Aleesha runs it,
-  Laiba sends the checkpoint).
-- [ ] Aleesha: ABIDE's terms allow committing trained weights (option A), or not.
-- [ ] Option A, B or C chosen at the Week 5 Thursday stand-up.
-- [ ] Week 5: `checkpoint_sha256` with memo 0011's `schema_version` 3 change.
+- [x] `predict_one.py` on the Mac with the CC200 checkpoint matches the reference
+  (`control`, 0.7052 within 0.001): matched on 6 November (Week 5 log).
+- [x] Aleesha: ABIDE's terms allow committing trained weights (option A): yes, see below.
+- [x] Option A chosen, on 12 November 2026.
+- [x] `checkpoint_sha256` added with memo 0011's `schema_version` 3 change (PR #94).
+
+## Acceptance (12 November 2026)
+
+- **Option A.** The checkpoints of the final runs are committed under `checkpoints/`, with
+  one `.gitignore` exception per file, so no other checkpoint is committed by accident.
+  This covers the four registered models and the archived CC200 run `00252f2b`, whose
+  frozen-set result is reported alongside the declared repeat (memo 0011), so that every
+  reported model can be loaded and regenerated from a clean clone. Each file's SHA-256 is
+  the one its run recorded in `runs/run_log.jsonl`. Training checkpoints that are not final
+  stay out of git.
+- **Licence.** ABIDE I states that data usage is unrestricted for non-commercial research,
+  under a Creative Commons Attribution-NonCommercial-ShareAlike licence
+  ([ABIDE I page](https://fcon_1000.projects.nitrc.org/indi/abide/abide_I.html)). The
+  weights are derived from that data, as preprocessed by the Preprocessed Connectomes
+  Project, so `checkpoints/README.md` states that they are shared on the same terms
+  (CC BY-NC-SA 3.0, non-commercial research and teaching use, with attribution to ABIDE I
+  and the Preprocessed Connectomes Project) and are not a diagnostic or medical device.
+- **Checked by** `scripts/check_integrity.py`: every registered and archived checkpoint is
+  present and matches its logged SHA-256 (or, for `00252f2b`, which predates schema 3, is
+  reported as recorded without a hash).

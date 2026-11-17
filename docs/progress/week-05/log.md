@@ -4,14 +4,13 @@
 **Closed since last time:** Week 4 data side merged (PR #87): fixture dataset and fixture
 mode, memos 0011, 0013 and 0014 drafted, clean-up. Memo 0012 merged (PR #86). Dashboard
 scaffold merged (PR #88, W4-19).
-**Carried into this week:** (fill in, from the Week 4 board)
+**Carried into this week:** the open items at the end of the Week 4 log.
 **Next:** tasks in `plan.md`.
-**Blocked:** (fill in)
 
 ## Thursday 29 October, stand-up
-**Memos accepted (W5-01):** (fill in which of 0009 to 0014 were accepted, and any changes asked for)
-**Next:** (fill in)
-**Blocked:** (fill in)
+**Memos accepted (W5-01):** 0010, 0011, 0013 (as revised on 27 October) and 0014. Memo 0009
+stayed open until the ABIDE data terms were checked; it was accepted on 12 November
+(option A). Memo 0012 had been accepted on 26 October.
 
 ## Entries
 
@@ -45,8 +44,7 @@ scaffold merged (PR #88, W4-19).
 - **W5-17:** `docs/testing/manual_tests.md`, template and TC-01 to TC-10 (to review with
   Alishba).
 - `CHANGELOG.md` started (W5-R3); `.gitattributes` with `runs/*.jsonl merge=union`.
-- Tests: (paste the final `pytest` line here).
-- Pull request: (paste the link).
+- Pull request: #119 (tests and merge results in the entry of 6 and 7 November).
 
 ### 6 and 7 November (Aleesha): catch-up, reviews and merges
 - Repository checked: `main` at `9324ccd` (Alishba's PRs #89 to #92 and #117). Laiba's
@@ -111,13 +109,22 @@ scaffold merged (PR #88, W4-19).
   in the Week 6 pull request.
 
 ## Decisions taken
-- `docs/decisions/0013-analysis-log-and-api-contract.md` (revised 27 October, for acceptance)
-- `docs/decisions/0014-fixture-data.md` (amended 27 October)
+- `docs/decisions/0013-analysis-log-and-api-contract.md` (revised 27 October; accepted
+  29 October)
+- `docs/decisions/0014-fixture-data.md` (amended 27 October; accepted 29 October)
+- `docs/decisions/0010-calibration.md` and `docs/decisions/0011-tuning-protocol.md`
+  (accepted 29 October)
 - `docs/decisions/0012-dashboard-stack.md` (decision of 7 November: React kept)
 
 ## Week close, Sunday 1 November
-**Gate items met:**
-**Gate items missed, and why:**
+**Gate items met:** analysis records are written and visible through `GET /analyses` and
+in the rebuilt SQLite database (PR #119); tuning runs logged for all four atlases, before
+the 2 November freeze (PR #94); the dashboard lists participants in fixture mode (PR #117).
+**Gate items missed, and why:** `POST /analyses` waited for the analysis-log writer (#119)
+and was merged in Week 6 (PR #126), so "every endpoint" and "the dashboard runs an
+analysis" were completed then; calibration moved to Week 6 with the final models, as memo
+0010 sets out (PR #126).
 **React or Streamlit (W5-18):** React kept (7 November); all seven checks pass, evidence in `docs/progress/week-05/react-check/` (memo 0012).
-**Carried into next week:**
-**Board screenshot:** `board.png`
+**Carried into next week:** `POST /analyses` and calibration (Laiba); History page and
+frontend tests (Alishba); regenerate, export and the integrity check (Aleesha, as planned
+for Week 6).

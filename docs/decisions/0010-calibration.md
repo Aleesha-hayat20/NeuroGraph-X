@@ -1,7 +1,7 @@
 # 0010. Confidence calibration
 
-**Status:** Proposed. For acceptance at the Week 5 Thursday stand-up. Implementation is
-Week 6 (W6-04), after the final models of memo 0011.
+**Status:** Accepted at the Week 5 Thursday stand-up (29 October 2026). Implemented in
+Week 6 (W6-04, PR #126), after the final models of memo 0011.
 **Date:** 2026-10-31
 **Owner:** Laiba Afridi
 **Related:** 0005 (frozen set), 0006 (confidence), 0009 (serving checkpoints), 0011 (tuning
@@ -106,7 +106,9 @@ OOF table of the cross-validation run that memo 0011 selected for that atlas.
 
 ## To confirm
 
-- [ ] Accepted at the Week 5 Thursday stand-up, before any OOF table is looked at.
-- [ ] Alishba: the dashboard reads `calibrated` and the model endpoint's calibration fields.
-- [ ] Aleesha: the integrity check (Week 6) verifies each calibration file's `oof_sha256`
-  against its CV run.
+- [x] Accepted at the Week 5 Thursday stand-up (29 October), before any OOF table was
+  looked at.
+- [x] Alishba: the dashboard reads `calibrated` (result card) and the model endpoint's
+  calibration fields (Models page, PR #128).
+- [x] Aleesha: the integrity check (Week 6) verifies each calibration file's `oof_sha256`
+  against its CV run (`src/neurographx/integrity.py`, section 3).

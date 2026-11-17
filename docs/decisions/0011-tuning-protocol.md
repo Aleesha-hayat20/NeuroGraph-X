@@ -1,8 +1,7 @@
 # 0011. Tuning protocol and frozen-set re-measurement policy
 
-**Status:** Proposed. Must be accepted **before the first tuning run**: at the Week 5
-Monday stand-up (26 October 2026) if tuning starts that week, and no later than the
-Thursday stand-up (29 October).
+**Status:** Accepted at the Week 5 Thursday stand-up (29 October 2026), before the first
+tuning run (the grid ran from 31 October; PR #94).
 **Date:** 2026-10-24
 **Owner:** Aleesha Hayat (protocol); Laiba Afridi runs the tuning
 **Related:** 0004 (one model per atlas), 0005 (frozen evaluation set), 0006 (model
@@ -154,8 +153,11 @@ the log too. Proposed for Week 5:
 
 ## To confirm
 
-- [ ] Laiba: baseline cross-validation timings for AAL, Harvard-Oxford and Dosenbach 160
-  confirm that 48 runs fit before 1 November, or the grid is shrunk here first.
-- [ ] Laiba: class-weighted loss and the `tuning_grid` tag implemented, with a unit test.
-- [ ] Alishba and Laiba: `repeat_reason` added to the logger, schema and ER diagram.
-- [ ] Accepted at a stand-up, before tuning starts.
+- [x] Laiba: baseline cross-validation timings for AAL, Harvard-Oxford and Dosenbach 160
+  confirm that 48 runs fit before 1 November (about 100 to 120 s per run, Week 4 log); the
+  grid was not shrunk.
+- [x] Laiba: class-weighted loss and the `tuning_grid` tag implemented, with a unit test
+  (PR #94).
+- [x] Alishba and Laiba: `repeat_reason` added to the logger (schema 3), `db/schema.sql`
+  and the ER diagram source `docs/design/database_schema.puml`.
+- [x] Accepted at the Week 5 Thursday stand-up (29 October), before tuning started.
