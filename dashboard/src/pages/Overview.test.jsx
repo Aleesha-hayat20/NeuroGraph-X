@@ -8,7 +8,7 @@ import Overview from './Overview.jsx'
 vi.mock('../api/client.js', () => ({ getCohortSummary: vi.fn() }))
 
 // Invented counts in the shape of GET /cohort/summary (memo 0013). Every breakdown
-// adds up to the totals: 7 retained, 3 excluded.
+// adds up to the totals: 7 included, 3 excluded.
 const SUMMARY = {
   total: 10,
   included: 7,
@@ -43,7 +43,7 @@ describe('Overview page', () => {
     renderPage()
 
     expect(
-      await screen.findByText('10 participants: 7 retained, 3 excluded by quality control.'),
+      await screen.findByText('10 participants: 7 included, 3 excluded by quality control.'),
     ).toBeInTheDocument()
 
     const gates = screen.getByRole('table', { name: 'Excluded, by first gate failed' })
@@ -51,7 +51,7 @@ describe('Overview page', () => {
     expect(within(gates).getByRole('row', { name: /Motion\s*1/ })).toBeInTheDocument()
     expect(within(gates).getByRole('row', { name: /Completeness\s*0/ })).toBeInTheDocument()
 
-    const splits = screen.getByRole('table', { name: 'Retained, by split' })
+    const splits = screen.getByRole('table', { name: 'Included, by split' })
     expect(within(splits).getByRole('row', { name: /Frozen evaluation set\s*2/ })).toBeInTheDocument()
     expect(within(splits).getByRole('row', { name: /Development\s*5/ })).toBeInTheDocument()
   })
@@ -60,10 +60,10 @@ describe('Overview page', () => {
     getCohortSummary.mockResolvedValue(SUMMARY)
     renderPage()
 
-    expect(await screen.findByRole('img', { name: 'Autism: 4 retained, 2 excluded' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'Control: 3 retained, 1 excluded' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'SYN_A: 4 retained, 1 excluded' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'SYN_B: 3 retained, 2 excluded' })).toBeInTheDocument()
+    expect(await screen.findByRole('img', { name: 'Autism: 4 included, 2 excluded' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Control: 3 included, 1 excluded' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'SYN_A: 4 included, 1 excluded' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'SYN_B: 3 included, 2 excluded' })).toBeInTheDocument()
   })
 
   it('links to the exclusion log', async () => {

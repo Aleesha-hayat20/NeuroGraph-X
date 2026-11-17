@@ -18,7 +18,7 @@ const SPLITS = [
 
 const fmt = (n) => n.toLocaleString('en-US')
 
-// One horizontal bar: retained part solid, excluded part faded. The bar length is
+// One horizontal bar: included part solid, excluded part faded. The bar length is
 // the row total relative to the longest row, so rows can be compared.
 function BarRow({ label, included, excluded, max }) {
   const total = included + excluded
@@ -37,7 +37,7 @@ function BarRow({ label, included, excluded, max }) {
       <div>
         <span
           role="img"
-          aria-label={`${label}: ${included} retained, ${excluded} excluded`}
+          aria-label={`${label}: ${included} included, ${excluded} excluded`}
           style={{ display: 'flex', height: '1rem', width: `${width}%` }}
         >
           <span style={{ flex: included, background: 'currentColor' }} />
@@ -45,7 +45,7 @@ function BarRow({ label, included, excluded, max }) {
         </span>
       </div>
       <span className="muted">
-        {fmt(included)} retained · {fmt(excluded)} excluded
+        {fmt(included)} included · {fmt(excluded)} excluded
       </span>
     </li>
   )
@@ -117,7 +117,7 @@ export default function Overview() {
   return (
     <section>
       <h1>Overview</h1>
-      <p>{`${fmt(d.total)} participants: ${fmt(d.included)} retained, ${fmt(d.excluded)} excluded by quality control.`}</p>
+      <p>{`${fmt(d.total)} participants: ${fmt(d.included)} included, ${fmt(d.excluded)} excluded by quality control.`}</p>
 
       <div className="table-wrap">
         <table className="data-table">
@@ -144,7 +144,7 @@ export default function Overview() {
 
       <div className="table-wrap">
         <table className="data-table">
-          <caption>Retained, by split</caption>
+          <caption>Included, by split</caption>
           <thead>
             <tr>
               <th>Split</th>
@@ -162,7 +162,7 @@ export default function Overview() {
         </table>
       </div>
 
-      <p className="muted">Solid part of a bar = retained, faded part = excluded.</p>
+      <p className="muted">Solid part of a bar = included, faded part = excluded.</p>
       <BarChart title="By group" rows={groupRows} />
       <BarChart title="By site" rows={siteRows} />
     </section>
