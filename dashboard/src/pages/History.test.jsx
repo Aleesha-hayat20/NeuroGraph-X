@@ -5,7 +5,12 @@ import { getAnalyses, getAnalysis } from '../api/client.js'
 import History from './History.jsx'
 
 // The page is tested without a server: the API client is replaced by a stand-in.
-vi.mock('../api/client.js', () => ({ getAnalyses: vi.fn(), getAnalysis: vi.fn() }))
+vi.mock('../api/client.js', () => ({
+  getAnalyses: vi.fn(),
+  getAnalysis: vi.fn(),
+  regenerateAnalysis: vi.fn(),
+  exportUrl: vi.fn(),
+}))
 
 // Invented analyses in the shape of GET /analyses (memo 0013), newest first.
 const NEWEST = {
