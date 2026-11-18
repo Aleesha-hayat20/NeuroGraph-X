@@ -1,3 +1,5 @@
+import { atlasLabel, formatTime } from '../format.js'
+
 // The result of one analysis: the record of memo 0013, shown by the rules of memo 0012.
 // Confidence is the probability of the predicted class (0.5 to 1), not of autism (memo 0006).
 export default function ResultCard({ record }) {
@@ -20,13 +22,13 @@ export default function ResultCard({ record }) {
         <dt>Participant</dt>
         <dd>{record.participant_id}</dd>
         <dt>Atlas</dt>
-        <dd>{record.atlas}</dd>
+        <dd>{atlasLabel(record.atlas)}</dd>
         <dt>Run ID</dt>
         <dd>{record.run_id}</dd>
         <dt>Analysis ID</dt>
         <dd>{record.analysis_id}</dd>
         <dt>Time (UTC)</dt>
-        <dd>{record.timestamp}</dd>
+        <dd>{formatTime(record.timestamp)}</dd>
       </dl>
     </article>
   )
