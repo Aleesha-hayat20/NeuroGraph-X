@@ -53,8 +53,9 @@ export default function Analysis() {
   function handleRun(event) {
     event.preventDefault()
     setRun({ status: 'running' })
+    const split = participants.find((p) => p.participant_id === participantId)?.split ?? null
     createAnalysis(participantId, atlas)
-      .then((record) => setRun({ status: 'ok', record }))
+      .then((record) => setRun({ status: 'ok', record, split }))
       .catch((error) => setRun({ status: 'error', message: error.message }))
   }
 
@@ -110,7 +111,17 @@ export default function Analysis() {
           {run.message}
         </p>
       )}
-     {run.status === 'ok' && <ResultCard record={run.record} />}
+      {run.status === 'ok' && (
+        <>
+          <ResultCard record={run.record} />
+          {run.split === 'development' && (
+            <p className="muted" role="note">
+              This participant is in the development pool: the final models were trained on all 761
+              development participants, so this prediction is not an independent test.
+            </p>
+          )}
+        </>
+      )}
     </section>
   )
 }
