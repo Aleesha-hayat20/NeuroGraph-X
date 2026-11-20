@@ -21,6 +21,10 @@ Section 8.8: `v1.0-fyp1` for the FYP-I final, hotfixes as `v1.0.1-fyp1`.
   predictions on a repeated job).
 - Manual tests: API checks AC-01 to AC-14 added to `docs/testing/manual_tests.md`; TC-09
   points to `docs/model_cards/`. Test plan `docs/testing/test_plan.md` (#136).
+- Manual test round 1 (`docs/testing/round_1.md`, #132), 20 November, build `04f01b9`:
+  12 API checks passed, AC-09 and AC-10 not run (cross-test pending); dashboard cases 8
+  passed, 2 failed, 1 blocked; bugs #198, #199 and #200.
+- Week 7 log.
 - README: reliability engine section.
 - The jury remark issues (#162, #163, #164) are named in memo 0015, the jury remarks page,
   the Week 4 log and this changelog.
