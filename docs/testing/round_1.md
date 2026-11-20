@@ -12,10 +12,10 @@ are run by Laiba Afridi.
 
 | Result | API checks | Dashboard cases |
 |---|---|---|
-| Pass | 12 (AC-01 to AC-08, AC-11 to AC-14) | 8 (TC-01 to TC-04, TC-06 to TC-08, TC-10) |
+| Pass | 14 (AC-01 to AC-14) | 8 (TC-01 to TC-04, TC-06 to TC-08, TC-10) |
 | Fail | 0 | 2 (TC-05, TC-09) |
 | Blocked | 0 | 1 (TC-04b) |
-| Not run | 2 (AC-09, AC-10) | 0 |
+| Not run | 0 | 0 |
 
 Bugs filed: #198 development-pool note (TC-04b), #199 atlas without a model can be chosen
 (TC-05), #200 majority-class baseline missing on the Models page (TC-09). All three are in
@@ -41,8 +41,8 @@ Tester Aleesha Hayat, 20 November 2026, build `04f01b9`, unless the row says oth
 | AC-06 | TC-04 | 201; analysis `132ae8374154`, run `cf60f29e`, `control`, 0.5124, calibrated, `git_commit` `04f01b9`, `reproduces_analysis_id` null | Pass |
 | AC-07 | TC-05 | ho `76533df4` autism 0.6174; aal `57900b0d` autism 0.777; dosenbach160 `5ee28510` autism 0.6709; each calibrated, each with a 12-character ID | Pass |
 | AC-08 | TC-06 | 4 analyses for 0050011, newest first (dosenbach160, aal, ho, cc200); with the atlas filter, the CC200 analysis only; the single record has the ten fields of memo 0013 | Pass |
-| AC-09 | TC-07 | Not run in this round: cross-test assigned to Laiba Afridi | Not run |
-| AC-10 | TC-08 | Not run in this round: cross-test assigned to Laiba Afridi | Not run |
+| AC-09 | TC-07 | 201; identical true, no differing field; the new record reproduces `83b67ea0009b` with run `cf60f29e`, `control`, 0.5124. Laiba Afridi, 20 November 2026, build `9616297` | Pass |
+| AC-10 | TC-08 | `analysis_83b67ea0009b.json` and `analysis_83b67ea0009b.csv`; the CSV has the ten-field header and one data row. Laiba Afridi, 20 November 2026, build `9616297` | Pass |
 | AC-11 | TC-09 | Four atlases, each calibrated (Platt); frozen accuracy, balanced accuracy and AUC aal 0.65, 0.6518, 0.6659; cc200 0.55, 0.5479, 0.6248; ho 0.63, 0.6236, 0.6816; dosenbach160 0.62, 0.6176, 0.6679, equal to the model cards at three decimals | Pass |
 | AC-12 | TC-10 | 251, then 10 at the motion gate; 0050039 PITT, control, `func_mean_fd = 0.602 > 0.5` | Pass |
 | AC-13 | TC-04, TC-05 | 422 `Unknown atlas 'xyz'. Use one of: aal, cc200, ho, dosenbach160`; 404 `Unknown participant: 0099999` | Pass |
