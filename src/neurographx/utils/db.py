@@ -35,6 +35,7 @@ RUN_LOG_COLUMNS = (
     "repeat_frozen_measurement",
     "repeat_reason",
     "checkpoint_sha256",
+    "reliability",
 )
 REGISTRY_COLUMNS = (
     "atlas",
@@ -64,6 +65,7 @@ JSON_COLUMNS = frozenset({
     "data_config",
     "split_sizes",
     "previous_run_ids",
+    "reliability",
 })
 
 

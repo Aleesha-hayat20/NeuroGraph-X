@@ -1,0 +1,28 @@
+# Reliability grid for the synthetic fixture dataset (memo 0016).
+#
+# Each job changes one thing from the reference run: the atlas, the training seed,
+# the training sample (a bootstrap of the development pool) or the site left out.
+# 2 atlases x (1 reference + 2 seeds + 2 resamples + 3 sites) = 16 jobs.
+#
+# Run:  python scripts/run_reliability.py --spec configs/reliability/fixture_grid.yaml \
+#           --output <folder outside fixtures/>
+#
+# A grid is fixed once it has been run: to change it, copy it under a new name.
+name: fixture-v1
+atlases: [rois_cc200, rois_ho]
+base_seed: 42
+axes:
+  atlas: true          # the reference run, once per atlas
+  seed: [1, 2]         # the same folds, another training seed
+  resample: 2          # two stratified bootstraps, scored on the participants left out
+  site: all            # leave each site out in turn
+settings:              # the fixture's small model (fixtures/runs/run_log.jsonl)
+  density: 0.10
+  fill_nan: 0.0
+  hidden: 8
+  layers: 2
+  dropout: 0.2
+  lr: 0.02
+  batch_size: 4
+  epochs: 10
+  class_weighted: false

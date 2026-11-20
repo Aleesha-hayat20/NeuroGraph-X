@@ -6,9 +6,32 @@ Section 8.8: `v1.0-fyp1` for the FYP-I final, hotfixes as `v1.0.1-fyp1`.
 
 ## [Unreleased]
 
+### Week 7 (work plan 9 to 15 November 2026; started 17 November)
+- Reliability engine skeleton (M5, memo 0016; #131): `neurographx.m5_reliability` and
+  `scripts/run_reliability.py`. A grid definition (`configs/reliability/fixture_grid.yaml`)
+  is expanded into a job manifest of axis, value, atlas and seed, written once; a resumable
+  runner trains and scores each job on the development pool and logs it with
+  `"stage": "variant"` and a `reliability` object. Axes: atlas, seed, resample (stratified
+  bootstrap, scored out of bag) and site (left out). Real ABIDE data is refused without
+  `--allow-real-data`; no ABIDE reliability result is produced in FYP-I.
+- Database schema: `stage` accepts `variant`; new `reliability` column (JSON). ER diagram
+  source updated. Run-log schema version unchanged (3).
+- `tests/test_reliability.py`: 30 tests on the fixture grid of 16 jobs (manifest, splits,
+  resuming after a stop, guards, database import, and the real GCN giving identical
+  predictions on a repeated job).
+- Manual tests: API checks AC-01 to AC-14 added to `docs/testing/manual_tests.md`; TC-09
+  points to `docs/model_cards/`. Test plan `docs/testing/test_plan.md` (#136).
+- Manual test round 1 (`docs/testing/round_1.md`, #132), 20 November, build `04f01b9`:
+  12 API checks passed, AC-09 and AC-10 not run (cross-test pending); dashboard cases 8
+  passed, 2 failed, 1 blocked; bugs #198, #199 and #200.
+- Week 7 log.
+- README: reliability engine section.
+- The jury remark issues (#162, #163, #164) are named in memo 0015, the jury remarks page,
+  the Week 4 log and this changelog.
+
 ### Midterm jury remarks and memo 0015 (17 November 2026)
 - The three written remarks of the midterm jury, released on 17 November, logged as issues
-  with owners (#000, #000, #000; board task #44) and recorded in
+  with owners (#162, #163, #164; board task #44) and recorded in
   `docs/progress/midterm_jury_remarks.md`.
 - Memo 0015, real-world repositioning, approved by the supervisor on 17 November: the same
   disorder, data, models and modules, with a named user (research groups and hospital

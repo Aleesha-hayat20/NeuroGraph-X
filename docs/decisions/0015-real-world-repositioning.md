@@ -6,7 +6,7 @@
 **Related:** 0002 (pipeline strategy), 0003 (quality control), 0007 (connectome engine),
 0010 (calibration), 0011 (tuning and the frozen set), 0013 (analysis log and API contract),
 0014 (fixture data); the midterm jury remarks in `docs/progress/midterm_jury_remarks.md`
-(board task #44, issue #000)
+(board task #44, issue #162)
 
 ## Context
 
@@ -61,7 +61,7 @@ real user needs: the expected performance on an unseen scanner, shown with every
 No new features. Feature development closed on 15 November, and the demonstration must stay
 stable.
 
-- The three jury remarks are logged as issues with owners (#000, #000, #000;
+- The three jury remarks are logged as issues with owners (#162, #163, #164;
   board task #44) and recorded in `docs/progress/midterm_jury_remarks.md`.
 - `README.md` states who the system is for. The SRS (`docs/report/srs.md`, version 1.2)
   points to this memo in its product scope. The report outline (`docs/report/README.md`)

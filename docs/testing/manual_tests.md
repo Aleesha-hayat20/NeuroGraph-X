@@ -56,7 +56,7 @@ and the page shows the research-use notice.
 | **Use case** | Supporting view: cohort overview (no use case in the diagram) |
 | **Preconditions** | Common preconditions; the Overview page is merged (W7-16) |
 | **Steps** | 1. Open the Overview page. 2. Read the totals. 3. Read the quality-gate counts. 4. Look at the charts. |
-| **Expected result** | 1,112 participants in the table; 861 retained; 251 excluded. Excluded by first gate: rater 241, motion 10, completeness 0. Retained by split: 100 frozen, 761 development. Charts by group and site agree with these totals. Same numbers as `GET /cohort/summary`. |
+| **Expected result** | 1,112 participants: 861 included, 251 excluded by quality control. Excluded by first gate: rater 241, motion 10, completeness 0. Included by split: 100 frozen, 761 development. The charts by group (autism 396 included and 143 excluded, control 465 and 108) and by site (20 sites) agree with these totals. Same numbers as `GET /cohort/summary`. |
 | **Actual result** | |
 | **Status** | Not run |
 | **Tester** | |
@@ -191,7 +191,7 @@ and the page shows the research-use notice.
 | **Use case** | Supporting view: models and calibration (no use case in the diagram) |
 | **Preconditions** | Common preconditions; final models registered (backlog W6-04); the Models page is merged (W6-11) |
 | **Steps** | 1. Open Models. 2. Check each atlas. 3. Open the reliability diagram of one atlas. |
-| **Expected result** | All four atlases with cross-validation and frozen-set metrics, the majority-class baseline, calibration error before and after calibration, and a reliability diagram. Figures equal the registry (`GET /models`) and the model cards in `docs/models/`. |
+| **Expected result** | All four atlases with cross-validation and frozen-set metrics, the majority-class baseline, calibration error before and after calibration, and a reliability diagram. Figures equal the registry (`GET /models`) and the model cards in `docs/model_cards/`. |
 | **Actual result** | |
 | **Status** | Not run |
 | **Tester** | |
@@ -212,6 +212,34 @@ and the page shows the research-use notice.
 | **Tester** | |
 | **Date** | |
 | **Build** | |
+
+---
+
+## API checks
+
+**Purpose:** the same use cases checked one layer down, at the REST API (memo 0013), so a
+round records the API and its data flow even where a dashboard page is not merged yet, and
+a dashboard failure can be placed on the right side of the interface. Each check names the
+dashboard case it backs. Requests go to the API on the real data (`make api`) with `curl`
+or the interactive reference at http://127.0.0.1:8000/docs. A check that would create
+records (AC-06 to AC-09) adds them to the analysis log like any analysis.
+
+| ID | Backs | Request | Expected result |
+|---|---|---|---|
+| AC-01 | all | `GET /health` | 200; `"status": "ok"`, `"data_mode": "real"`, `"participant_table_found": true` |
+| AC-02 | TC-01 | `GET /cohort/summary` | 200; total 1112, included 861, excluded 251; excluded by gate rater 241, motion 10, completeness 0; by split frozen 100, development 761 |
+| AC-03 | TC-02 | `GET /participants?site=NYU`, then with `&qc_status=included`, then with `&group=autism` | 184, 172 and 74 participants; the totals in every response stay 1112, 861 and 251 |
+| AC-04 | TC-03 | `GET /participants/0050002`; `POST /analyses` with `{"participant_id": "0050002", "atlas": "cc200"}` | Excluded, gate rater, reasons `qc_rater_1 = fail`, `qc_func_rater_2 = fail`, `qc_func_rater_3 = fail`; the POST returns 409 with that gate and those reasons in `detail`, and no record is added |
+| AC-05 | TC-04 | `GET /atlases` | Four atlases: aal 116, cc200 200, ho 111, dosenbach160 161 regions, each with data present and a model registered |
+| AC-06 | TC-04 | `POST /analyses` with `{"participant_id": "0050011", "atlas": "cc200"}` | 201; run `cf60f29e`, prediction control, confidence 0.5124, calibrated true, a new 12-character analysis ID |
+| AC-07 | TC-05 | The same participant with `ho`, `aal` and `dosenbach160` | 201 each; runs `76533df4`, `57900b0d`, `5ee28510`; predictions autism with confidence 0.6174, 0.777 and 0.6709 |
+| AC-08 | TC-06 | `GET /analyses?participant_id=0050011`, then with `&atlas=cc200`; `GET /analyses/{analysis_id}` for the AC-06 record | Newest first, the AC-07 records before the AC-06 record; with the atlas filter, CC200 records only; the single record has the ten fields of memo 0013 |
+| AC-09 | TC-07 | `POST /analyses/{analysis_id}/regenerate` for the AC-06 record | 201; `"identical": true`; the new record has `reproduces_analysis_id` equal to the AC-06 analysis ID and the same run ID, prediction, confidence and calibrated flag |
+| AC-10 | TC-08 | `GET /analyses/{analysis_id}/export?format=json` and `?format=csv` | 200; files `analysis_<id>.json` and `analysis_<id>.csv`; the CSV has the header `analysis_id,timestamp,participant_id,atlas,run_id,prediction,confidence,calibrated,git_commit,reproduces_analysis_id` and one data row |
+| AC-11 | TC-09 | `GET /models` | Four atlases with runs aal `57900b0d`, cc200 `cf60f29e`, ho `76533df4`, dosenbach160 `5ee28510`, each calibrated (Platt); frozen-set accuracy, balanced accuracy and AUC equal the model cards in `docs/model_cards/`, which round to three decimals |
+| AC-12 | TC-10 | `GET /exclusions`, then `?gate=motion` | 251, then 10; 0050039 is PITT, control, reason `func_mean_fd = 0.602 > 0.5` |
+| AC-13 | TC-04, TC-05 | `POST /analyses` with atlas `xyz`; with participant `0099999` | 422 `Unknown atlas 'xyz'. Use one of: aal, cc200, ho, dosenbach160`; 404 `Unknown participant: 0099999` |
+| AC-14 | data flow | `python scripts/build_db.py`; `wc -l runs/run_log.jsonl runs/analysis_log.jsonl` | The script reports `<n> runs, 4 registered models, <m> analyses (real data)`, with n and m equal to the line counts of the two files |
 
 ---
 
