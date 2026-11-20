@@ -88,6 +88,7 @@ export default function Analysis() {
                 type="radio"
                 name="atlas"
                 value={a.atlas}
+                disabled={!a.data_available || !a.model_registered}
                 checked={atlas === a.atlas}
                 onChange={() => setAtlas(a.atlas)}
               />

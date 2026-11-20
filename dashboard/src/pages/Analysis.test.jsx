@@ -57,3 +57,31 @@ describe('Analysis page: development-pool note (#198)', () => {
     expect(screen.queryByText(/not an independent test/)).not.toBeInTheDocument()
   })
 })
+
+const MIXED_ATLASES = [
+  ...ATLASES,
+  { atlas: 'ho', label: 'Harvard-Oxford', n_regions: 111, data_available: true, model_registered: false },
+  { atlas: 'aal', label: 'AAL', n_regions: null, data_available: false, model_registered: false },
+]
+
+describe('Analysis page: atlases that cannot run (#199)', () => {
+  it('disables an atlas with no registered model or no connectomes', async () => {
+    getAtlases.mockResolvedValue(MIXED_ATLASES)
+    await openAnalysis()
+    expect(screen.getByRole('radio', { name: /CC200/ })).toBeEnabled()
+    expect(screen.getByRole('radio', { name: /Harvard-Oxford/ })).toBeDisabled()
+    expect(screen.getByRole('radio', { name: /AAL/ })).toBeDisabled()
+    expect(screen.getByText('no model registered')).toBeInTheDocument()
+    expect(screen.getByText('no connectomes')).toBeInTheDocument()
+  })
+
+  it('keeps Run analysis disabled until a usable atlas is chosen', async () => {
+    getAtlases.mockResolvedValue(MIXED_ATLASES)
+    await openAnalysis()
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: '0050011' } })
+    expect(screen.getByRole('button', { name: 'Run analysis' })).toBeDisabled()
+    fireEvent.click(screen.getByRole('radio', { name: /CC200/ }))
+    expect(screen.getByRole('button', { name: 'Run analysis' })).toBeEnabled()
+    expect(createAnalysis).not.toHaveBeenCalled()
+  })
+})
