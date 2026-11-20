@@ -187,6 +187,7 @@ export default function Models() {
               <th>Run</th>
               <th>CV accuracy (5-fold)</th>
               <th>Frozen accuracy</th>
+              <th>Majority baseline (frozen)</th>
               <th>Frozen AUC</th>
               <th>ECE before calibration</th>
               <th>ECE after calibration</th>
@@ -202,6 +203,7 @@ export default function Models() {
                   <td>{model.run_id}</td>
                   <td>{cvText(model.metrics?.cv_accuracy)}</td>
                   <td>{percent(frozen?.accuracy)}</td>
+                  <td>{percent(frozen?.majority_baseline)}</td>
                   <td>{decimal(frozen?.auc)}</td>
                   <td>{calibration ? decimal(calibration.before?.ece) : 'not calibrated'}</td>
                   <td>{calibration ? decimal(calibration.after?.ece) : 'not calibrated'}</td>
@@ -213,7 +215,8 @@ export default function Models() {
       </div>
       <p className="muted">
         Frozen set: 100 held-out participants, measured once. ECE is the expected calibration
-        error, lower is better, measured on the frozen set.
+        error, lower is better, measured on the frozen set. The majority baseline is the accuracy
+        of always guessing the larger group in the frozen set.
       </p>
 
       <h2>Reliability diagrams</h2>
