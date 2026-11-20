@@ -19,7 +19,7 @@ const CALIBRATED = {
   atlas: 'aal',
   run_id: 'aaaa1111',
   checkpoint_available: false,
-  metrics: { cv_accuracy: { mean: 0.7, sd: 0.02 }, frozen: { accuracy: 0.65, auc: 0.7 } },
+  metrics: { cv_accuracy: { mean: 0.7, sd: 0.02 }, frozen: { accuracy: 0.65, auc: 0.7, majority_baseline: 0.54 } },
   calibrated: true,
   calibration: {
     method: 'platt',
@@ -37,7 +37,7 @@ const UNCALIBRATED = {
   atlas: 'cc200',
   run_id: 'bbbb2222',
   checkpoint_available: true,
-  metrics: { cv_accuracy: { mean: 0.6, sd: 0.03 }, frozen: { accuracy: 0.55, auc: 0.6 } },
+  metrics: { cv_accuracy: { mean: 0.6, sd: 0.03 }, frozen: { accuracy: 0.55, auc: 0.6, majority_baseline: 0.54 } },
   calibrated: false,
   calibration: null,
 }
@@ -57,6 +57,16 @@ describe('Models page', () => {
     for (const text of ['AAL', '70.0% ± 2.0', '65.0%', '0.700', '0.250', '0.100']) {
       expect(within(rows[1]).getByText(text)).toBeInTheDocument()
     }
+  })
+
+  it('shows the majority-class baseline of the frozen set next to the frozen accuracy', async () => {
+    getModels.mockResolvedValue([CALIBRATED, UNCALIBRATED])
+    render(<Models />)
+
+    expect(
+      await screen.findByRole('columnheader', { name: 'Majority baseline (frozen)' }),
+    ).toBeInTheDocument()
+    expect(within(screen.getAllByRole('row')[1]).getByText('54.0%')).toBeInTheDocument()
   })
 
   it('says not calibrated, and draws no diagram, for a model without calibration', async () => {
