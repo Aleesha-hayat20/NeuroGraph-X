@@ -52,7 +52,7 @@ motion and data quality. 2.4 Calibration and reproducibility in medical machine 
 (DFD levels 0 and 1). 3.4 Behaviour (activity diagram; sequence diagrams for running and for
 regenerating an analysis). 3.5 Structure (class or component diagram). 3.6 Data design (ER
 diagram, analysis record, registry entry, connectome store). 3.7 Algorithm design.
-3.8 Design decisions (memos 0001 to 0015).
+3.8 Design decisions (memos 0001 to 0016).
 
 **4 Implementation.** 4.1 Data acquisition and quality control. 4.2 Connectome engine.
 4.3 Model and training. 4.4 Calibration. 4.5 REST API and the analysis log. 4.6 Dashboard.

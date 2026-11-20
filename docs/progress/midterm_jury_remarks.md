@@ -8,9 +8,9 @@ Each remark is its own issue with an owner, quoted exactly as released.
 
 | # | Remark | Owner | Issue | Response | Status on 17 November |
 |---|---|---|---|---|---|
-| 1 | "Moving the project from a strictly research domain to a more real-world application can be helpful." | Aleesha | #000 | Memo 0015: reposition and extend, approved by the supervisor on 17 November | Memo accepted; README, SRS and report outline updated; final deck slide pending |
-| 2 | "Design/analysis figures need reordering." | Alishba | #000 | Analysis figures first, then design figures, in the same order in the deck and the report | Open |
-| 3 | "Class diagram should use standard annotations." | Alishba | #000 | Class diagram redrawn in standard UML notation | Redrawn; in review |
+| 1 | "Moving the project from a strictly research domain to a more real-world application can be helpful." | Aleesha | #162 | Memo 0015: reposition and extend, approved by the supervisor on 17 November | Memo accepted; README, SRS and report outline updated; final deck slide pending |
+| 2 | "Design/analysis figures need reordering." | Alishba | #163 | Analysis figures first, then design figures, in the same order in the deck and the report | Open |
+| 3 | "Class diagram should use standard annotations." | Alishba | #164 | Class diagram redrawn in standard UML notation | Redrawn; in review |
 
 ## 1. Real-world application
 

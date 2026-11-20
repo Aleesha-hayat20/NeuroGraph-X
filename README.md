@@ -115,6 +115,24 @@ python scripts/build_fixtures.py --force      # regenerate after a file format c
 
 `/health` reports `"data_mode": "fixtures"`. Nothing measured on the fixture is a result.
 
+## Reliability engine (FYP-I skeleton)
+
+The reliability module (M5, memo 0016) re-runs the model with one thing changed at a time:
+the atlas, the training seed, the training sample or the site left out. A grid definition
+in `configs/reliability/` is expanded into a job manifest, and each finished job is logged
+as one run with `"stage": "variant"`. The runner is resumable: run the same command again
+and only the jobs not yet logged are run.
+
+```bash
+python scripts/run_reliability.py --spec configs/reliability/fixture_grid.yaml \
+    --output /tmp/ngx-reliability --dry-run     # list the 16 jobs
+python scripts/run_reliability.py --spec configs/reliability/fixture_grid.yaml \
+    --output /tmp/ngx-reliability               # run them on the fixture
+```
+
+In FYP-I it runs on the synthetic fixture only; real ABIDE data is refused without
+`--allow-real-data`, because the reliability finding is an FYP-II deliverable (memo 0015).
+
 ## The REST API
 
 Start it with `make api` (real data) or `make api-fixtures`, then open
