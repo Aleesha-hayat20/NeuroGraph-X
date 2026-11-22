@@ -1,0 +1,77 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="DFD Level 0" id="dfd0">
+    <mxGraphModel dx="1492" dy="684" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=center;fontStyle=1;fontSize=13;" value="NeuroGraph-X: DFD Level 0 (single process, FYP-I scope)" vertex="1">
+          <mxGeometry height="30" width="600" x="220" as="geometry" />
+        </mxCell>
+        <mxCell id="user" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=3;fontStyle=1;fontSize=13;" value="Research User" vertex="1">
+          <mxGeometry height="80" width="150" x="30" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="abide" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=3;fontStyle=1;fontSize=13;" value="ABIDE Preprocessed&lt;br&gt;(external dataset)" vertex="1">
+          <mxGeometry height="70" width="190" x="810" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="off" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=3;fontStyle=1;fontSize=13;" value="Offline Training&lt;br&gt;Environment" vertex="1">
+          <mxGeometry height="80" width="180" x="820" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="D1" parent="1" style="shape=partialRectangle;right=0;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=13;" value="D1  ABIDE data&lt;br&gt;local copy + exclusion log" vertex="1">
+          <mxGeometry height="56" width="240" x="380" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="D2" parent="1" style="shape=partialRectangle;right=0;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=13;" value="D2  Connectome store&lt;br&gt;matrices (.npz)" vertex="1">
+          <mxGeometry height="56" width="210" x="790" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="D3" parent="1" style="shape=partialRectangle;right=0;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=13;" value="D3  Model registry&lt;br&gt;JSON + checkpoints" vertex="1">
+          <mxGeometry height="56" width="240" x="270" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="D4" parent="1" style="shape=partialRectangle;right=0;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=13;" value="D4  Run &amp;amp; analysis log&lt;br&gt;JSONL, SQLite view" vertex="1">
+          <mxGeometry height="56" width="250" x="560" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="P0" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=13;" value="0&lt;br&gt;NeuroGraph-X&lt;br&gt;System" vertex="1">
+          <mxGeometry height="200" width="200" x="400" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" edge="1" parent="1" source="user" style="endArrow=block;html=1;startArrow=none;rounded=0;labelBackgroundColor=#ffffff;fontSize=13;exitX=1.0;exitY=0.3125;exitDx=0;exitDy=0;entryX=0.0057;entryY=0.425;entryDx=0;entryDy=0;" target="P0" value="participant + atlas&lt;br&gt;selection">
+          <mxGeometry relative="1" x="-0.0051" y="25" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="P0" style="endArrow=block;html=1;startArrow=none;rounded=0;labelBackgroundColor=#ffffff;fontSize=13;exitX=0.0159;exitY=0.625;exitDx=0;exitDy=0;entryX=1.0;entryY=0.8125;entryDx=0;entryDy=0;" target="user" value="result report: label,&lt;br&gt;confidence, run id, history">
+          <mxGeometry relative="1" x="0.0143" y="25" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="abide" style="endArrow=block;html=1;startArrow=none;rounded=0;labelBackgroundColor=#ffffff;fontSize=13;exitX=0.0;exitY=0.5714;exitDx=0;exitDy=0;entryX=0.883;entryY=0.1786;entryDx=0;entryDy=0;" target="P0" value="participant metadata,&lt;br&gt;ROI time series">
+          <mxGeometry relative="1" x="0.028" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="D1" style="endArrow=block;html=1;startArrow=block;rounded=0;labelBackgroundColor=#ffffff;fontSize=13;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" target="P0" value="participant records,&lt;br&gt;exclusion log">
+          <mxGeometry relative="1" x="-0.0526" y="-60" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="D2" style="endArrow=block;html=1;startArrow=block;rounded=0;labelBackgroundColor=#ffffff;fontSize=13;exitX=0.0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.9538;entryY=0.29;entryDx=0;entryDy=0;" target="P0" value="connectome&lt;br&gt;matrices">
+          <mxGeometry relative="1" x="-0.0969" y="-18" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="off" style="endArrow=block;html=1;startArrow=none;rounded=0;labelBackgroundColor=#ffffff;fontSize=13;exitX=0.0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.9636;entryY=0.6873;entryDx=0;entryDy=0;" target="P0" value="trained models,&lt;br&gt;training run records">
+          <mxGeometry relative="1" x="-0.1236" y="-41" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="D3" style="endArrow=block;html=1;startArrow=block;rounded=0;labelBackgroundColor=#ffffff;fontSize=13;exitX=0.5;exitY=0.0;exitDx=0;exitDy=0;entryX=0.2653;entryY=0.9415;entryDx=0;entryDy=0;" target="P0" value="model per atlas">
+          <mxGeometry relative="1" x="-0.3427" y="47" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="D4" style="endArrow=block;html=1;startArrow=block;rounded=0;labelBackgroundColor=#ffffff;fontSize=13;exitX=0.32;exitY=0.0;exitDx=0;exitDy=0;entryX=0.6873;entryY=0.9636;entryDx=0;entryDy=0;" target="P0" value="analysis records,&lt;br&gt;run history">
+          <mxGeometry relative="1" x="-0.5094" y="-49" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
