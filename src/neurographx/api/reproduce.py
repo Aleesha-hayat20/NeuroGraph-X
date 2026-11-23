@@ -31,7 +31,7 @@ from pathlib import Path
 
 from neurographx import analysis_log, datasource
 from neurographx.api import errors
-from neurographx.api.analyses import graph_source
+from neurographx.api.analyses import graph_source, non_finite_sentence
 from neurographx.m3_model.run_logger import get_run
 
 # The fields that decide whether a regenerated analysis repeats the original.
@@ -80,7 +80,7 @@ def regenerate(analysis_id: str, root: Path | None = None) -> dict:
     original = _original(analysis_id, root)
     run, entry = _model_of(original, root)
 
-    from neurographx.m3_model.inference import predict
+    from neurographx.m3_model.inference import NonFiniteGraph, predict
 
     pid, atlas = original["participant_id"], original["atlas"]
     try:
@@ -90,6 +90,8 @@ def regenerate(analysis_id: str, root: Path | None = None) -> dict:
         raise errors.unavailable(
             f"Participant {pid} has no connectome for atlas '{atlas}' in this dataset."
         ) from None
+    except NonFiniteGraph:
+        raise errors.unavailable(non_finite_sentence(pid, atlas)) from None
     except ValueError as err:                                           # 5
         raise errors.unavailable(
             f"The model of run {entry['run_id']} cannot be used: {err}") from None

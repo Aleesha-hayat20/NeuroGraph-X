@@ -148,3 +148,53 @@ def test_a_missing_or_changed_checkpoint_is_503_and_nothing_is_written(api, fixt
     response = api.post("/analyses", json={"participant_id": "0090001", "atlas": "cc200"})
     _assert_plain_sentence(response, 503, words)
     assert _log_lines(fixture_root) == 0
+
+
+# ---------------------------------------------------------------------------
+# A graph with NaN or infinite values (work plan Week 7: "NaN graph")
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def nan_graphs(monkeypatch):
+    """Every graph the API builds gets one NaN node feature, as a damaged connectome would."""
+    pytest.importorskip("torch")
+    pytest.importorskip("torch_geometric")
+    from neurographx.api import analyses, reproduce
+
+    real = analyses.graph_source
+
+    def damaged(run, root=None):
+        get_graph = real(run, root)
+
+        def get(participant_id):
+            graph = get_graph(participant_id)
+            graph.x = graph.x.clone()
+            graph.x[0, 0] = float("nan")
+            return graph
+
+        return get
+
+    def install():
+        monkeypatch.setattr(analyses, "graph_source", damaged)
+        monkeypatch.setattr(reproduce, "graph_source", damaged)
+
+    return install
+
+
+NAN_SENTENCE = ("The connectome of participant 0090001 for atlas 'cc200' contains missing or "
+                "infinite values, so it cannot be analysed.")
+
+
+def test_a_nan_graph_is_503_and_nothing_is_written(api, fixture_root, nan_graphs):
+    nan_graphs()
+    response = api.post("/analyses", json={"participant_id": "0090001", "atlas": "cc200"})
+    _assert_plain_sentence(response, 503, NAN_SENTENCE)
+    assert _log_lines(fixture_root) == 0
+
+
+def test_regenerating_onto_a_nan_graph_is_503_and_nothing_is_written(api, analysis_id,
+                                                                    fixture_root, nan_graphs):
+    nan_graphs()
+    response = api.post(f"/analyses/{analysis_id}/regenerate")
+    _assert_plain_sentence(response, 503, NAN_SENTENCE)
+    assert _log_lines(fixture_root) == 1  # only the original analysis

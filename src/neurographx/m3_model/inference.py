@@ -25,6 +25,14 @@ from neurographx.m3_model.run_logger import REGISTRY_PATH, get_model, get_run
 LABELS = {0: "control", 1: "autism"}
 
 
+class NonFiniteGraph(ValueError):
+    """The participant's graph has NaN or infinite node features, so it cannot be scored.
+
+    A ValueError, so existing callers that catch ValueError keep working; the API catches
+    this subclass first, because the cause is the participant's data, not the model.
+    """
+
+
 def checkpoint_path(entry: dict, registry_path: Path = REGISTRY_PATH) -> Path:
     """Where the registered checkpoint is on this machine.
 
@@ -100,7 +108,7 @@ def predict_graph(model, graph, device="cpu") -> tuple[int, float]:
             f"{in_dim} features per node (wrong atlas for this model?)"
         )
     if not torch.isfinite(graph.x).all():
-        raise ValueError("graph features contain NaN or inf")
+        raise NonFiniteGraph("graph features contain NaN or inf")
     graph = graph.to(device)
     batch = torch.zeros(graph.x.shape[0], dtype=torch.long, device=device)
     logits = model(graph.x, graph.edge_index, batch)

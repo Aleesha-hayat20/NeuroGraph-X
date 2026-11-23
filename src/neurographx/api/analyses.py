@@ -14,8 +14,9 @@ nothing itself:
            Its return value is the response body.
 
 Problems that are not the caller's fault but the data's (a connectome missing for one
-participant, a checkpoint that does not match its logged hash, a run missing from the run
-log) are 503 with a plain sentence, as memo 0013 asks for unavailable data.
+participant or holding NaN or infinite values, a checkpoint that does not match its logged
+hash, a run missing from the run log) are 503 with a plain sentence, as memo 0013 asks for
+unavailable data.
 """
 
 from __future__ import annotations
@@ -63,6 +64,12 @@ def graph_source(run: dict, root: Path | None = None):
     return make_get_graph(cset, cfg["density"], cfg["fill_nan"])
 
 
+def non_finite_sentence(participant_id: str, atlas: str) -> str:
+    """The 503 sentence for a graph with NaN or infinite values (POST and regenerate)."""
+    return (f"The connectome of participant {participant_id} for atlas '{atlas}' contains "
+            "missing or infinite values, so it cannot be analysed.")
+
+
 def run_analysis(participant_id: str, atlas: str, root: Path | None = None) -> dict:
     """Check, predict, log. Returns the analysis record (memo 0013, part 2)."""
     ok = check_request(participant_id, atlas, root)                    # 1
@@ -75,7 +82,7 @@ def run_analysis(participant_id: str, atlas: str, root: Path | None = None) -> d
             "the run log, so its graph settings are unknown.")
     get_graph = graph_source(run, root)
 
-    from neurographx.m3_model.inference import predict
+    from neurographx.m3_model.inference import NonFiniteGraph, predict
 
     try:                                                                # 2
         prediction = predict(pid, atlas, get_graph, datasource.model_registry(root),
@@ -84,6 +91,8 @@ def run_analysis(participant_id: str, atlas: str, root: Path | None = None) -> d
         raise errors.unavailable(
             f"Participant {pid} has no connectome for atlas '{atlas}' in this dataset."
         ) from None
+    except NonFiniteGraph:
+        raise errors.unavailable(non_finite_sentence(pid, atlas)) from None
     except ValueError as err:  # checkpoint does not match the SHA-256 in the run log
         raise errors.unavailable(f"The model for atlas '{atlas}' cannot be used: {err}") from None
 
