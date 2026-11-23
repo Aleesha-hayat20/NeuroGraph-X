@@ -17,7 +17,7 @@ import math
 from pathlib import Path
 
 from neurographx import datasource
-from neurographx.m3_model.run_logger import get_run, read_registry
+from neurographx.m3_model.run_logger import get_run, read_registry, read_runs
 
 LABELS = {"aal": "AAL (116 regions)", "cc200": "CC200 (200 regions)",
           "ho": "Harvard-Oxford (111 regions)", "dosenbach160": "Dosenbach 160 (161 regions)"}
@@ -48,7 +48,10 @@ def gather(root: Path | None) -> list[dict]:
         cal_path = Path(datasource.model_registry(root)).parent / "calibration" / \
             f"{atlas}_{final['run_id']}.json"
         cal = json.loads(cal_path.read_text(encoding="utf-8")) if cal_path.exists() else None
-        rows.append({"atlas": atlas, "final": final, "cv": cv, "cal": cal})
+        earlier = [r for r in read_runs(log) if r.get("stage") == "final"
+                   and r["atlas"] == atlas and r["run_id"] != final["run_id"]
+                   and "frozen" in r.get("metrics", {})]
+        rows.append({"atlas": atlas, "final": final, "cv": cv, "cal": cal, "earlier": earlier})
     return rows
 
 
@@ -76,7 +79,8 @@ def card(row: dict) -> str:
         f"- **Architecture:** graph convolutional network, {hp.get('layers')} GCN layers of "
         f"{hp.get('hidden')} units, mean-pool readout, MLP head, dropout {hp.get('dropout')}.",
         f"- **Graph:** one graph per participant; nodes are the atlas regions, node features "
-        f"the Fisher-z correlation row, edges the strongest {dc['density']:.0%} of |z| "
+        f"the Fisher-z correlation row, unweighted edges for the strongest "
+        f"{dc['density']:.0%} of |z| "
         f"(missing values filled with {dc['fill_nan']}).",
         f"- **Training:** Adam, learning rate {hp.get('lr')}, batch {hp.get('batch_size')}, "
         f"{hp.get('epochs')} epochs (median best epoch of the CV folds), class-weighted loss "
@@ -118,7 +122,19 @@ def card(row: dict) -> str:
     if f.get("repeat_frozen_measurement"):
         lines += ["", f"**Declared repeat measurement.** This atlas was measured on the frozen "
                   f"set before; reason logged: \"{f.get('repeat_reason')}\". The earlier "
-                  "result stays in the run log."]
+                  "result stays in the run log and is reported beside this one:"]
+        lines += ["", "| Frozen-set measurement | Run | Accuracy | Balanced accuracy | AUC |",
+                  "|---|---|---|---|---|",
+                  f"| This model (served) | `{f['run_id']}` | {fr['accuracy']:.3f} | "
+                  f"{fr['balanced_accuracy']:.3f} | {_fmt(fr.get('auc'))} |"]
+        for e in row.get("earlier", []):
+            ef = e["metrics"]["frozen"]
+            lines.append(f"| Earlier ({e['timestamp'][:10]}, not served) | `{e['run_id']}` | "
+                         f"{ef['accuracy']:.3f} | {ef['balanced_accuracy']:.3f} | "
+                         f"{_fmt(ef.get('auc'))} |")
+        lines += ["", "The served model is the one selected before measuring (memo 0011); "
+                  "choosing between the two by their frozen-set scores would make the frozen "
+                  "set a tuning set. The intervals of the two overlap widely."]
     lines += ["", "## Confidence calibration (memo 0010)"]
     if cal:
         o, fz = cal["oof"], cal.get("frozen")
@@ -147,10 +163,18 @@ def card(row: dict) -> str:
         "- Modest accuracy: useful for studying group differences, far from individual use.",
         f"- One frozen set of {fr['n']} gives a wide interval (above); differences of a few "
         "points between atlases are within it.",
+        "- Accuracy varies between imaging sites; see the confound check "
+        "(`docs/reports/confound_check.md`), which reports it by site, head motion and flat "
+        "regions on the out-of-fold predictions.",
         "- ABIDE I only: sites, scanners and protocols differ, and no external dataset was "
         "tested.",
         "- Trained on all development participants, so a prediction for one of them is not an "
         "independent test; demonstrations use frozen-set participants.",
+        "",
+        "## How it is served",
+        f"`GET /models/{atlas}` describes this model and `POST /analyses` uses it "
+        "(`docs/api.md`). The checkpoint is committed; the loader refuses a file whose SHA-256 "
+        "differs from the one above, and every prediction is calibrated as described.",
         "",
         "## Licence",
         "ABIDE I data: CC BY-NC-SA 3.0 (non-commercial research use).",

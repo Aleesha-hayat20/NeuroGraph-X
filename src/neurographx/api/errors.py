@@ -20,6 +20,7 @@ from collections.abc import Iterable, Sequence
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 log = logging.getLogger("neurographx.api")
 
@@ -91,6 +92,8 @@ def validation_message(errors: Sequence[dict]) -> str:
         msg = msg[:1].lower() + msg[1:]
         if err.get("type") == "missing":
             sentences.append(f"Missing required field: {field}.")
+        elif err.get("type") == "json_invalid":
+            sentences.append("The request body is not valid JSON.")
         elif "input" in err and not isinstance(err["input"], (dict, list)):
             sentences.append(f"Invalid value '{err['input']}' for {field}: {msg}.")
         else:
@@ -100,6 +103,17 @@ def validation_message(errors: Sequence[dict]) -> str:
 
 async def _validation_handler(_request: Request, exc: RequestValidationError) -> JSONResponse:
     return JSONResponse(status_code=422, content={"detail": validation_message(exc.errors())})
+
+
+async def _http_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+    """Our own errors keep their sentence; Starlette's bare defaults become one."""
+    detail = exc.detail
+    if exc.status_code == 404 and detail == "Not Found":
+        detail = f"No such endpoint: {request.method} {request.url.path}."
+    elif exc.status_code == 405 and detail == "Method Not Allowed":
+        detail = f"Method {request.method} is not allowed for {request.url.path}."
+    return JSONResponse(status_code=exc.status_code, content={"detail": detail},
+                        headers=getattr(exc, "headers", None))
 
 
 async def _data_handler(_request: Request, exc: DataUnavailable) -> JSONResponse:
@@ -115,5 +129,6 @@ async def _unexpected_handler(request: Request, exc: Exception) -> JSONResponse:
 def install(app: FastAPI) -> None:
     """Register the handlers that keep every error body a plain-language `detail`."""
     app.add_exception_handler(RequestValidationError, _validation_handler)
+    app.add_exception_handler(StarletteHTTPException, _http_handler)
     app.add_exception_handler(DataUnavailable, _data_handler)
     app.add_exception_handler(Exception, _unexpected_handler)
