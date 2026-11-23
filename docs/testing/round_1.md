@@ -195,5 +195,7 @@ Tester Aleesha Hayat, 20 November 2026, build `04f01b9`, unless the row says oth
 
 ## Next round
 
-Round 2 (Week 8) repeats every case on the build that fixes the three bugs, with the
-dashboard cases cross-tested again and AC-09 and AC-10 included.
+Round 2 (Week 8) repeats every case, TC-04b included, on the build that fixes the three
+bugs (#198 to #200), with the testers swapped: Laiba Afridi runs the dashboard cases and
+Alishba Fayaz the API checks. AC-09 and AC-10 passed in this round and are repeated with the
+rest.

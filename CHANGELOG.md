@@ -6,7 +6,41 @@ Section 8.8: `v1.0-fyp1` for the FYP-I final, hotfixes as `v1.0.1-fyp1`.
 
 ## [Unreleased]
 
+### Week 8 (work plan 16 to 22 November 2026)
+- Release checklist, `docs/release/checklist.md` (#174): what must be true on `main`, in CI
+  and on the demonstration machine before `v1.0-fyp1` is tagged, and the hotfix route
+  during the evaluation window.
+- `SETUP.md` rewritten for the clean-clone test (#137, #177): a fresh clone to a running
+  dashboard in fixture mode, then the real data (downloaded or copied), the integrity check,
+  a CPU prediction, the checks CI runs, and the common problems. README: quick start with
+  the repository address, a documentation table, and the full error list.
+- The API loads the model code at start-up, so the first analysis after the server starts
+  no longer pays about 4.5 seconds of library loading (#139 follow-up;
+  `tests/test_performance.py`). `scripts/benchmark_api.py` starts the server the same way
+  and reports the start-up time.
+- A connectome with missing or infinite values is refused by `POST /analyses` and by
+  regenerate with 503 and its own sentence, instead of a sentence that blamed the model;
+  `inference.NonFiniteGraph`. Two cases added to `tests/test_robustness.py`, closing the
+  "NaN graph" path of the work plan's robustness list (#140 follow-up).
+- Version 1.0.0 in the package, the API (`GET /health`) and the dashboard, for `v1.0-fyp1`.
+- Round 1 report: the plan for round 2 states the swapped testers and that AC-09 and AC-10
+  passed.
+
 ### Week 7 (work plan 9 to 15 November 2026; started 17 November)
+- Merged on 22 November: round 1 cross-test of regenerate (AC-09) and export (AC-10) on
+  real data, both passed, so all 14 API checks passed (PR #201); dashboard fixes for the
+  round 1 bugs, the development-pool note (#198), atlases without a model or data disabled
+  (#199) and the majority-class baseline on the Models page (#200) (PR #203); the database
+  schema image re-rendered with the `reliability` column and the `variant` stage (#153,
+  PR #204).
+- Merged in Week 8 (PR #202): robustness tests, every failure path returning its
+  documented status and one sentence with nothing written to the analysis log
+  (`tests/test_robustness.py`, #140); Starlette's bare 404 and 405 and a body that is not
+  JSON now answer with one plain sentence too (`api/errors.py`). Performance benchmark and
+  tests (`scripts/benchmark_api.py`, `tests/test_performance.py`,
+  `docs/reports/performance.md`, #139). API reference `docs/api.md` (#141). Final model
+  cards, the CC200 card reporting both frozen-set measurements and why run `cf60f29e` is
+  served (#144).
 - Reliability engine skeleton (M5, memo 0016; #131): `neurographx.m5_reliability` and
   `scripts/run_reliability.py`. A grid definition (`configs/reliability/fixture_grid.yaml`)
   is expanded into a job manifest of axis, value, atlas and seed, written once; a resumable

@@ -1,6 +1,6 @@
 [project]
 name = "neurographx"
-version = "0.1.0"
+version = "1.0.0"
 description = "A graph neural network platform for reliability-aware brain connectivity analysis in autism research"
 requires-python = ">=3.11"
 
