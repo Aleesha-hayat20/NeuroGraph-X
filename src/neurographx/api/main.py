@@ -32,6 +32,9 @@ Every error body is {"detail": "<plain sentence>"} (api/errors.py).
 
 from __future__ import annotations
 
+import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated
 
@@ -61,10 +64,39 @@ from neurographx.api.schemas import (
 
 datasource.mode()  # an unknown NGX_DATA value stops the server at start-up, not mid-demo
 
+log = logging.getLogger("neurographx.api")
+
+
+def warm_up() -> bool:
+    """Import the model code (PyTorch, PyTorch Geometric) once, before the first request.
+
+    Without this, the first analysis after the server starts also pays for loading the
+    libraries, about 4.5 seconds on a laptop CPU against about 0.15 seconds for every
+    analysis after it (docs/reports/performance.md, #139). Returns False when PyTorch is
+    not installed, so a server without the model code still starts and serves the data
+    side.
+    """
+    try:
+        import neurographx.m3_model.data  # noqa: F401
+        import neurographx.m3_model.inference  # noqa: F401
+    except ImportError as err:
+        log.warning("Model code not loaded at start-up: %s", err)
+        return False
+    return True
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    """Start-up: load the model code, so the first analysis of a demonstration is fast."""
+    warm_up()
+    yield
+
+
 app = FastAPI(
     title="NeuroGraph-X API",
     version=__version__,
     description="Research use only. Not a diagnostic device, not a medical device.",
+    lifespan=lifespan,
 )
 errors.install(app)
 app.include_router(models_router)

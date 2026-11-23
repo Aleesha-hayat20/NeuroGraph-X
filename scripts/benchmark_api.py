@@ -1,7 +1,8 @@
 """Measure analysis time on this machine's CPU (#139, NFR-9) and write the report table.
 
-For each atlas with a registered model, through the real API code (FastAPI TestClient,
-no network):
+The server is started as uvicorn starts it, so its start-up hook loads the model code
+once (the start-up time is reported). Then, for each atlas with a registered model, through
+the real API code (FastAPI TestClient, no network):
 
   1. the first POST /analyses, which also loads the atlas's connectomes ("cold");
   2. then `--repeats` more requests for the same participant ("warm"): their median and
@@ -37,6 +38,28 @@ def _machine() -> str:
             f"cores; Python {platform.python_version()}, PyTorch {torch.__version__} (CPU)")
 
 
+def _measure(client, atlas: str, participant: str, repeats: int, startup_s: float) -> dict:
+    """One first request and `repeats` more for one atlas: times and whether all agree."""
+    body = {"participant_id": participant, "atlas": atlas}
+    times, answers = [], set()
+    for _ in range(repeats + 1):
+        start = time.perf_counter()
+        response = client.post("/analyses", json=body)
+        elapsed = time.perf_counter() - start
+        if response.status_code != 201:
+            raise SystemExit(f"{atlas}: {response.status_code} "
+                             f"{response.json().get('detail')}")
+        record = response.json()
+        answers.add((record["prediction"], record["confidence"]))
+        times.append(elapsed)
+    warm = times[1:]
+    return {"atlas": atlas, "run_id": record["run_id"], "cold_s": times[0],
+            "warm_median_s": statistics.median(warm), "warm_max_s": max(warm),
+            "repeats": repeats, "identical": len(answers) == 1,
+            "prediction": record["prediction"], "confidence": record["confidence"],
+            "within_limit": max(warm) <= LIMIT_S, "startup_s": startup_s}
+
+
 def benchmark(repeats: int = 20, participant: str | None = None) -> list[dict]:
     from fastapi.testclient import TestClient
 
@@ -52,29 +75,11 @@ def benchmark(repeats: int = 20, participant: str | None = None) -> list[dict]:
         real_log = datasource.analysis_log
         datasource.analysis_log = lambda root=None: log  # keep the demonstration log clean
         try:
-            client = TestClient(app)
-            rows = []
-            for atlas in registry:
-                body = {"participant_id": participant, "atlas": atlas}
-                times, answers = [], set()
-                for i in range(repeats + 1):
-                    start = time.perf_counter()
-                    response = client.post("/analyses", json=body)
-                    elapsed = time.perf_counter() - start
-                    if response.status_code != 201:
-                        raise SystemExit(f"{atlas}: {response.status_code} "
-                                         f"{response.json().get('detail')}")
-                    record = response.json()
-                    answers.add((record["prediction"], record["confidence"]))
-                    times.append(elapsed)
-                warm = times[1:]
-                rows.append({"atlas": atlas, "run_id": record["run_id"], "cold_s": times[0],
-                             "warm_median_s": statistics.median(warm),
-                             "warm_max_s": max(warm), "repeats": repeats,
-                             "identical": len(answers) == 1,
-                             "prediction": record["prediction"],
-                             "confidence": record["confidence"],
-                             "within_limit": max(warm) <= LIMIT_S})
+            start = time.perf_counter()
+            with TestClient(app) as client:  # runs the start-up hook, as uvicorn does
+                startup_s = time.perf_counter() - start
+                rows = [_measure(client, atlas, participant, repeats, startup_s)
+                        for atlas in registry]
         finally:
             datasource.analysis_log = real_log
     return rows
@@ -90,8 +95,10 @@ def table(rows: list[dict], participant: str) -> str:
                      f"{r['warm_median_s'] * 1000:.0f} | {r['warm_max_s'] * 1000:.0f} | "
                      f"{'yes' if r['identical'] else 'NO'} ({r['repeats']}) | "
                      f"{'yes' if r['within_limit'] else 'NO'} |")
-    return "\n".join(lines) + f"\n\nParticipant {participant}; prediction and confidence of " \
-        "every repeat compared with the first.\n"
+    startup = (f"Server start-up, which loads the model code once: {rows[0]['startup_s']:.2f} s. "
+               if rows and "startup_s" in rows[0] else "")
+    return "\n".join(lines) + f"\n\n{startup}Participant {participant}; prediction and " \
+        "confidence of every repeat compared with the first.\n"
 
 
 def main() -> None:

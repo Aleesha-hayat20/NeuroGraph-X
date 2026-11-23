@@ -60,3 +60,17 @@ def test_nfr9_on_real_data_every_analysis_within_five_seconds(monkeypatch):
     # the same answer as manual check AC-06
     assert (rows["cc200"]["run_id"], rows["cc200"]["prediction"],
             rows["cc200"]["confidence"]) == ("cf60f29e", "control", 0.5124)
+
+
+def test_the_server_loads_the_model_code_at_start_up():
+    """The start-up hook (#139): the first analysis does not pay for importing PyTorch."""
+    import sys
+
+    from fastapi.testclient import TestClient
+
+    from neurographx.api.main import app, warm_up
+
+    assert warm_up() is True
+    with TestClient(app) as client:  # runs the start-up hook
+        assert client.get("/health").status_code == 200
+    assert "neurographx.m3_model.inference" in sys.modules
