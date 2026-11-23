@@ -61,17 +61,35 @@ advice of the midterm jury.
 ## Quick start
 
 ```bash
-git clone <your repository url>
-cd neurograph-x
+git clone https://github.com/Aleesha-hayat20/NeuroGraph-X.git
+cd NeuroGraph-X
 
-python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate          # Windows PowerShell: .venv\Scripts\Activate.ps1
 
 pip install -r requirements-dev.txt
 pip install -e .
 
 pytest                             # should pass before you change anything
 ```
+
+[`SETUP.md`](SETUP.md) takes a fresh clone to a running dashboard, first on the synthetic
+fixture dataset and then on the real ABIDE data, and lists the checks CI runs.
+
+## Documentation
+
+| Document | Where |
+|---|---|
+| Setup, from a clean clone to a running dashboard | [`SETUP.md`](SETUP.md) |
+| API reference, every endpoint and error | [`docs/api.md`](docs/api.md) |
+| Model cards, one per atlas | [`docs/model_cards/`](docs/model_cards/) |
+| Decision memos, the reasoning behind every choice | [`docs/decisions/`](docs/decisions/) |
+| Design diagrams | [`docs/design/`](docs/design/) |
+| Test plan, manual test cases and round reports | [`docs/testing/`](docs/testing/) |
+| Results, performance and limitation analyses | [`docs/reports/`](docs/reports/) |
+| Release checklist | [`docs/release/checklist.md`](docs/release/checklist.md) |
+| Weekly plans and logs, supervisor meetings | [`docs/progress/`](docs/progress/) |
+| What changed, week by week | [`CHANGELOG.md`](CHANGELOG.md) |
 
 ## Week 1 workflow
 
@@ -153,7 +171,8 @@ error, is decision memo 0013.
 | `POST /analyses/{id}/regenerate` | re-run a past analysis with its original model; reports whether the result is identical |
 | `GET /analyses/{id}/export` | one analysis record as a JSON or CSV file (`format=json` or `csv`) |
 
-Errors always come back as `{"detail": "<plain sentence>"}` with 404, 409, 422 or 503.
+Errors always come back as `{"detail": "<plain sentence>"}` with 404, 405, 409, 422, 503 or,
+for anything unexpected, 500 (`docs/api.md`).
 `python scripts/build_db.py` rebuilds the SQLite view of the run log, the model registry
 and the analysis log (`runs/neurographx.sqlite`, not committed).
 
@@ -161,10 +180,12 @@ and the analysis log (`runs/neurographx.sqlite`, not committed).
 
 ```bash
 python scripts/check_integrity.py      # registry, run log, checkpoints, data files and analysis log agree
+python scripts/benchmark_api.py        # analysis time on this machine's CPU (NFR-9), docs/reports/performance.md
 python scripts/confound_check.py       # rewrites docs/reports/confound_check.md (site, motion, flat regions)
 ```
 
-The integrity check also runs in CI on the fixture dataset (`--data fixtures`).
+The integrity check also runs in CI on the fixture dataset (`--data fixtures`). The full
+list for a release is [`docs/release/checklist.md`](docs/release/checklist.md).
 
 > **Never request the `func_preproc` derivative.** The `rois_*` derivatives are small
 > `.1D` text files. Everything else is a large `.nii.gz` volume.

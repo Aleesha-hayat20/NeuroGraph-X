@@ -1,6 +1,6 @@
 # NeuroGraph-X API reference
 
-The REST API behind the dashboard (FastAPI, version 0.1.0). It serves the participant table
+The REST API behind the dashboard (FastAPI, version 1.0.0). It serves the participant table
 and quality control, the four atlas models, and every analysis with its record. Decisions:
 memo 0013 (analysis log and API contract), 0009 (checkpoints), 0010 (calibration), 0014
 (fixture data). The interactive version of this page, generated from the code, is at
@@ -16,7 +16,9 @@ make api-fixtures   # synthetic fixture dataset (NGX_DATA=fixtures), no real dat
 ```
 
 Base URL: `http://127.0.0.1:8000`. Every response is JSON except the export endpoint, which
-returns a file. `GET /health` reports the data mode (`real` or `fixtures`).
+returns a file. `GET /health` reports the data mode (`real` or `fixtures`). At start-up the
+server loads the model code once, so the first analysis is as fast as the ones after it
+(`docs/reports/performance.md`).
 
 Real mode needs, besides the repository: the phenotypic table
 (`python scripts/01_fetch_phenotypic.py`) and the connectomes in
@@ -35,7 +37,7 @@ it as it is. A request that fails writes nothing to the analysis log. Tested by
 | 405 | Method not allowed on that path | `Method DELETE is not allowed for /analyses/132ae8374154.` |
 | 409 | Participant excluded by quality control | `Participant 0050002 was excluded by quality control (rater): qc_rater_1 = fail; …` |
 | 422 | Unknown atlas, site or format; invalid filter, body or JSON | `Unknown atlas 'xyz'. Use one of: aal, cc200, ho, dosenbach160` |
-| 503 | Data, model or checkpoint not available, or a checkpoint that does not match its recorded SHA-256 | `No model is registered for atlas 'ho'.` |
+| 503 | Data, model or checkpoint not available, a checkpoint that does not match its recorded SHA-256, or a connectome with missing or infinite values | `No model is registered for atlas 'ho'.` |
 | 500 | Anything unexpected (details go to the server log, not the response) | `Internal error; see the server log.` |
 
 Participant IDs are accepted as `0050003` or `50003` and always returned with 7 digits.
@@ -61,7 +63,7 @@ Atlas names are `aal`, `cc200`, `ho` and `dosenbach160`.
 
 ### `GET /health`
 
-`{"status": "ok", "version": "0.1.0", "participant_table_found": true, "data_mode": "real"}`
+`{"status": "ok", "version": "1.0.0", "participant_table_found": true, "data_mode": "real"}`
 
 ### `GET /participants`
 
@@ -115,8 +117,9 @@ Body: `{"participant_id": "0050011", "atlas": "cc200"}`. The checks run in this 
 so the same bad request always gets the same answer: atlas known (422), participant exists
 (404), participant included (409), connectomes available for the atlas (503), model
 registered and checkpoint present and matching its SHA-256 (503). The graph is built with
-the settings of the model's training run; the prediction is made on the CPU and calibrated
-with the run's Platt calibrator. Returns 201 and the stored record:
+the settings of the model's training run, and a graph with missing or infinite values is
+refused (503); the prediction is made on the CPU and calibrated with the run's Platt
+calibrator. Returns 201 and the stored record:
 
 ```json
 {
@@ -151,8 +154,8 @@ whichever model is registered today), with that run's graph settings and calibra
 records the result with `reproduces_analysis_id` set. Returns 201 with `analysis` (the new
 record), `original`, `identical` (prediction, confidence and calibrated all equal) and
 `differences` (the fields that differ). Errors: 404 unknown analysis; 503 when the run, its
-checkpoint or the participant's connectome is unavailable, or the checkpoint does not match
-its SHA-256.
+checkpoint or the participant's connectome is unavailable, the checkpoint does not match its
+SHA-256, or the connectome has missing or infinite values.
 
 ### `GET /analyses/{analysis_id}/export`
 
