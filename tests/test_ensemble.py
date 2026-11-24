@@ -163,19 +163,24 @@ def test_cv_mode_reads_no_frozen_file(four_members, monkeypatch):
     assert script.main(["--cv"], root=root, members=members) == 0
 
 
-def test_measure_once_logs_one_record_and_refuses_a_second(four_members):
+def _ensemble_records(root):
+    return ens.read_ensemble_log(root / "runs/ensemble_log.jsonl")
+
+
+def test_measure_once_records_one_measurement_and_refuses_a_second(four_members):
     root, members = four_members
+    run_log_before = (root / "runs/run_log.jsonl").read_bytes()
     script = _load_script()
     assert script.main(["--measure-once"], root=root, members=members) == 0
 
-    records = [r for r in read_runs(root / "runs/run_log.jsonl") if r["stage"] == "ensemble"]
+    records = _ensemble_records(root)
     assert len(records) == 1
     rec = records[0]
+    assert set(ens.REQUIRED) <= set(rec)
     assert rec["members"] == {a: members[a] for a in ("aal", "cc200", "ho", "dosenbach160")}
-    assert rec["hyperparameters"]["threshold"] == 0.5 and rec["atlas"] is None
-    pred = rec["metrics"]["frozen"]["predictions"]
-    path = root / pred["file"]
-    assert _sha(path) == pred["sha256"]
+    assert rec["rule"]["threshold"] == 0.5 and rec["rule"]["memo"] == "0017"
+    path = root / rec["predictions"]["file"]
+    assert _sha(path) == rec["predictions"]["sha256"]
 
     out = pd.read_csv(path)
     member_cols = [f"prob_{a}" for a in ("aal", "cc200", "ho", "dosenbach160")]
@@ -183,11 +188,54 @@ def test_measure_once_logs_one_record_and_refuses_a_second(four_members):
     assert (out["prediction"] == (out["prob_autism"] >= 0.5)).all()
     assert rec["metrics"]["frozen"]["n"] == len(out)
     assert (root / "docs/reports/ensemble.md").read_text().startswith("# The four-atlas")
+    # the run log, which holds training runs only (memo 0008), is not touched
+    assert (root / "runs/run_log.jsonl").read_bytes() == run_log_before
 
     with pytest.raises(SystemExit, match="measured once"):
         script.main(["--measure-once"], root=root, members=members)
-    assert len([r for r in read_runs(root / "runs/run_log.jsonl")
-                if r["stage"] == "ensemble"]) == 1
+    assert len(_ensemble_records(root)) == 1
+
+
+def test_build_db_still_imports_everything_after_a_measurement(four_members, tmp_path):
+    """Aleesha's review of #208: the measurement must not break scripts/build_db.py."""
+    import importlib.util
+    root, members = four_members
+    assert _load_script().main(["--measure-once"], root=root, members=members) == 0
+    spec = importlib.util.spec_from_file_location("build_db", ROOT / "scripts/build_db.py")
+    build_db = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(build_db)
+    counts = build_db.build(root, tmp_path / "check.sqlite")
+    assert counts["run_log"] == len(read_runs(root / "runs/run_log.jsonl"))
+
+
+def _section8(root):
+    from neurographx.integrity import check
+    report = check(root, "fixtures", replay=False)
+    return [f for f in report.findings if f.section == "8. Ensemble log"]
+
+
+def test_integrity_passes_without_and_with_a_measurement(four_members):
+    root, members = four_members
+    assert [f.status for f in _section8(root)] == ["PASS"]
+    assert _load_script().main(["--measure-once"], root=root, members=members) == 0
+    found = _section8(root)
+    assert [f.status for f in found] == ["PASS"], [f.message for f in found]
+
+
+def test_integrity_fails_on_a_changed_ensemble_file_or_a_second_record(four_members):
+    root, members = four_members
+    assert _load_script().main(["--measure-once"], root=root, members=members) == 0
+    log = root / "runs/ensemble_log.jsonl"
+    rec = _ensemble_records(root)[0]
+    path = root / rec["predictions"]["file"]
+    good = path.read_text()
+
+    path.write_text(good.replace("0.", "0.9", 1))
+    assert any("does not match its hash" in f.message for f in _section8(root))
+
+    path.write_text(good)
+    log.write_text(log.read_text() + json.dumps({**rec, "ensemble_id": "second"}) + "\n")
+    assert any("allows one" in f.message for f in _section8(root))
 
 
 def test_a_changed_prediction_file_is_refused(four_members):
@@ -196,7 +244,7 @@ def test_a_changed_prediction_file_is_refused(four_members):
     path.write_text(path.read_text().replace("0.", "0.1", 1))
     with pytest.raises(ValueError, match="differs from the hash"):
         _load_script().main(["--measure-once"], root=root, members=members)
-    assert not [r for r in read_runs(root / "runs/run_log.jsonl") if r["stage"] == "ensemble"]
+    assert not _ensemble_records(root)
 
 
 def test_crlf_copies_of_prediction_files_are_accepted(four_members):

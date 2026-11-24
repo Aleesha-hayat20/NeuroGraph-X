@@ -28,6 +28,9 @@ one consistent system (work plan Section 2.2 and Week 6; memos 0008, 0009, 0011,
                     every analysis made by a registered or archived run of its atlas, every
                     regenerated analysis points to an earlier one with the same participant,
                     atlas and run.
+8. Ensemble log     (memo 0017) at most one measurement per dataset; its members are final
+                    runs of their atlases; its prediction file matches its hash and holds
+                    the mean of the members' saved frozen-set predictions.
 
 Why a different connectome hash is not on its own a failure: the arrays are what the
 model reads, but the hash is of the .npz file, and the same arrays saved by different
@@ -577,6 +580,68 @@ class _Checker:
                               "each made by a registered or archived run of its atlas")
 
 
+    # 8 ---------------------------------------------------------------------
+    def ensemble(self) -> None:
+        """Memo 0017: the ensemble record, its members and its prediction file."""
+        s = "8. Ensemble log"
+        path = datasource.ensemble_log(self.root)
+        if not path.exists():
+            self.add(PASS, s, "no ensemble measurement recorded")
+            return
+        records, bad = _read_jsonl(path)
+        if bad:
+            self.add(FAIL, s, f"lines that are not JSON records: {bad[:10]}")
+        problems = []
+        ids = [str(r.get("ensemble_id")) for r in records]
+        for dup in _duplicates(ids):
+            problems.append(f"ensemble_id {dup} is used more than once")
+        per_dataset: dict[str, int] = {}
+        for rec in records:
+            eid = rec.get("ensemble_id")
+            per_dataset[rec.get("dataset")] = per_dataset.get(rec.get("dataset"), 0) + 1
+            members = rec.get("members") or {}
+            if len(members) < 2:
+                problems.append(f"{eid}: fewer than two members")
+            member_probs = {}
+            for atlas, run_id in members.items():
+                run = self.runs.get(run_id)
+                if run is None or run.get("stage") != "final" or run.get("atlas") != atlas:
+                    problems.append(f"{eid}: member {atlas} {run_id} is not a final {atlas} run "
+                                    "in the run log")
+                    continue
+                meta = ((run.get("metrics") or {}).get("frozen") or {}).get("predictions")
+                mpath = self.path(meta["file"]) if meta else None
+                if mpath is None or not mpath.exists():
+                    problems.append(f"{eid}: member {run_id} has no frozen-set predictions")
+                    continue
+                member_probs[atlas] = pd.read_csv(mpath).set_index("SUB_ID")["prob_autism"]
+            pred = rec.get("predictions") or {}
+            ppath = self.path(pred["file"]) if pred.get("file") else None
+            if ppath is None or not ppath.exists():
+                problems.append(f"{eid}: prediction file {pred.get('file')} not found")
+                continue
+            if not text_hash_matches(ppath, pred.get("sha256", "")):
+                problems.append(f"{eid}: {pred['file']} does not match its hash")
+                continue
+            if len(member_probs) == len(members):
+                table = pd.read_csv(ppath).set_index("SUB_ID")
+                mean = sum(member_probs[a].reindex(table.index) for a in members) / len(members)
+                worst = float((table["prob_autism"] - mean).abs().max())
+                if not worst <= 1e-5:
+                    problems.append(f"{eid}: its probabilities are not the mean of its members' "
+                                    f"saved predictions (largest difference {worst:.6f})")
+        for dataset, n in per_dataset.items():
+            if n > 1:
+                problems.append(f"{n} ensemble measurements on {dataset}: memo 0017 allows one")
+        if problems:
+            for p in problems[:20]:
+                self.add(FAIL, s, p)
+        else:
+            self.add(PASS, s, f"{len(records)} ensemble measurement(s): members are final runs, "
+                              "the prediction file matches its hash and is the mean of the "
+                              "members' saved predictions")
+
+
 def check(root: Path | None = None, mode: str | None = None, replay: bool = True) -> Report:
     """Run every check on the dataset at `root` (default: the active data mode's root)."""
     mode = mode or datasource.mode()
@@ -589,4 +654,5 @@ def check(root: Path | None = None, mode: str | None = None, replay: bool = True
     c.connectomes()
     c.replay()
     c.analyses()
+    c.ensemble()
     return c.report

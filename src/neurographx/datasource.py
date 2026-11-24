@@ -45,6 +45,7 @@ FIXTURE_DIR = "fixtures"
 RUN_LOG = Path("runs/run_log.jsonl")
 MODEL_REGISTRY = Path("runs/model_registry.json")
 ANALYSIS_LOG = Path("runs/analysis_log.jsonl")
+ENSEMBLE_LOG = Path("runs/ensemble_log.jsonl")  # memo 0017: kept apart from the run log
 
 
 def mode() -> str:
@@ -124,6 +125,10 @@ def model_registry(root: Path | None = None) -> Path:
 
 def analysis_log(root: Path | None = None) -> Path:
     return _under(ANALYSIS_LOG, root)
+
+
+def ensemble_log(root: Path | None = None) -> Path:
+    return _under(ENSEMBLE_LOG, root)
 
 
 def checkpoint(path: str | Path, root: Path | None = None) -> Path:

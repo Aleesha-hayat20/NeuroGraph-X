@@ -8,11 +8,16 @@ reads saved predictions and never runs a model.
   evidence memo 0017 was written from; the frozen set is not touched).
 - `load_frozen_members` reads the final runs' saved frozen-set predictions, hash checked,
   and refuses members that disagree on participants or labels.
-- `frozen_ensemble` combines them once; `scripts/ensemble.py` logs the result and refuses
-  a second measurement.
+- `frozen_ensemble` combines them once; `scripts/ensemble.py` records the result and
+  refuses a second measurement.
+
+The record goes to its own file, `runs/ensemble_log.jsonl`, not the run log: the run log
+and its database table (memo 0008) hold training runs, and an ensemble trains nothing.
+`neurographx.integrity` checks that file (section 8).
 """
 from __future__ import annotations
 
+import json
 import math
 from pathlib import Path
 
@@ -23,7 +28,6 @@ from sklearn.metrics import balanced_accuracy_score, confusion_matrix, roc_auc_s
 from neurographx.integrity import text_hash_matches
 from neurographx.m3_model.run_logger import get_run, read_registry, read_runs
 
-STAGE = "ensemble"
 THRESHOLD = 0.5
 ORDER = ("aal", "cc200", "ho", "dosenbach160")
 
@@ -161,9 +165,31 @@ def load_frozen_members(root: Path, members: dict[str, str] = MEMBERS,
     return _merge(frames, extra=("FILE_ID", "SITE_ID"))
 
 
-def previous_measurements(log_path: Path, dataset: str) -> list[dict]:
-    return [r for r in read_runs(log_path) if r.get("stage") == STAGE
-            and r.get("dataset") == dataset]
+REQUIRED = ("ensemble_id", "timestamp", "dataset", "members", "rule", "metrics",
+            "predictions")
+
+
+def read_ensemble_log(path: Path) -> list[dict]:
+    """Every record of `runs/ensemble_log.jsonl`; empty when the file does not exist."""
+    path = Path(path)
+    if not path.exists():
+        return []
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()
+            if line.strip()]
+
+
+def append_ensemble_record(path: Path, record: dict) -> None:
+    missing = [k for k in REQUIRED if k not in record]
+    if missing:
+        raise ValueError(f"ensemble record is missing {missing}")
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(record, sort_keys=True) + "\n")
+
+
+def previous_measurements(ensemble_log_path: Path, dataset: str) -> list[dict]:
+    return [r for r in read_ensemble_log(ensemble_log_path) if r.get("dataset") == dataset]
 
 
 def frozen_ensemble(members_table: pd.DataFrame, atlases: tuple[str, ...]) -> tuple[dict,
