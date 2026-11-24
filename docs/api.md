@@ -15,6 +15,10 @@ make api            # real ABIDE data:  python -m uvicorn neurographx.api.main:a
 make api-fixtures   # synthetic fixture dataset (NGX_DATA=fixtures), no real data needed
 ```
 
+Without `make` (for example in Git Bash on Windows), run the commands directly:
+`python -m uvicorn neurographx.api.main:app` for real data, and
+`NGX_DATA=fixtures python -m uvicorn neurographx.api.main:app` for the fixture dataset.
+
 Base URL: `http://127.0.0.1:8000`. Every response is JSON except the export endpoint, which
 returns a file. `GET /health` reports the data mode (`real` or `fixtures`). At start-up the
 server loads the model code once, so the first analysis is as fast as the ones after it
@@ -169,4 +173,19 @@ and one data row. Errors: 404 unknown analysis; 422 unknown format.
 On the CPU, an analysis completes well within the 5-second requirement (NFR-9) once its
 atlas's connectomes are loaded; the first request for an atlas also loads them. Measured by
 `python scripts/benchmark_api.py`, which writes `docs/reports/performance.md`, and checked
-by `tests/test_performance.py`.
+by `tests/test_performance.py`. On a Windows laptop (20 November 2026), repeated analyses
+took a median of 136 to 143 ms per atlas. The very first request after the server starts
+took 4.55 s, because it also imports the libraries and reads the participant table, so run
+one analysis before a demonstration to warm the server.
+
+## What the API does not serve
+
+- **The four-atlas ensemble** (memo 0017) is the project's final model for reporting. Its
+  frozen-set result is in the run log (`stage: "ensemble"`) and `docs/reports/ensemble.md`,
+  but the API serves the four single-atlas models only; serving the ensemble is a separate
+  team decision (memo 0017, section 5).
+- **Explanation and reliability** (dashboard tabs marked FYP-II) have no endpoints in FYP-I
+  (memo 0015, memo 0016).
+
+`tests/test_api_docs.py` checks that the endpoint table above lists exactly the endpoints the
+code serves, so this page cannot fall behind the code unnoticed.
