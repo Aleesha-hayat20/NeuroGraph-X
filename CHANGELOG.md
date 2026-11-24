@@ -25,6 +25,18 @@ Section 8.8: `v1.0-fyp1` for the FYP-I final, hotfixes as `v1.0.1-fyp1`.
 - Version 1.0.0 in the package, the API (`GET /health`) and the dashboard, for `v1.0-fyp1`.
 - Round 1 report: the plan for round 2 states the swapped testers and that AC-09 and AC-10
   passed.
+- Manual test round 2, dashboard cases (#179, PR #207): all 11 pass on build `08264c4`, so
+  the three round 1 bugs (#198, #199, #200) are confirmed fixed. `docs/testing/round_2.md`.
+- Final FYP-I diagram set with draw.io sources (#186, PR #205): system architecture, use
+  case, DFD levels 0 and 1, class diagram, run-analysis activity, and the run-analysis and
+  regenerate sequence diagrams, in `docs/design/`.
+- API reference final (#183, PR #209): running the API without `make`, what the API does not
+  serve, and `tests/test_api_docs.py`, which fails if the endpoint table and the served
+  endpoints disagree. Its performance section now quotes the demonstration MacBook and the
+  start-up step.
+- `SETUP.md`: Node.js 24 or newer (CI uses 24; the dashboard has also run on 25 and 26).
+- Memo 0016 accepted: the reliability engine's place in FYP-II was approved by the
+  supervisor in September 2026; the memo records the FYP-I skeleton.
 
 ### Week 7 (work plan 9 to 15 November 2026; started 17 November)
 - Merged on 22 November: round 1 cross-test of regenerate (AC-09) and export (AC-10) on

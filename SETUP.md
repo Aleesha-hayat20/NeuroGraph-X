@@ -19,9 +19,10 @@ Sections 1 to 5 are enough for fixture mode.
 |---|---|---|
 | Git | any recent version | `git --version` |
 | Python | 3.11 or newer (CI uses 3.11) | `python3 --version` |
-| Node.js and npm | Node.js 24 (`dashboard/.nvmrc`) | `node --version` |
+| Node.js and npm | Node.js 24 or newer; CI uses 24 (`dashboard/.nvmrc`) | `node --version` |
 
 No GPU is needed. Training happened on Kaggle; serving runs on any laptop CPU (memo 0009).
+The dashboard has been run on Node.js 24 (CI), 25 and 26.
 
 On Windows, use `python` where this guide writes `python3`, and the activation command
 given in Section 3.
@@ -225,7 +226,7 @@ Windows, the full path of `.venv\Scripts\python.exe`). The test plan, with every
 |---|---|
 | `Address already in use` when starting the API | Another server holds port 8000. Stop it (Ctrl+C in its terminal), or find it with `lsof -i :8000` on macOS and Linux. |
 | The dashboard footer says the API cannot be reached | Start the API first (Section 5 or 7), then reload the page. |
-| `npm ci` fails with an engine or syntax error | Check `node --version` shows 24. |
+| `npm ci` fails with an engine or syntax error | Check `node --version` shows 24 or newer. |
 | A real-data endpoint answers 503 | A data file is missing. Run `python scripts/check_integrity.py`; its failed lines name the file. |
 | Hash tests fail on Windows (`test_fixture_data`, `test_integrity`, `test_reliability`) | The clone was made before `.gitattributes` fixed line endings. Commit or stash your work, then run `git rm -r --cached -q .` and `git reset --hard` to check the files out again with LF endings. |
 | `ModuleNotFoundError: neurographx` | The virtual environment is not active, or `pip install -e .` was skipped. |

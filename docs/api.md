@@ -170,22 +170,20 @@ and one data row. Errors: 404 unknown analysis; 422 unknown format.
 
 ## Performance
 
-On the CPU, an analysis completes well within the 5-second requirement (NFR-9) once its
-atlas's connectomes are loaded; the first request for an atlas also loads them. Measured by
+On the CPU, an analysis completes well within the 5-second requirement (NFR-9). Measured by
 `python scripts/benchmark_api.py`, which writes `docs/reports/performance.md`, and checked
-by `tests/test_performance.py`. On a Windows laptop (20 November 2026), repeated analyses
-took a median of 136 to 143 ms per atlas. The very first request after the server starts
-took 4.55 s, because it also imports the libraries and reads the participant table, so run
-one analysis before a demonstration to warm the server.
+by `tests/test_performance.py`. On the demonstration MacBook (23 November 2026), repeated
+analyses took a median of 72 to 78 ms per atlas, and the first request for an atlas, which
+also loads its connectomes, 0.13 to 0.27 s. The server loads the model code once at
+start-up (2.26 s on that machine), so no warm-up analysis is needed before a demonstration.
+Before that start-up step was added, the very first request also paid for loading the
+libraries: 4.55 s on a Windows laptop (20 November 2026), where repeated analyses took a
+median of 136 to 143 ms.
 
 ## What the API does not serve
 
-- **The four-atlas ensemble** (memo 0017) is the project's final model for reporting. Its
-  frozen-set result is in the run log (`stage: "ensemble"`) and `docs/reports/ensemble.md`,
-  but the API serves the four single-atlas models only; serving the ensemble is a separate
-  team decision (memo 0017, section 5).
-- **Explanation and reliability** (dashboard tabs marked FYP-II) have no endpoints in FYP-I
-  (memo 0015, memo 0016).
+Explanation and reliability, the dashboard tabs marked FYP-II, have no endpoints in FYP-I
+(memo 0015, memo 0016).
 
 `tests/test_api_docs.py` checks that the endpoint table above lists exactly the endpoints the
 code serves, so this page cannot fall behind the code unnoticed.

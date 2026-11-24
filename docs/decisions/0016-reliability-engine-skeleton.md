@@ -1,7 +1,9 @@
 # 0016. Reliability engine skeleton
 
-**Status:** Proposed in Week 7 (17 November 2026). Implemented on
-`feature/week7-reliability-tests`.
+**Status:** Accepted. Placing the reliability engine (M5) in FYP-II was approved by the
+supervisor, Dr. Hafeez Anwar, when the project was restructured in September 2026, before
+the idea defence. This memo records the FYP-I skeleton built on that decision, proposed
+in Week 7 (17 November 2026) and merged in PR #197.
 **Date:** 2026-11-17
 **Owner:** Aleesha Hayat
 **Related:** 0001 (atlases), 0005 (frozen set), 0008 (database schema), 0011 (tuning and the
