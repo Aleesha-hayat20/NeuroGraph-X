@@ -41,8 +41,10 @@ It predicts autism when `p_ens >= 0.5`; its confidence is `max(p_ens, 1 - p_ens)
 - **Models used:** the registered final runs `57900b0d`, `cf60f29e`, `76533df4` and
   `5ee28510` (`runs/model_registry.json`), unchanged. No model is retrained.
 
-Mean (soft-vote) fusion of graph convolutional networks on ABIDE follows Anirudh and
-Thiagarajan (2017, arXiv:1704.07487).
+Ensembles of graph convolutional networks have been used on ABIDE before (Anirudh and
+Thiagarajan, ICASSP 2019, DOI 10.1109/ICASSP.2019.8683547). Theirs combine weakly trained
+networks built on different population graphs, not one model per atlas, so the parallel is
+the use of an ensemble, not the exact rule.
 
 ### 2. Evidence: cross-validation only
 
@@ -80,9 +82,13 @@ model (probability near 0 or 1) dominates the average of logits.
   same 100 participants with the same labels. Then it computes the ensemble.
 - It reports accuracy with a 95% Wilson interval, balanced accuracy, AUC, the confusion
   matrix and the majority baseline, as for the single models.
-- It writes one run-log record (`stage: "ensemble"`, the four member run IDs, the metrics
-  and the SHA-256 of its prediction file) and refuses to run again if such a record
-  exists, as `train_gnn.py` does for a frozen measurement.
+- It writes one record to `runs/ensemble_log.jsonl` (the four member run IDs, the rule,
+  the metrics and the SHA-256 of its prediction file) and refuses to run again if that file
+  already holds a measurement, as `train_gnn.py` does for a frozen measurement. The record
+  is kept out of the run log, whose database table (memo 0008) holds training runs; an
+  ensemble trains nothing. `scripts/check_integrity.py` (section 8) checks the record:
+  one measurement per dataset, members that are final runs, and a prediction file that
+  matches its hash and is the mean of the members' saved predictions.
 - The result is reported **whatever it is**, beside the four single models. The ensemble
   stays the final model even if a single atlas scored higher on the frozen set; choosing
   between them by frozen score would turn the frozen set into a tuning set.
