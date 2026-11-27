@@ -1,4 +1,4 @@
-"""The four-atlas ensemble, the project's final model (memo 0017).
+"""The four-atlas ensemble, reported beside the four single-atlas models (memo 0017).
 
 For each participant: the equal-weight mean of the four final models' probability of
 autism; autism when the mean is at least 0.5. Nothing is fitted, so the module only
