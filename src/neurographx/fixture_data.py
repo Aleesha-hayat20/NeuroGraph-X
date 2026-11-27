@@ -193,7 +193,9 @@ def make_timeseries(sub_id: int, dx_group: int, n_timepoints: int, n_regions: in
 def write_1d(path: Path, ts: np.ndarray) -> None:
     """A .1D file as ABIDE distributes them: a '#' header of labels, then one row per timepoint."""
     header = "\t".join(f"#{k}" for k in range(1, ts.shape[1] + 1))
-    np.savetxt(path, ts, fmt="%.6f", delimiter="\t", header=header, comments="")
+    # LF on every platform: the input fingerprint hashes these bytes (Windows wrote CRLF).
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        np.savetxt(f, ts, fmt="%.6f", delimiter="\t", header=header, comments="")
 
 
 # ---------------------------------------------------------------------------

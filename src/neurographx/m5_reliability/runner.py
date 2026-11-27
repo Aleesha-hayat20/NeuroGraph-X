@@ -126,7 +126,7 @@ def score(labels, prob_autism) -> dict:
 def _sha256_frame(df: pd.DataFrame, path: Path) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     text = df.to_csv(index=False, lineterminator="\n")
-    path.write_text(text, encoding="utf-8")
+    path.write_text(text, encoding="utf-8", newline="\n")  # the hash is of these LF bytes
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
