@@ -37,6 +37,29 @@ Section 8.8: `v1.0-fyp1` for the FYP-I final, hotfixes as `v1.0.1-fyp1`.
 - `SETUP.md`: Node.js 24 or newer (CI uses 24; the dashboard has also run on 25 and 26).
 - Memo 0016 accepted: the reliability engine's place in FYP-II was approved by the
   supervisor in September 2026; the memo records the FYP-I skeleton.
+- Memo 0017 accepted (option 1, 24 November): the four-atlas ensemble, the equal-weight
+  mean of the four final models' probability of autism, is reported as one extra result
+  beside the four single-atlas models, which stay the main results and the served models
+  (PR #206). Ensemble script with check, CV and measure-once modes, its own record in
+  `runs/ensemble_log.jsonl`, integrity check section 8 and 20 tests (PR #208). Measured once
+  on the frozen set, ensemble `a7f3095e`: accuracy 0.62, balanced accuracy 0.616, AUC 0.680
+  (PR #213, `docs/reports/ensemble.md`).
+- Manual test round 2, API checks (#182, PR #211): all 14 pass on build `678e8d7`.
+- Diagram follow-up (PR #210): one naming pattern without version suffixes, the FYP-II use
+  cases marked, one source for the database schema.
+- Clean-clone test of `SETUP.md` on Windows (#177, PR #212), and its findings fixed:
+  - Three tests failed on Windows because the fixture's time series files and the
+    reliability runner's prediction files were written with CRLF line endings while their
+    hashes were taken of LF text. Both are now written with LF on every platform
+    (`fixture_data.write_1d`, `m5_reliability/runner.py`, `m5_reliability/manifest.py`).
+  - PyYAML 6.0.3 instead of 6.0.2, which has no Windows build for Python 3.14.
+  - `SETUP.md`: every command on its own line (Windows PowerShell 5.1 has no `&&`), the
+    PowerShell form of the end-to-end command, stop the servers before it, links that open
+    correctly, the expected integrity-check warnings, the development-only npm audit
+    findings, no fixed test counts, and five new troubleshooting rows.
+- Supervisor meetings of 17 November (dataset overview; midterm jury remarks and the
+  repositioning of memo 0015) and 19 November (the ensemble) recorded in
+  `docs/progress/meetings.md`, with Week 7 as a week without a meeting.
 
 ### Week 7 (work plan 9 to 15 November 2026; started 17 November)
 - Merged on 22 November: round 1 cross-test of regenerate (AC-09) and export (AC-10) on
