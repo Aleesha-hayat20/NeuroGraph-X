@@ -1,12 +1,13 @@
-# 0017. The four-atlas ensemble as the final model
+# 0017. The four-atlas ensemble, reported beside the single-atlas models
 
-**Status:** Proposed by Laiba Afridi on 23 November 2026, after the supervisor suggested
-combining the four atlas models and the team agreed. Accepted when this memo is merged;
-the ensemble is evaluated only after that.
-**Date:** 2026-11-23
+**Status:** Accepted on 24 November 2026 (option 1 of Section 0). Proposed by Laiba Afridi
+on 23 November 2026, after the supervisor suggested combining the four atlas models. The
+ensemble is evaluated on the frozen set only after this memo is merged.
+**Date:** 2026-11-23, revised 2026-11-24
 **Owner:** Laiba Afridi
 **Related:** 0005 (frozen set), 0006 (architecture), 0010 (calibration), 0011 (tuning
-protocol and final models), 0013 (analysis record)
+protocol and final models), 0013 (analysis record and API contract), 0015 (real-world
+repositioning, Section 4.3), 0016 (reliability engine skeleton)
 
 ## Context
 
@@ -16,12 +17,21 @@ Memo 0011 trained one final model per atlas and measured each once on the frozen
 The four atlases divide the same brain differently, so their models make partly different
 mistakes, and combining them can cancel some of those mistakes.
 
-This memo fixes one combination rule and declares it the project's final model **before
-it is evaluated on the frozen set**. Those results were known when the idea came up, so
-the decision is not fully blind to the frozen set. That is why the rule has no setting
-to tune, its evidence comes from cross-validation only, and it is evaluated once.
+This memo fixes one combination rule, and how its result is reported, **before it is
+evaluated on the frozen set**. The single models' frozen results were known when the idea
+came up, so the decision is not fully blind to the frozen set. That is why the rule has no
+setting to tune, its evidence comes from cross-validation only, it is evaluated once, and
+its result does not replace the single models' results.
 
 ## Decision
+
+### 0. How the ensemble is reported
+
+| Option | Meaning | Decision |
+|---|---|---|
+| 1. An extra result | One more row beside the four single-atlas models; they stay the main results and the served models | **Accepted** |
+| 2. The main result | The ensemble becomes the headline model; the single models become its components | Rejected. It would hide how much the result depends on the atlas, which is the atlas axis of the planned reliability envelope (memo 0015, Section 4.3; memo 0016), and the headline would be a model the platform does not serve |
+| 3. Not in FYP-I | Close the work and move it to FYP-II | Rejected. The evidence is ready, nothing is retrained, and the supervisor asked for it |
 
 ### 1. The rule
 
@@ -89,21 +99,25 @@ model (probability near 0 or 1) dominates the average of logits.
   ensemble trains nothing. `scripts/check_integrity.py` (section 8) checks the record:
   one measurement per dataset, members that are final runs, and a prediction file that
   matches its hash and is the mean of the members' saved predictions.
-- The result is reported **whatever it is**, beside the four single models. The ensemble
-  stays the final model even if a single atlas scored higher on the frozen set; choosing
-  between them by frozen score would turn the frozen set into a tuning set.
+- The result is reported **whatever it is**, as one more row beside the four single
+  models. It does not replace them as the main results, whether it scores higher or lower
+  than any of them: choosing a headline by frozen score would turn the frozen set into a
+  tuning set.
 
-### 5. What does not change
+### 5. What changes in the platform, and what does not
 
-The four single models, their cards and their calibration stay as they are, and the API
-and dashboard keep serving them. Serving the ensemble through the API is a separate
-decision for the team. The ensemble's confidence is uncalibrated; calibrating it is left
-for FYP-II.
+The four single models, their cards and their calibration stay as they are, and every
+analysis is still made by one atlas's model. The API reports the ensemble's recorded
+result (members, rule, cross-validation and frozen-set metrics, from
+`runs/ensemble_log.jsonl`) through its own endpoint, `GET /models/ensemble`, so that
+`GET /models` keeps one entry per atlas model (memo 0013). The Models page shows it as one
+extra row, "Ensemble of the four atlases (memo 0017)". A combined prediction for a single
+participant, and calibrating the ensemble's confidence, are left for FYP-II.
 
 ## Consequences
 
-- The report gives one headline result, the ensemble, and keeps the four single models
-  as its components.
+- The report and the deck present the four single-atlas models as the main results and
+  the ensemble as one more row, so the spread between atlases stays visible.
 - The comparison with published work (Dong et al. 2025) uses cross-validation numbers on
   both sides; the frozen result is reported separately.
 - **Limitation, stated in the report:** the decision to combine was taken after the single
