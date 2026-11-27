@@ -1,6 +1,8 @@
 """Model endpoints (memo 0013, part 3; W5-10): what the registry serves, per atlas.
 
     GET /models             every registered model, one per atlas (memo 0004)
+    GET /models/ensemble    the four-atlas ensemble's recorded result (memo 0017, section 5);
+                            404 when it has not been measured on the active dataset
     GET /models/{atlas}     one atlas: 422 for an unknown atlas name, 503 if none registered
 
 Each entry is the registry entry plus what a reader needs to judge it: the training
@@ -8,6 +10,11 @@ run's settings from the run log, whether the checkpoint file is on this machine,
 the calibration of memo 0010 when it exists. Read-only: nothing here loads a model or
 reads the frozen set, so it needs no PyTorch. Works in fixture mode (memo 0014) through
 `datasource`.
+
+The ensemble has its own endpoint rather than a fifth entry in GET /models, because
+GET /models is one entry per atlas model, each with a checkpoint and a calibration, and
+the ensemble has neither. Its route is declared before /models/{atlas}, otherwise FastAPI
+would read "ensemble" as an atlas name and answer 422.
 """
 
 from __future__ import annotations
@@ -19,6 +26,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from neurographx import datasource
+from neurographx.m3_model.ensemble import read_ensemble_log
 from neurographx.m3_model.run_logger import get_run, read_registry
 
 router = APIRouter(tags=["models"])
@@ -39,6 +47,17 @@ class ModelInfo(BaseModel):
     metrics: dict[str, Any]                  # as registered: frozen set and CV summary
     calibrated: bool                         # memo 0010: a calibration file exists
     calibration: dict[str, Any] | None
+
+
+class EnsembleInfo(BaseModel):
+    ensemble_id: str
+    timestamp: str
+    members: dict[str, str]                  # atlas -> run_id of the final model
+    rule: dict[str, Any]                     # combine, weights, probabilities, threshold, memo
+    metrics: dict[str, Any]                  # "cv" (out-of-fold) and "frozen" (measured once)
+
+
+NO_ENSEMBLE = "The ensemble has not been measured on this dataset."
 
 
 def calibration_file(atlas: str, run_id: str):
@@ -70,6 +89,37 @@ def model_info(atlas: str, entry: dict) -> dict:
 def list_models() -> list[dict]:
     registry = read_registry(datasource.model_registry())
     return [model_info(atlas, registry[atlas]) for atlas in ATLASES if atlas in registry]
+
+
+def active_dataset() -> str | None:
+    """Dataset name of the active registry's runs ("ABIDE", or "synthetic_fixture")."""
+    registry = read_registry(datasource.model_registry())
+    for atlas in ATLASES:
+        if atlas in registry:
+            run = get_run(registry[atlas]["run_id"], datasource.run_log()) or {}
+            if run.get("dataset"):
+                return run["dataset"]
+    return None
+
+
+@router.get(
+    "/models/ensemble",
+    response_model=EnsembleInfo,
+    summary="The four-atlas ensemble's recorded result",
+    description="The record written by scripts/ensemble.py --measure-once to "
+    "runs/ensemble_log.jsonl for the active dataset (memo 0017): members, rule, and the "
+    "cross-validation and frozen-set metrics. Read-only; no prediction is made.",
+    responses={404: {"description": "The ensemble has not been measured on this dataset"}},
+)
+def get_ensemble() -> dict:
+    dataset = active_dataset()
+    records = [r for r in read_ensemble_log(datasource.ensemble_log())
+               if dataset is not None and r.get("dataset") == dataset]
+    if not records:
+        raise HTTPException(status_code=404, detail=NO_ENSEMBLE)
+    record = records[-1]  # one per dataset by construction (--measure-once refuses a second)
+    return {k: record[k] for k in ("ensemble_id", "timestamp", "members", "rule")} | {
+        "metrics": {"cv": record["metrics"]["cv"], "frozen": record["metrics"]["frozen"]}}
 
 
 @router.get(
