@@ -4,17 +4,16 @@
 (`/health`: `"data_mode": "real"`); fixture mode only for TC-05 step 4.
 Dashboard run with Node.js 26.13.1 (CI uses Node 24).
 **Definitions:** `manual_tests.md`. **Cross-testing:** Laiba Afridi ran the dashboard cases on the pages built by
-Alishba, on the build with the round 1 fixes (#198, #199, #200, PR #203). The API checks of this round (#182) are run by
-Alishba Fayaz and added to this file.
+Alishba, on the build with the round 1 fixes (#198, #199, #200, PR #203). The API checks of this round (#182) were run by Alishba Fayaz on build `678e8d7` (`main`, 24 November 2026).
 
 ## Summary
 
 | Result | API checks | Dashboard cases |
 |---|---|---|
-| Pass | to be added (#182) | 11 (TC-01 to TC-10, TC-04b) |
-| Fail | | 0 |
-| Blocked | | 0 |
-| Not run | | 0 |
+| Pass | 14 (AC-01 to AC-14) | 11 (TC-01 to TC-10, TC-04b) |
+| Fail | 0 | 0 |
+| Blocked | 0 | 0 |
+| Not run | 0 | 0 |
 
 Bugs filed: none. The three round 1 bugs are fixed: #198 (TC-04b), #199 (TC-05) and #200 (TC-09) now pass.
 
@@ -25,9 +24,34 @@ then imported the run log and the analysis log into SQLite with every record pre
 4 registered models and 5 analyses (real data). The test analyses were then removed from
 `runs/analysis_log.jsonl`, which holds only demonstration analyses (memo 0013).
 
+The API checks created five analyses: AC-06 (`e0b1b82b712d`), AC-07 (`ccdb659092d1`,
+`96601ae45249`, `7e682524b16c`) and AC-09 (`a656b46ecbeb`, regenerating `e0b1b82b712d`).
+`scripts/build_db.py` then imported 64 runs, 4 registered models and 12 analyses (real
+data): the seven demonstration analyses already in the log and these five. The test
+analyses were then removed from `runs/analysis_log.jsonl`.
+
 ## API checks
 
-To be added by Alishba Fayaz (#182).
+Tester Alishba Fayaz, 24 November 2026, build `678e8d7`. The API ran on Windows with
+Python 3.14, PyTorch 2.11.0 (CPU) and PyTorch Geometric 2.8.0.post1; PyYAML was 6.0.3
+instead of the pinned 6.0.2, which has no Python 3.14 build for Windows.
+
+| ID | Backs | Actual result | Status |
+|---|---|---|---|
+| AC-01 | all | 200; `"status":"ok"`, `"version":"0.1.0"`, `"participant_table_found":true`, `"data_mode":"real"` | Pass |
+| AC-02 | TC-01 | Total 1112, included 861, excluded 251; by gate rater 241, motion 10, completeness 0; by split frozen 100, development 761; by group autism 396 and 143, control 465 and 108; 20 sites | Pass |
+| AC-03 | TC-02 | 184, 172 and 74 participants; totals 1112, 861 and 251 in every response | Pass |
+| AC-04 | TC-03 | 0050002: PITT, autism, excluded at the rater gate with the reasons `qc_rater_1 = fail`, `qc_func_rater_2 = fail`, `qc_func_rater_3 = fail`; the POST returned 409 `Participant 0050002 was excluded by quality control (rater): qc_rater_1 = fail; qc_func_rater_2 = fail; qc_func_rater_3 = fail`, and the analysis log stayed at 7 lines | Pass |
+| AC-05 | TC-04 | aal 116, cc200 200, ho 111, dosenbach160 161 regions; data present and a model registered for each (runs `57900b0d`, `cf60f29e`, `76533df4`, `5ee28510`) | Pass |
+| AC-06 | TC-04 | 201; analysis `e0b1b82b712d`, run `cf60f29e`, `control`, 0.5124, calibrated, `git_commit` `678e8d7`, `reproduces_analysis_id` null | Pass |
+| AC-07 | TC-05 | ho `76533df4` autism 0.6174; aal `57900b0d` autism 0.777; dosenbach160 `5ee28510` autism 0.6709; each 201, calibrated, with a 12-character ID | Pass |
+| AC-08 | TC-06 | 6 analyses for 0050011, newest first: the four from AC-06 and AC-07 (dosenbach160, aal, ho, cc200), then two earlier CC200 demonstration analyses (`1c270485a07c`, `e9b14e874db6`); with the atlas filter, CC200 analyses only; the single record has the ten fields of memo 0013 | Pass |
+| AC-09 | TC-07 | 201; identical true, no differing field; the new record `a656b46ecbeb` reproduces `e0b1b82b712d` with run `cf60f29e`, `control`, 0.5124, calibrated | Pass |
+| AC-10 | TC-08 | 200 each; `analysis_e0b1b82b712d.json` and `analysis_e0b1b82b712d.csv`; the JSON has the ten fields; the CSV has the ten-field header and one data row | Pass |
+| AC-11 | TC-09 | Four atlases, each calibrated (Platt); frozen accuracy, balanced accuracy and AUC aal 0.65, 0.6518, 0.6659; cc200 0.55, 0.5479, 0.6248; ho 0.63, 0.6236, 0.6816; dosenbach160 0.62, 0.6176, 0.6679, equal to the model cards at three decimals | Pass |
+| AC-12 | TC-10 | 251, then 10 at the motion gate; 0050039 PITT, control, `func_mean_fd = 0.602 > 0.5` | Pass |
+| AC-13 | TC-04, TC-05 | 422 `Unknown atlas 'xyz'. Use one of: aal, cc200, ho, dosenbach160`; 404 `Unknown participant: 0099999` | Pass |
+| AC-14 | data flow | `64 runs, 4 registered models, 12 analyses (real data)`; the run log has 64 lines and the analysis log 12 | Pass |
 
 ## Dashboard cases
 
