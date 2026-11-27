@@ -18,14 +18,15 @@ Sections 1 to 5 are enough for fixture mode.
 | Tool | Version | Check with |
 |---|---|---|
 | Git | any recent version | `git --version` |
-| Python | 3.11 or newer (CI uses 3.11) | `python3 --version` |
+| Python | 3.11 or newer; CI uses 3.11, and the team also uses 3.12 (macOS) and 3.14 (Windows) | `python3 --version` |
 | Node.js and npm | Node.js 24 or newer; CI uses 24 (`dashboard/.nvmrc`) | `node --version` |
 
 No GPU is needed. Training happened on Kaggle; serving runs on any laptop CPU (memo 0009).
 The dashboard has been run on Node.js 24 (CI), 25 and 26.
 
 On Windows, use `python` where this guide writes `python3`, and the activation command
-given in Section 3.
+given in Section 3. Every command in this guide is on its own line, so it runs unchanged in
+Windows PowerShell; where PowerShell needs a different form, it is given next to it.
 
 ## 2. Clone the repository
 
@@ -68,10 +69,10 @@ Check the installation by running the test suite:
 pytest
 ```
 
-Without the real data the last line reads `453 passed, 1 skipped`. The skipped test is the
-performance check on the real data. With the real data in place (Section 6) it runs too:
-`454 passed`. Some tests guard the frozen evaluation set on purpose, so if one fails, read
-its message before changing anything.
+Without the real data the last line counts the tests that passed and ends with `1 skipped`;
+it must not mention `failed`. The skipped test is the performance check on the real data; with the real data in place
+(Section 6) it runs too, and nothing is skipped. Some tests guard the frozen evaluation set
+on purpose, so if one fails, read its message before changing anything.
 
 ## 4. Install the dashboard
 
@@ -82,8 +83,12 @@ npm test
 cd ..
 ```
 
-`npm ci` installs the exact versions in `package-lock.json`. `npm test` ends with
-`Tests  55 passed (55)`.
+`npm ci` installs the exact versions in `package-lock.json`. `npm test` ends with a
+`Tests` line in which every test passed and none failed.
+
+`npm ci` may also report a few moderate vulnerabilities. They are in the development tools
+(the linter), not in the dashboard that reaches the browser: `npm audit --omit=dev` reports
+`found 0 vulnerabilities`. Do not run `npm audit fix`, which rewrites `package-lock.json`.
 
 ## 5. Run the system in fixture mode
 
@@ -97,8 +102,8 @@ NGX_DATA=fixtures python -m uvicorn neurographx.api.main:app
 
 On Windows PowerShell, set the variable first: `$env:NGX_DATA = "fixtures"`, then run
 `python -m uvicorn neurographx.api.main:app`. The server is ready when it prints
-`Application startup complete.` Open http://127.0.0.1:8000/health: it shows
-`"data_mode": "fixtures"`. The full API reference is at http://127.0.0.1:8000/docs and in
+`Application startup complete.` Open <http://127.0.0.1:8000/health>, which shows
+`"data_mode": "fixtures"`. The full API reference is at <http://127.0.0.1:8000/docs> and in
 `docs/api.md`.
 
 **Terminal 2, the dashboard:**
@@ -108,7 +113,7 @@ cd dashboard
 npm run dev
 ```
 
-Open http://localhost:5173. The footer of every page shows the API's status. On the
+Open <http://localhost:5173>. The footer of every page shows the API's status. On the
 fixture dataset you should see:
 
 - **Overview:** 24 participants, 17 included and 7 excluded by quality control.
@@ -164,7 +169,9 @@ python scripts/check_integrity.py
 
 It checks that the registry, run log, checkpoints, data files and analysis log agree with
 the hashes recorded for them, and replays each registered model on its saved frozen-set
-predictions. It must end with `Integrity check passed` and `0 failed`.
+predictions. It must end with `Integrity check passed` and `0 failed`. A few warnings are
+expected and each says why, for example an archived run that is no longer served (two or
+three on the real data, depending on the machine; one on the fixtures).
 
 Then make one prediction on the CPU:
 
@@ -177,11 +184,18 @@ script only predicts: it reads no labels and writes nothing.
 
 ## 7. Run the system on the real data
 
-As in Section 5, without `NGX_DATA`:
+As in Section 5, without `NGX_DATA` (in PowerShell, open a new terminal, or run
+`Remove-Item Env:NGX_DATA`). Terminal 1:
 
 ```bash
-python -m uvicorn neurographx.api.main:app          # terminal 1
-cd dashboard && npm run dev                         # terminal 2
+python -m uvicorn neurographx.api.main:app
+```
+
+Terminal 2:
+
+```bash
+cd dashboard
+npm run dev
 ```
 
 `/health` now shows `"data_mode": "real"`, and the Overview page shows 1,112 participants,
@@ -203,11 +217,19 @@ ruff check src scripts tests
 pytest --cov=src/neurographx --cov-report=term
 python scripts/smoke_api.py --data fixtures
 python scripts/check_integrity.py --data fixtures
-cd dashboard && npm run lint && npm test && npm run build && cd ..
+cd dashboard
+npm run lint
+npm test
+npm run build
+cd ..
 ```
 
-The end-to-end test drives a real browser through the dashboard on the fixture dataset. It
-needs the browser installed once:
+The end-to-end test drives a real browser through the dashboard on the fixture dataset, and
+starts its own API and dashboard. **Stop the servers of Sections 5 and 7 first**, or it
+stops with `http://127.0.0.1:8000/health is already used`. It needs the browser installed
+once. `NGX_PYTHON` gives it the full path of the virtual environment's Python.
+
+On macOS and Linux:
 
 ```bash
 cd dashboard
@@ -216,8 +238,17 @@ NGX_PYTHON="$PWD/../.venv/bin/python" npm run e2e
 cd ..
 ```
 
-`NGX_PYTHON` points the test at the virtual environment's Python, as a full path (on
-Windows, the full path of `.venv\Scripts\python.exe`). The test plan, with every test level, is
+On Windows PowerShell:
+
+```powershell
+cd dashboard
+npx playwright install chromium
+$env:NGX_PYTHON = (Resolve-Path ..\.venv\Scripts\python.exe).Path
+npm run e2e
+cd ..
+```
+
+It ends with `1 passed`. The test plan, with every test level, is
 `docs/testing/test_plan.md`.
 
 ## 9. If something goes wrong
@@ -228,7 +259,11 @@ Windows, the full path of `.venv\Scripts\python.exe`). The test plan, with every
 | The dashboard footer says the API cannot be reached | Start the API first (Section 5 or 7), then reload the page. |
 | `npm ci` fails with an engine or syntax error | Check `node --version` shows 24 or newer. |
 | A real-data endpoint answers 503 | A data file is missing. Run `python scripts/check_integrity.py`; its failed lines name the file. |
-| Hash tests fail on Windows (`test_fixture_data`, `test_integrity`, `test_reliability`) | The clone was made before `.gitattributes` fixed line endings. Commit or stash your work, then run `git rm -r --cached -q .` and `git reset --hard` to check the files out again with LF endings. |
+| `pip install -r requirements-dev.txt` fails with `Microsoft Visual C++ 14.0 or greater is required` | A pinned package has no ready-made build for your Python version on Windows, so pip tries to compile it. Use Python 3.11 to 3.14, which all have builds for the pinned versions, and upgrade pip first (Section 3). |
+| Hash or fingerprint tests fail on Windows, in a clone made before 7 November 2026 | Files checked out before `.gitattributes` fixed line endings keep CRLF. Commit or stash your work, then run `git rm -r --cached -q .` and `git reset --hard` to check the files out again with LF endings. A fresh clone does not need this. |
+| `http://127.0.0.1:8000/health is already used` from `npm run e2e` | The end-to-end test starts its own servers. Stop the API and the dashboard (Ctrl+C), then run it again. |
+| `'playwright' is not recognized` | Run `npm ci` in `dashboard/` again; it restores the Playwright command. |
+| `The token '&&' is not a valid statement separator` | Windows PowerShell 5.1 has no `&&`. Run the commands one per line, as this guide writes them. |
 | `ModuleNotFoundError: neurographx` | The virtual environment is not active, or `pip install -e .` was skipped. |
 
 Do not run `scripts/train_gnn.py --stage final` to check a setup. It measures the frozen
