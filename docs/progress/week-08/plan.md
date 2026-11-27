@@ -17,6 +17,23 @@ the feature freeze of 15 November.
 | **Alishba** | Manual test round 2 on the API and data flows (#182). Final deck with the Gantt chart updated to show what was delivered against the plan (#184). User manual final, linked from the README (#185). Final diagrams in the report and the deck (#186). Clean-clone test from `SETUP.md` (#177). Supervisor meeting log and Sunday board screenshot (#189, #190) | Round 2 API checks recorded; the deck and the user manual committed |
 | **All three** | Rehearse the demonstration three times, once on the presentation laptop (#188); fix any demonstration-breaking bug from round 2 (#187); apply the supervisor's report comments (#171) | Rehearsed three times; no open bug that breaks the demonstration |
 
+## Change of plan (24 November)
+
+The FYP-I final evaluation moved to 2 December, and the team accepted memo 0017 (option 1):
+the four-atlas ensemble is reported as one extra result beside the four single-atlas
+models, which stay the main results and the served models. This is the one change after
+the feature freeze, and it adds no analysis path.
+
+| Member | Task | By |
+|---|---|---|
+| **Aleesha** | Merge memo 0017 (#206) and the ensemble script (#208); the single frozen-set measurement on the demonstration Mac; the release tag after the new row is tested | Tue 24 Nov, then the tag |
+| **Laiba** | `GET /models/ensemble`, which reports the recorded ensemble result, with tests, `docs/api.md` and the endpoint test updated | Wed 25 Nov |
+| **Alishba** | The ensemble row on the Models page, "Ensemble of the four atlases (memo 0017)", with its test; the user manual updated | Thu 26 Nov |
+| **Laiba and Alishba** | Round 2 addendum: TC-09 (Models page) and an API check of the new endpoint, cross-tested on the build with both | Fri 27 Nov |
+
+`v1.0-fyp1` is tagged after the addendum passes, and the evaluation-window rules below
+apply from the tag.
+
 ## Gate (FYP-I Final Work Plan, Week 8: the 23 November deadline)
 
 - `v1.0-fyp1` tagged on `main`; CI green.
