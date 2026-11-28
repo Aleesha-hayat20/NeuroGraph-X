@@ -21,6 +21,8 @@ Data side (this file):
 
 Model side (Laiba, api/models.py, W5-10):
     GET /models                              every registered model, one per atlas
+    GET /models/ensemble                     the four-atlas ensemble's result (memo 0017);
+                                             404 when not measured on this dataset
     GET /models/{atlas}                      one atlas's model; 422 unknown atlas, 503 none
 
 Model side (Laiba, api/analyses.py, W5-09):

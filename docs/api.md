@@ -56,6 +56,7 @@ Atlas names are `aal`, `cc200`, `ho` and `dosenbach160`.
 | `GET /cohort/summary` | Counts for the Overview page | 200 |
 | `GET /exclusions` | The exclusion log; filter by gate | 200 |
 | `GET /models` | The registered model of every atlas | 200 |
+| `GET /models/ensemble` | The four-atlas ensemble's recorded result (memo 0017) | 200 |
 | `GET /models/{atlas}` | One atlas's model | 200 |
 | `POST /analyses` | Run one analysis and record it | 201 |
 | `GET /analyses` | Analysis history, newest first; filters | 200 |
@@ -112,6 +113,22 @@ Errors: 422 unknown atlas; 503 no model registered.
 | cc200 | `cf60f29e` | 0.55 |
 | ho | `76533df4` | 0.63 |
 | dosenbach160 | `5ee28510` | 0.62 |
+
+### `GET /models/ensemble`
+
+The record that `scripts/ensemble.py --measure-once` wrote to `runs/ensemble_log.jsonl` for
+the active dataset (memo 0017, section 5): `ensemble_id`, `timestamp`, `members` (atlas to
+run id of the four final models), `rule` (equal-weight mean of the raw probabilities,
+threshold 0.5) and `metrics`, with `cv` (out-of-fold, mean and standard deviation over the
+five folds) and `frozen` (the single frozen-set measurement). Read-only: it makes no
+prediction. It is a separate endpoint, not a fifth entry in `GET /models`, because that list
+is one entry per atlas model with a checkpoint and a calibration.
+Errors: 404 "The ensemble has not been measured on this dataset." (always the case in
+fixture mode).
+
+| Ensemble | Members | Frozen accuracy (95% CI) | Frozen AUC |
+|---|---|---|---|
+| `a7f3095e` | `57900b0d`, `cf60f29e`, `76533df4`, `5ee28510` | 0.62 (0.52–0.71) | 0.680 |
 
 ### `POST /analyses`
 
@@ -177,10 +194,9 @@ one analysis before a demonstration to warm the server.
 
 ## What the API does not serve
 
-- **The four-atlas ensemble** (memo 0017) is the project's final model for reporting. Its
-  frozen-set result is in the run log (`stage: "ensemble"`) and `docs/reports/ensemble.md`,
-  but the API serves the four single-atlas models only; serving the ensemble is a separate
-  team decision (memo 0017, section 5).
+- **A combined prediction for one participant.** Every analysis is made by one atlas's
+  model; `GET /models/ensemble` reports the ensemble's recorded result only. Combined
+  predictions and calibrating the ensemble are left for FYP-II (memo 0017, section 5).
 - **Explanation and reliability** (dashboard tabs marked FYP-II) have no endpoints in FYP-I
   (memo 0015, memo 0016).
 
