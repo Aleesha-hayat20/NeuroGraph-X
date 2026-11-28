@@ -107,43 +107,7 @@ def _sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-@pytest.fixture
-def four_members(fixture_root):
-    """The fixture's cc200 runs copied to three more 'atlases' with shifted probabilities."""
-    log_path = fixture_root / "runs/run_log.jsonl"
-    runs = read_runs(log_path)
-    final = next(r for r in runs if r["stage"] == "final")
-    cv = next(r for r in runs if r["run_id"] == final["metrics"]["cv_run_id"])
-    registry_path = fixture_root / "runs/model_registry.json"
-    registry = json.loads(registry_path.read_text())
-    members = {"cc200": final["run_id"]}
-    new_lines = []
-    for i, atlas in enumerate(("aal", "ho", "dosenbach160"), start=1):
-        shift = 0.05 * i
-        frozen = pd.read_csv(fixture_root / final["metrics"]["frozen"]["predictions"]["file"])
-        frozen["prob_autism"] = (frozen["prob_autism"] * (1 - shift) + shift / 2).round(6)
-        fpath = fixture_root / f"runs/frozen_predictions/{atlas}_fake{i}_frozen.csv"
-        frozen.to_csv(fpath, index=False, float_format="%.6f", lineterminator="\n")
-        oof = pd.read_csv(fixture_root / cv["metrics"]["oof"]["file"])
-        oof["prob_autism"] = (oof["prob_autism"] * (1 - shift) + shift / 2).round(6)
-        opath = fixture_root / f"runs/oof/{atlas}_fakecv{i}_oof.csv"
-        oof.to_csv(opath, index=False, float_format="%.6f", lineterminator="\n")
-        cv_rec = {**cv, "run_id": f"fakecv{i}", "atlas": atlas,
-                  "metrics": {**cv["metrics"], "oof": {**cv["metrics"]["oof"],
-                              "file": opath.relative_to(fixture_root).as_posix(),
-                              "sha256": _sha(opath)}}}
-        fin = {**final, "run_id": f"fake{i}", "atlas": atlas,
-               "metrics": {**final["metrics"], "cv_run_id": f"fakecv{i}",
-                           "frozen": {**final["metrics"]["frozen"], "predictions": {
-                               "file": fpath.relative_to(fixture_root).as_posix(),
-                               "n": len(frozen), "sha256": _sha(fpath)}}}}
-        new_lines += [json.dumps(cv_rec), json.dumps(fin)]
-        registry[atlas] = {**registry["cc200"], "atlas": atlas, "run_id": f"fake{i}"}
-        members[atlas] = f"fake{i}"
-    with open(log_path, "a", newline="\n") as f:
-        f.write("\n".join(new_lines) + "\n")
-    registry_path.write_text(json.dumps(registry, indent=2))
-    return fixture_root, members
+# The four_members fixture is in tests/conftest.py (shared with test_api_models.py).
 
 
 def test_default_mode_checks_and_measures_nothing(four_members, capsys):

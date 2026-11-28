@@ -190,6 +190,12 @@ list for a release is [`docs/release/checklist.md`](docs/release/checklist.md).
 > **Never request the `func_preproc` derivative.** The `rois_*` derivatives are small
 > `.1D` text files. Everything else is a large `.nii.gz` volume.
 
+## User manual
+
+[NeuroGraph-X User Manual](docs/user_manual/NeuroGraphX_User_Manual.pdf) (PDF; the editable Word file is beside it):
+installation, starting the system, every dashboard page, troubleshooting and maintenance.
+For a first setup, follow [SETUP.md](SETUP.md).
+
 ## Repository layout
 
 ```
