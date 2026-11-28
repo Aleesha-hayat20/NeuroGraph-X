@@ -147,6 +147,17 @@ export function createAnalysis(participantId, atlas) {
 export function getModels() {
   return request('/models')
 }
+
+/**
+ * GET /models/ensemble -> the four-atlas ensemble's recorded result (memo 0017, section 5):
+ * { ensemble_id, timestamp, members, rule, metrics: { cv, frozen } }, where `cv` holds
+ * { accuracy, balanced_accuracy, auc }, each { mean, sd }, and `frozen` holds accuracy,
+ * accuracy_ci95_wilson [low, high], balanced_accuracy, auc and majority_baseline.
+ * Read-only. 404 when the ensemble has not been measured on the dataset (always in fixture mode).
+ */
+export function getModelEnsemble() {
+  return request('/models/ensemble')
+}
 /**
  * POST /analyses/{analysis_id}/regenerate -> 201 { analysis, original, identical, differences }
  * `analysis` is the new record (its reproduces_analysis_id is the original), `original` the
