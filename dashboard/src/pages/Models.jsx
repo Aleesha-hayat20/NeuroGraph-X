@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
-import { getModels } from '../api/client.js'
+import { getModelEnsemble, getModels } from '../api/client.js'
 
 // Models page (W6-11): for each atlas the registered model, its cross-validation and
 // frozen-set results, and the effect of calibration (memo 0010): ECE before and after, and a
 // reliability diagram. Everything comes from GET /models (memo 0013); the page computes nothing.
+// One extra row reports the four-atlas ensemble (memo 0017) from GET /models/ensemble. It is
+// reported, not served, and not calibrated; the row is hidden when the endpoint answers 404,
+// which is always the case in fixture mode.
 const ATLAS_LABELS = {
   aal: 'AAL',
   cc200: 'CC200',
@@ -23,11 +26,72 @@ function decimal(value, digits = 3) {
   return typeof value === 'number' ? value.toFixed(digits) : 'not recorded'
 }
 
+const ENSEMBLE_LABEL = 'Ensemble of the four atlases (memo 0017)'
+const ENSEMBLE_NOTE = "Each analysis uses one atlas's model; the ensemble is reported, not served."
+
 function cvText(cv) {
   if (!cv || typeof cv.mean !== 'number') return 'not recorded'
   return typeof cv.sd === 'number'
     ? `${percent(cv.mean)} ± ${(cv.sd * 100).toFixed(1)}`
     : percent(cv.mean)
+}
+
+function aucCvText(cv) {
+  if (!cv || typeof cv.mean !== 'number') return 'not recorded'
+  return typeof cv.sd === 'number' ? `${cv.mean.toFixed(3)} ± ${cv.sd.toFixed(3)}` : cv.mean.toFixed(3)
+}
+
+function intervalText(ci) {
+  if (!Array.isArray(ci) || ci.length !== 2 || !ci.every((value) => typeof value === 'number')) {
+    return null
+  }
+  return `95% CI ${percent(ci[0])}–${percent(ci[1])}`
+}
+
+// The ensemble's result, or null when it has not been measured on this dataset (404). Any other
+// error is shown as a note, so the four atlas models stay visible.
+function loadEnsemble() {
+  return getModelEnsemble()
+    .then((ensemble) => ({ ensemble, ensembleError: null }))
+    .catch((error) =>
+      error.status === 404
+        ? { ensemble: null, ensembleError: null }
+        : { ensemble: null, ensembleError: error.message },
+    )
+}
+
+function EnsembleRow({ ensemble }) {
+  const cv = ensemble.metrics?.cv
+  const frozen = ensemble.metrics?.frozen
+  const interval = intervalText(frozen?.accuracy_ci95_wilson)
+  return (
+    <tr className="ensemble-row">
+      <td>{ENSEMBLE_LABEL}</td>
+      <td>{ensemble.ensemble_id}</td>
+      <td>
+        <span>{cvText(cv?.accuracy)}</span>
+        <br />
+        <span className="muted">balanced {cvText(cv?.balanced_accuracy)}</span>
+        <br />
+        <span className="muted">AUC {aucCvText(cv?.auc)}</span>
+      </td>
+      <td>
+        <span>{percent(frozen?.accuracy)}</span>
+        {interval && (
+          <>
+            {' '}
+            <span className="muted">({interval})</span>
+          </>
+        )}
+        <br />
+        <span className="muted">balanced {percent(frozen?.balanced_accuracy)}</span>
+      </td>
+      <td>{percent(frozen?.majority_baseline)}</td>
+      <td>{decimal(frozen?.auc)}</td>
+      <td>not calibrated</td>
+      <td>not calibrated</td>
+    </tr>
+  )
 }
 
 // Reliability diagram: predicted probability against observed share, one point per bin that
@@ -131,9 +195,9 @@ export default function Models() {
 
   useEffect(() => {
     let cancelled = false
-    getModels()
-      .then((models) => {
-        if (!cancelled) setState({ status: 'ok', models })
+    Promise.all([getModels(), loadEnsemble()])
+      .then(([models, { ensemble, ensembleError }]) => {
+        if (!cancelled) setState({ status: 'ok', models, ensemble, ensembleError })
       })
       .catch((error) => {
         if (!cancelled) setState({ status: 'error', message: error.message })
@@ -161,7 +225,7 @@ export default function Models() {
     )
   }
 
-  const { models } = state
+  const { models, ensemble, ensembleError } = state
   if (models.length === 0) {
     return (
       <section>
@@ -210,6 +274,7 @@ export default function Models() {
                 </tr>
               )
             })}
+            {ensemble && <EnsembleRow ensemble={ensemble} />}
           </tbody>
         </table>
       </div>
@@ -218,6 +283,10 @@ export default function Models() {
         error, lower is better, measured on the frozen set. The majority baseline is the accuracy
         of always guessing the larger group in the frozen set.
       </p>
+      {ensemble && <p className="muted">{ENSEMBLE_NOTE}</p>}
+      {ensembleError && (
+        <p className="muted">The ensemble result could not be loaded. {ensembleError}</p>
+      )}
 
       <h2>Reliability diagrams</h2>
       <p className="muted">
